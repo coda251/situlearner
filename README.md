@@ -28,15 +28,15 @@ SituLearner是综合影视字幕或音乐歌词的android单词学习软件，
 
 1. 在`播放器`界面点击对应的单词，收藏即可。字幕经过分词，单词也已还原至原形。但是目前仅支持查询分词后的结果，不支持自定义选择单词。单词释义取自网络，因此查询释义需要正常的网络连接。另外：双击对应字幕的空白区域可循环播放该例句；长按对应字幕的空白区域可复制该例句的原文。
 <div style="display: flex; justify-content: center; gap: 10px;">
-<img width="270" src=".readme/image/player.jpg" alt="player">
-<img width="270" src=".readme/image/player-word_context.jpg" alt="player-word_context">
+<img width="270" src=".readme/image/player.png" alt="player">
+<img width="270" src=".readme/image/player-word_context.png" alt="player-word_context">
 </div>
 
 2. `单词库`界面，提供了不同类别的单词组；`单词组`界面包含了该分组下的所有单词。
 3. `单词详情`页面，点击某一个例句即可循环播放该例句的界面。
 <div style="display: flex; justify-content: center; gap: 10px;">
-<img width="270" src=".readme/image/word_library.jpg" alt="word_library">
-<img width="270" src=".readme/image/word_detail.jpg" alt="word_detail">
+<img width="270" src=".readme/image/word_library.png" alt="word_library">
+<img width="270" src=".readme/image/word_detail.png" alt="word_detail">
 </div>
 
 
