@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_explore_library_screen_title">Explore</string>
+
+    <string name="home_explore_library_screen_audio">Audio</string>
+    <string name="home_explore_library_screen_video">Video</string>
+</resources>

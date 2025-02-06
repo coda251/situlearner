@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_media_library_screen_title">媒体库</string>
+    <string name="home_media_library_screen_delete_collection">删除</string>
+    <string name="home_media_library_screen_rename_collection">重命名</string>
+    <string name="home_media_library_screen_delete_collection_title">删除这个合集？</string>
+    <string name="home_media_library_screen_delete_collection_text">合集中所有文件将被删除且不可恢复。你确定吗？</string>
+    <string name="home_media_library_screen_rename_collection_label">重命名</string>
+    <string name="home_media_library_screen_rename_collection_empty_error">合集名称不应为空</string>
+</resources>

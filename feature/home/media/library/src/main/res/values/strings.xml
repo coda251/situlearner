@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_media_library_screen_title">Media Library</string>
+
+    <string name="home_media_library_screen_delete_collection">Delete</string>
+    <string name="home_media_library_screen_rename_collection">Rename</string>
+
+    <string name="home_media_library_screen_delete_collection_title">Delete this collection?</string>
+    <string name="home_media_library_screen_delete_collection_text">All media files in this collection will be deleted and can not be restored. Are you sure?</string>
+    <string name="home_media_library_screen_rename_collection_label">Rename</string>
+    <string name="home_media_library_screen_rename_collection_empty_error">Collection name should not be empty</string>
+</resources>

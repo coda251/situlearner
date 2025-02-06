@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "com.coda.situlearner.core.datastore";
+option java_multiple_files = true;
+
+enum RepeatModeProto {
+  REPEAT_MODE_ONE = 0;
+  REPEAT_MODE_ALL = 1;
+}

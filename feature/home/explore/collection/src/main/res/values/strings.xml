@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_explore_collection_screen_add">Add</string>
+
+    <string name="home_explore_collection_screen_subtitles">subtitles</string>
+    <string name="home_explore_collection_screen_no_subtitles">no subtitles</string>
+    <string name="home_explore_collection_screen_unknown_file_format">unknown format</string>
+
+    <string name="home_explore_collection_screen_adding_to_db">Adding to media library…</string>
+
+</resources>

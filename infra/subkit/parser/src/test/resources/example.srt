@@ -1,0 +1,11 @@
+1
+00:00:02,122 --> 00:00:04,818
+What a good day! Wanna go out?
+
+2
+00:00:04,818 --> 00:00:06,122
+No, I'm busy preparing my math test recently.
+I'm afraid I can't <i>pass</i> it.
+
+3
+00:00:06,122 --> 00:00:07,122

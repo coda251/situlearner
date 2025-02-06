@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option java_package = "com.coda.situlearner.core.datastore";
+option java_multiple_files = true;
+
+enum ThemeColorModeProto {
+  THEME_COLOR_MODE_STATIC = 0;
+  THEME_COLOR_MODE_DYNAMIC_WITH_THUMBNAIL = 1;
+  THEME_COLOR_MODE_DYNAMIC_WITH_WALLPAPER = 2;
+}

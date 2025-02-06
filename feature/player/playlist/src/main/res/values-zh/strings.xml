@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="player_playlist_screen_clear_playlist_title">清除播放列表？</string>
+    <string name="player_playlist_screen_clear_playlist_text">所有播放媒体项将被移除。</string>
+</resources>

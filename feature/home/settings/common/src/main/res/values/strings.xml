@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_settings_common_screen_title">Settings</string>
+
+    <string name="home_settings_common_screen_dialog_ok">OK</string>
+
+    <string name="home_settings_common_screen_dark_theme_mode">Dark theme</string>
+    <string name="home_settings_common_screen_dark_theme_mode_follow_system">Follow system</string>
+    <string name="home_settings_common_screen_dark_theme_mode_light">Light</string>
+    <string name="home_settings_common_screen_dark_theme_mode_dark">Dark</string>
+
+    <string name="home_settings_common_screen_theme_color_mode">Theme color</string>
+    <string name="home_settings_common_screen_theme_color_static">Static</string>
+    <string name="home_settings_common_screen_theme_color_dynamic_with_wallpaper">Dynamic with wallpaper</string>
+    <string name="home_settings_common_screen_theme_color_dynamic_with_thumbnail">Dynamic with thumbnail</string>
+</resources>

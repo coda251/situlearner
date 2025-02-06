@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "com.coda.situlearner.core.datastore";
+option java_multiple_files = true;
+import "com/coda/situlearner/core/datastore/media_type.proto";
+
+message PlaylistItemProto {
+  string id = 1;
+  string name = 2;
+  string collectionName = 3;
+  string mediaUrl = 4;
+  string subtitleUrl = 5;
+  string thumbnailUrl = 6;
+  MediaTypeProto media_type = 7;
+  sint64 durationInMs = 8;
+  sint64 lastPositionInMs = 9;
+}

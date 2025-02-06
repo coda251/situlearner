@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_package = "com.coda.situlearner.core.datastore";
+option java_multiple_files = true;
+
+import "com/coda/situlearner/core/datastore/language.proto";
+import "com/coda/situlearner/core/datastore/word_category_type.proto";
+import "com/coda/situlearner/core/datastore/dark_theme_mode.proto";
+import "com/coda/situlearner/core/datastore/theme_color_mode.proto";
+
+message UserPreferenceProto {
+  LanguageProto word_filter_language = 1;
+  WordCategoryTypeProto word_category_type = 2;
+  DarkThemeModeProto dark_theme_mode = 3;
+  ThemeColorModeProto theme_color_mode = 4;
+}

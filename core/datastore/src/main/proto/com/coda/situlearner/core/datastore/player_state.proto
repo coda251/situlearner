@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "com.coda.situlearner.core.datastore";
+option java_multiple_files = true;
+
+import "com/coda/situlearner/core/datastore/playlist_item.proto";
+import "com/coda/situlearner/core/datastore/repeat_mode.proto";
+
+message PlayerStateProto {
+  RepeatModeProto repeatMode = 1;
+  sint64 positionInMs = 2;
+  repeated PlaylistItemProto items = 3;
+  int32 currentIndex = 4;
+}

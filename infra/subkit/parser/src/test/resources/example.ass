@@ -1,0 +1,21 @@
+[Script Info]
+; // None
+Title:
+Original Script:None
+Synch Point:0
+ScriptType:v4.00+
+Collisions:Normal
+PlayResX:
+PlayResY:
+Timer:100.0000
+
+[V4+ Styles]
+
+[Events]
+Format: Layer, Start, End, Style, Actor, MarginL, MarginR, MarginV, Effect, Text
+; // en
+
+Dialogue: 0,0:00:02.12,0:00:04.82,,NTP,0000,0000,0000,,What a good day! Wanna go out?
+Dialogue: 0,0:00:04.82,0:00:06.12,,NTP,0000,0000,0000,,No, I'm busy preparing my math test recently. I'm afraid I can't {\i1}pass{\i0} it.
+Dialogue: 0,0:00:06.12,0:00:07.12,,NTP,0000,0000,0000,,
+Dialogue: 0,0:00:44.20,0:00:46.53,*Default,NTP,0000,0000,0000,,直说吧 好吗\N{\fnDaxlinePro-Regular}{\fs19}{\b0}{\c&HFFFFFF&}{\3c&H2F2F2F&}{\4c&H000000&}Just give it to me straight, okay?

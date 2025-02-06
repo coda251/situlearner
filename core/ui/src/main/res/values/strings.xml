@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_ui_cancel">Cancel</string>
+    <string name="core_ui_confirm">Confirm</string>
+
+    <string name="core_ui_language">Language</string>
+    <string name="core_ui_language_unknown">Unknown</string>
+    <string name="core_ui_language_chinese">Chinese</string>
+    <string name="core_ui_language_english">English</string>
+    <string name="core_ui_language_japanese">Japanese</string>
+
+    <string name="core_ui_part_of_speech_noun">Noun</string>
+    <string name="core_ui_part_of_speech_verb">Verb</string>
+    <string name="core_ui_part_of_speech_adjective">Adjective</string>
+    <string name="core_ui_part_of_speech_adverb">Adverb</string>
+    <string name="core_ui_part_of_speech_unknown">Unknown</string>
+</resources>

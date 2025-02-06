@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="word_category_screen_yesterday">Yesterday</string>
+    <string name="word_category_screen_monday">Monday</string>
+    <string name="word_category_screen_tuesday">Tuesday</string>
+    <string name="word_category_screen_wednesday">Wednesday</string>
+    <string name="word_category_screen_thursday">Thursday</string>
+    <string name="word_category_screen_friday">Friday</string>
+    <string name="word_category_screen_saturday">Saturday</string>
+    <string name="word_category_screen_sunday">Sunday</string>
+</resources>

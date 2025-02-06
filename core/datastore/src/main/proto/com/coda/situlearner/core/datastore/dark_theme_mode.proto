@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option java_package = "com.coda.situlearner.core.datastore";
+option java_multiple_files = true;
+
+enum DarkThemeModeProto {
+  DARK_THEME_MODE_FOLLOW_SYSTEM = 0;
+  DARK_THEME_MODE_LIGHT = 1;
+  DARK_THEME_MODE_DARK = 2;
+}
