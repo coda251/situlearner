@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.coda.situlearner.feature.word.category"
+    namespace = "com.coda.situlearner.feature.word.echo"
 }
 
 dependencies {
@@ -12,6 +12,4 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.testing)
     implementation(projects.infra.player)
-
-    implementation(libs.kotlinx.datetime)
 }

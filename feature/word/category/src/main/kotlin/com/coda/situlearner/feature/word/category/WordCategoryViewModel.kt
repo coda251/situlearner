@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.PartOfSpeech
-import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordCategoryType
 import com.coda.situlearner.core.model.data.WordProficiency
+import com.coda.situlearner.core.model.data.WordWithContexts
 import com.coda.situlearner.core.model.domain.TimeFrame
 import com.coda.situlearner.core.model.domain.WordCategory
 import com.coda.situlearner.core.model.domain.WordCategoryList
@@ -32,11 +32,15 @@ internal class WordCategoryViewModel(
     val uiState = wordRepository.wordCategories.map { it ->
         when (it.categoryType) {
             WordCategoryType.LastViewedDate -> {
-                it.toWords<WordViewedDateCategory> { it.timeFrame == TimeFrame.valueOf(route.categoryId) }
+                it.filterToWordWithContextsList<WordViewedDateCategory> {
+                    it.timeFrame == TimeFrame.valueOf(
+                        route.categoryId
+                    )
+                }
             }
 
             WordCategoryType.Proficiency -> {
-                it.toWords<WordProficiencyCategory> {
+                it.filterToWordWithContextsList<WordProficiencyCategory> {
                     it.proficiency == WordProficiency.valueOf(
                         route.categoryId
                     )
@@ -44,16 +48,22 @@ internal class WordCategoryViewModel(
             }
 
             WordCategoryType.PartOfSpeech -> {
-                it.toWords<WordPOSCategory> { it.partOfSpeech == PartOfSpeech.valueOf(route.categoryId) }
+                it.filterToWordWithContextsList<WordPOSCategory> {
+                    it.partOfSpeech == PartOfSpeech.valueOf(
+                        route.categoryId
+                    )
+                }
             }
 
             WordCategoryType.Media -> {
-                it.toWords<WordMediaCategory> { it.collection.id == route.categoryId }
+                it.filterToWordWithContextsList<WordMediaCategory> {
+                    it.collection.id == route.categoryId
+                }
             }
         }
     }.map {
         if (it.isNullOrEmpty()) WordCategoryUiState.Empty
-        else WordCategoryUiState.Success(words = it)
+        else WordCategoryUiState.Success(wordWithContextsList = it)
     }.catch {
         if (it is IllegalArgumentException) {
             emit(WordCategoryUiState.Error)
@@ -64,16 +74,14 @@ internal class WordCategoryViewModel(
         initialValue = WordCategoryUiState.Loading
     )
 
-    private inline fun <reified T : WordCategory> WordCategoryList.toWords(
+    private inline fun <reified T : WordCategory> WordCategoryList.filterToWordWithContextsList(
         filter: (T) -> Boolean
-    ) = this.asTypedCategoryList<T>().firstOrNull(filter)?.let { category ->
-        category.wordWithContextsList.map { it.word }
-    }
+    ) = this.asTypedCategoryList<T>().firstOrNull(filter)?.wordWithContextsList
 }
 
 internal sealed interface WordCategoryUiState {
     data object Error : WordCategoryUiState
     data object Loading : WordCategoryUiState
     data object Empty : WordCategoryUiState
-    data class Success(val words: List<Word>) : WordCategoryUiState
+    data class Success(val wordWithContextsList: List<WordWithContexts>) : WordCategoryUiState
 }

@@ -26,6 +26,8 @@ import com.coda.situlearner.feature.word.category.navigation.wordCategoryScreen
 import com.coda.situlearner.feature.word.detail.navigation.WordDetailRoute
 import com.coda.situlearner.feature.word.detail.navigation.navigateToWordDetail
 import com.coda.situlearner.feature.word.detail.navigation.wordDetailScreen
+import com.coda.situlearner.feature.word.echo.navigation.navigateToWordEcho
+import com.coda.situlearner.feature.word.echo.navigation.wordEchoScreen
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 
@@ -48,8 +50,13 @@ fun AppNavHost(
 
         wordCategoryScreen(
             onBack = appNavController::popBackStack,
-            onNavigateToWordDetail = appNavController::navigateToWordDetail
-        )
+            onNavigateToWordDetail = appNavController::navigateToWordDetail,
+            onNavigateToWordEcho = appNavController::navigateToWordEcho
+        ) {
+            wordEchoScreen(
+                onBack = appNavController::popBackStack
+            )
+        }
 
         wordDetailScreen(
             onBack = appNavController::popBackStack,

@@ -7,6 +7,7 @@ import com.coda.situlearner.core.data.mapper.asEntity
 import com.coda.situlearner.core.data.mapper.asExternalModel
 import com.coda.situlearner.core.data.mapper.asValue
 import com.coda.situlearner.core.database.dao.WordBankDao
+import com.coda.situlearner.core.database.entity.WordContextEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.PartOfSpeech
@@ -105,6 +106,11 @@ internal class LocalWordRepository(
                 )
             }
         }
+    }
+
+    override fun getWordContexts(ids: Set<String>): Flow<List<WordContext>> {
+        return wordBankDao.getWordContextEntities(ids)
+            .map { it.map(WordContextEntity::asExternalModel) }
     }
 
     override suspend fun setWordProficiency(word: Word, proficiency: WordProficiency) {

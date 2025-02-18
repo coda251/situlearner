@@ -10,4 +10,5 @@ data class PlaylistItem(
     val mediaType: MediaType,
     val durationInMs: Long? = null,
     val lastPositionInMs: Long? = null,
+    val clipInMs: Pair<Long, Long>? = null
 )

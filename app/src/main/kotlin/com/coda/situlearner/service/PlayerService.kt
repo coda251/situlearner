@@ -156,6 +156,10 @@ class PlayerService : LifecycleService(), KoinComponent, PlayerState {
         playerEngine.setPlaybackLoop(start, end)
     }
 
+    override fun setRepeatNumber(number: Int) {
+        playerEngine.setRepeatNumber(number)
+    }
+
     override val playlist: StateFlow<Playlist>
         get() = playerEngine.playlist
     override val playlistType: StateFlow<PlaylistType>

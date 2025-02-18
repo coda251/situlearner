@@ -41,6 +41,10 @@ internal class ExoPlayerEngine(
 
     private var isOnSeekingProgress = false
 
+    private var repeatNumber = 1
+
+    private var remainingRepeatNumber = repeatNumber
+
     private var updatePositionAndCheckLoopPlayingJob = scope.launch(
         start = CoroutineStart.LAZY
     ) {
@@ -64,7 +68,7 @@ internal class ExoPlayerEngine(
         }
     }
 
-    val player = ExoPlayer.Builder(context).apply {
+    private val player = ExoPlayer.Builder(context).apply {
         setHandleAudioBecomingNoisy(true)
         setAudioAttributes(
             AudioAttributes.Builder()
@@ -110,7 +114,14 @@ internal class ExoPlayerEngine(
                             // if size == 1, then there will be no next item. we go
                             // back to 0 position so the media continues
                             if (playlistManager.items.size == 1) seekTo(0L)
-                            else playNext()
+                            else {
+                                remainingRepeatNumber--
+                                if (remainingRepeatNumber > 0) {
+                                    seekTo(0L)
+                                } else {
+                                    playNext()
+                                }
+                            }
                         }
                     }
 
@@ -212,6 +223,15 @@ internal class ExoPlayerEngine(
             if (loop.isStartSet) loop.start else null,
             if (loop.isEndSet) loop.end else null
         )
+    }
+
+    override fun setRepeatNumber(number: Int) {
+        max(1, number).let {
+            if (it != repeatNumber) {
+                repeatNumber = it
+                remainingRepeatNumber = it
+            }
+        }
     }
 
     override val playlist: MutableStateFlow<Playlist> = MutableStateFlow(Playlist())
@@ -325,6 +345,7 @@ internal class ExoPlayerEngine(
 
         // set current item
         player.setMediaItem(item, item.startPlayingPosition)
+        remainingRepeatNumber = repeatNumber
         player.prepare()
         updatePlaylist()
         setPlaybackLoop(PlayerState.TIME_UNSET, PlayerState.TIME_UNSET)
@@ -334,6 +355,7 @@ internal class ExoPlayerEngine(
         if (item == player.currentMediaItem) {
             playlistManager.nextItem?.let {
                 player.setMediaItem(it)
+                remainingRepeatNumber = repeatNumber
                 player.prepare()
             } ?: run {
                 player.clearMediaItems()

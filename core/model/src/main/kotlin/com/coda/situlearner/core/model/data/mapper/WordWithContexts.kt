@@ -10,6 +10,22 @@ import com.coda.situlearner.core.model.domain.WordProficiencyCategory
 import com.coda.situlearner.core.model.domain.WordViewedDateCategory
 import kotlinx.datetime.Instant
 
+fun WordWithContexts.asPlaylistItem() = contexts.takeIf { it.isNotEmpty() }?.random()?.let {
+    val file = it.mediaFile
+    val collection = it.mediaCollection
+    if (file != null && collection != null) {
+        Pair(collection, file).asPlaylistItem().copy(
+            id = it.wordContext.id,
+            clipInMs = Pair(
+                first = it.wordContext.subtitleStartTimeInMs,
+                second = it.wordContext.subtitleEndTimeInMs
+            )
+        )
+    } else {
+        null
+    }
+}
+
 fun List<WordWithContexts>.toWordCategoryList(
     categoryType: WordCategoryType,
     timeFrameProvider: (Instant?) -> TimeFrame
