@@ -156,11 +156,12 @@ private fun WordDetailContentBoard(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
             AnimatedVisibility(showPlayer) {
-                PlayerViewCard(playerState)
+                Column {
+                    PlayerViewCard(playerState)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
 
             WordWithContextsCard(
@@ -185,6 +186,7 @@ private fun WordDetailContentBoard(
                             }
 
                             MediaType.Audio -> {
+                                showPlayer = false
                                 showBottomBar = true
                             }
                         }

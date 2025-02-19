@@ -43,6 +43,7 @@ dependencies {
     implementation(projects.feature.player.playlist)
     implementation(projects.feature.word.category)
     implementation(projects.feature.word.detail)
+    implementation(projects.feature.word.echo)
 
     implementation(projects.infra.explorerLocal)
     implementation(projects.infra.player)

@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,29 +24,38 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.Word
-import com.coda.situlearner.core.testing.data.wordsTestData
+import com.coda.situlearner.core.model.data.mapper.asPlaylistItem
+import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
 import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.feature.word.category.util.formatInstant
+import com.coda.situlearner.infra.player.PlayerState
+import com.coda.situlearner.infra.player.PlayerStateProvider
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun WordCategoryScreen(
     onBack: () -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
+    onNavigateToWordEcho: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WordCategoryViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val playerState by PlayerStateProvider.state.collectAsStateWithLifecycle()
+
     WordCategoryScreen(
         uiState = uiState,
+        playerState = playerState,
         onBack = onBack,
         onClickWord = { onNavigateToWordDetail(it.id) },
+        onRepeatWordContexts = { onNavigateToWordEcho() },
         modifier = modifier,
     )
 }
@@ -53,8 +64,10 @@ internal fun WordCategoryScreen(
 @Composable
 private fun WordCategoryScreen(
     uiState: WordCategoryUiState,
+    playerState: PlayerState,
     onBack: () -> Unit,
     onClickWord: (Word) -> Unit,
+    onRepeatWordContexts: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -62,11 +75,35 @@ private fun WordCategoryScreen(
             TopAppBar(
                 title = {},
                 navigationIcon = { BackButton(onBack) },
+                actions = {
+                    when (uiState) {
+                        WordCategoryUiState.Error -> {}
+                        WordCategoryUiState.Empty -> {}
+                        WordCategoryUiState.Loading -> {}
+                        is WordCategoryUiState.Success -> {
+                            IconButton(
+                                onClick = {
+                                    playerState.setRepeatNumber(3)
+                                    playerState.setItems(
+                                        uiState.wordWithContextsList.mapNotNull { it.asPlaylistItem() }
+                                    )
+                                    playerState.play()
+                                    onRepeatWordContexts()
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.event_repeat_24dp_000000_fill0_wght400_grad0_opsz24),
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         },
         modifier = modifier
-    ) {
+    ) { it ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -79,7 +116,7 @@ private fun WordCategoryScreen(
                 WordCategoryUiState.Loading -> {}
                 is WordCategoryUiState.Success -> {
                     WordCategoryContentBoard(
-                        words = uiState.words,
+                        words = uiState.wordWithContextsList.map { it.word },
                         onClickWord = onClickWord
                     )
                 }
@@ -152,11 +189,13 @@ private fun WordItem(
 @Composable
 private fun WordCategoryScreenPreview() {
     val uiState = WordCategoryUiState.Success(
-        words = wordsTestData
+        wordWithContextsList = wordWithContextsListTestData
     )
     WordCategoryScreen(
         uiState = uiState,
+        playerState = PlayerStateProvider.EmptyPlayerState,
         onBack = {},
-        onClickWord = {}
+        onClickWord = {},
+        onRepeatWordContexts = {}
     )
 }

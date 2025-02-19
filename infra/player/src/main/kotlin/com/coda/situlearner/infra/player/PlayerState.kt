@@ -51,6 +51,12 @@ interface PlayerState {
      */
     fun setPlaybackLoop(start: Long?, end: Long?)
 
+    /**
+     * Items will be played for `number` times when the repeat mode
+     * is [RepeatMode.All][RepeatMode.All].
+     */
+    fun setRepeatNumber(number: Int)
+
     val playlist: StateFlow<Playlist>
 
     val playlistType: StateFlow<PlaylistType>

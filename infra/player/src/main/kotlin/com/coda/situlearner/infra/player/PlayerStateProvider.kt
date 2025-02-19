@@ -45,6 +45,8 @@ object PlayerStateProvider {
         override fun setRepeatMode(mode: RepeatMode) {}
         override fun setPlaybackSpeed(speed: Float) {}
         override fun setPlaybackLoop(start: Long?, end: Long?) {}
+        override fun setRepeatNumber(number: Int) {}
+
         override fun addItems(items: List<PlaylistItem>, startItem: PlaylistItem?) {}
         override fun setItems(items: List<PlaylistItem>) {}
 
