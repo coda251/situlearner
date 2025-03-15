@@ -27,4 +27,15 @@ class TranslatorTest {
         println(situWord.toString())
         assertEquals(word, situWord.word)
     }
+
+    @Test
+    fun `test YouDaoJapanese no posTag`() = runTest {
+        val dictionary = YouDaoJapanese()
+        val word = "さつがい"
+        val definition = "杀害，杀死"
+        val situWord = dictionary.query(word)
+
+        println(situWord.toString())
+        assertEquals(definition, situWord.meanings?.firstOrNull()?.definition)
+    }
 }

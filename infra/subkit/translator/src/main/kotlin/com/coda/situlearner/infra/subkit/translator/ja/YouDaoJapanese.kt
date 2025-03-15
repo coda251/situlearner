@@ -31,7 +31,7 @@ class YouDaoJapanese(
             }
             if (wordExp.isNotEmpty()) {
                 wordExp.forEach { element ->
-                    var posTag: String? = null
+                    var posTag = ""
                     var paraphrase = ""
 
                     element.children().forEach {
@@ -42,14 +42,12 @@ class YouDaoJapanese(
                         }
                     }
 
-                    posTag?.let {
-                        meanings.add(
-                            WordMeaning(
-                                partOfSpeechTag = it,
-                                definition = paraphrase
-                            )
+                    meanings.add(
+                        WordMeaning(
+                            partOfSpeechTag = posTag,
+                            definition = paraphrase
                         )
-                    }
+                    )
                 }
             }
         } catch (e: IOException) {
