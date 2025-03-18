@@ -36,6 +36,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,6 @@ import com.coda.situlearner.core.model.data.PartOfSpeech
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.testing.data.wordContextsTestData
 import com.coda.situlearner.core.testing.data.wordsTestData
-import com.coda.situlearner.core.ui.util.asText
 import org.koin.compose.getKoin
 
 @Composable
@@ -263,6 +263,15 @@ private fun WordPOSChips(
             )
         }
     }
+}
+
+@Composable
+private fun PartOfSpeech.asText(): String = when (this) {
+    PartOfSpeech.Unknown -> stringResource(R.string.player_entry_screen_part_of_speech_unknown)
+    PartOfSpeech.Noun -> stringResource(R.string.player_entry_screen_part_of_speech_noun)
+    PartOfSpeech.Verb -> stringResource(R.string.player_entry_screen_part_of_speech_verb)
+    PartOfSpeech.Adjective -> stringResource(R.string.player_entry_screen_part_of_speech_adjective)
+    PartOfSpeech.Adverb -> stringResource(R.string.player_entry_screen_part_of_speech_adverb)
 }
 
 @Composable

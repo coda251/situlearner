@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.coda.situlearner.core.model.data.WordCategoryType
 import com.coda.situlearner.feature.home.word.library.WordLibraryScreen
 import kotlinx.serialization.Serializable
 
@@ -15,7 +16,7 @@ fun NavController.navigateToWordLibrary(navOptions: NavOptions) {
 }
 
 fun NavGraphBuilder.wordLibrarySection(
-    onNavigateToWordCategory: (String) -> Unit,
+    onNavigateToWordCategory: (WordCategoryType, String) -> Unit,
     onNavigateToWordDetail: (String) -> Unit
 ) {
     composable<WordLibraryRoute> {

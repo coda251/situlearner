@@ -13,4 +13,6 @@
     <string name="home_settings_common_screen_theme_color_static">Static</string>
     <string name="home_settings_common_screen_theme_color_dynamic_with_wallpaper">Dynamic with wallpaper</string>
     <string name="home_settings_common_screen_theme_color_dynamic_with_thumbnail">Dynamic with thumbnail</string>
+
+    <string name="home_settings_common_screen_word_library_language">Word library language</string>
 </resources>

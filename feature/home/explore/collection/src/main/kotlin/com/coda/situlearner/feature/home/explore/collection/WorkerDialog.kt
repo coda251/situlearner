@@ -1,6 +1,10 @@
 package com.coda.situlearner.feature.home.explore.collection
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
@@ -13,11 +17,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.cfg.LanguageConfig
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.infra.SourceCollectionWithFiles
-import com.coda.situlearner.core.ui.widget.LanguageChips
+import com.coda.situlearner.core.ui.util.asText
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -100,10 +105,29 @@ private fun WorkerParametersBoard(
     onSelectLanguage: (Language) -> Unit,
     languageChoices: List<Language>
 ) {
-    LanguageChips(
-        selectedLanguage = null,
-        onSelectLanguage = onSelectLanguage,
-        languageChoices = languageChoices
+    ListItem(
+        leadingContent = {
+            Text(
+                text = stringResource(com.coda.situlearner.core.ui.R.string.core_ui_language),
+            )
+        },
+        headlineContent = {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(
+                    items = languageChoices,
+                    key = { it.name }
+                ) {
+                    FilterChip(
+                        selected = false,
+                        onClick = { onSelectLanguage(it) },
+                        label = { Text(text = it.asText()) }
+                    )
+                }
+            }
+        },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
     )
 }
 

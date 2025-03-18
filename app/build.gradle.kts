@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "com.coda.situlearner"
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.3.0-alpha01"
     }
 
     buildTypes {
@@ -18,7 +18,8 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt")
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }

@@ -51,7 +51,8 @@ fun AppNavHost(
         wordCategoryScreen(
             onBack = appNavController::popBackStack,
             onNavigateToWordDetail = appNavController::navigateToWordDetail,
-            onNavigateToWordEcho = appNavController::navigateToWordEcho
+            onNavigateToWordEcho = appNavController::navigateToWordEcho,
+            onNavigateToWordCategory = appNavController::navigateToWordCategory
         ) {
             wordEchoScreen(
                 onBack = appNavController::popBackStack

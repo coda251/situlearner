@@ -8,4 +8,11 @@
     <string name="word_category_screen_friday">周五</string>
     <string name="word_category_screen_saturday">周六</string>
     <string name="word_category_screen_sunday">周日</string>
+    <string name="word_category_screen_sort">排序</string>
+    <string name="word_category_screen_sort_mode">模式</string>
+    <string name="word_category_screen_sort_mode_ascending">升序</string>
+    <string name="word_category_screen_sort_mode_descending">降序</string>
+    <string name="word_category_screen_word_sort_by">类型</string>
+    <string name="word_category_screen_word_sort_by_date">上次查看</string>
+    <string name="word_category_screen_word_sort_by_proficiency">熟练度</string>
 </resources>

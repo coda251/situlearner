@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="player_entry_screen_part_of_speech_noun">名词</string>
+    <string name="player_entry_screen_part_of_speech_verb">动词</string>
+    <string name="player_entry_screen_part_of_speech_adjective">形容词</string>
+    <string name="player_entry_screen_part_of_speech_adverb">副词</string>
+    <string name="player_entry_screen_part_of_speech_unknown">未知</string>
+</resources>

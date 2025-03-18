@@ -16,11 +16,8 @@ import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordWithContexts
 import com.coda.situlearner.core.model.data.mapper.resolveLanguage
-import com.coda.situlearner.core.model.data.mapper.toWordCategoryList
-import com.coda.situlearner.core.model.domain.TimeFrame
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -32,17 +29,13 @@ internal class LocalWordRepository(
     private val imageCacheManager: CoverImageCacheManager,
     preferenceRepository: UserPreferenceRepository,
     defaultSourceLanguage: Language = LanguageConfig.sourceLanguages.first(),
-    timeFrameProvider: (Instant?) -> TimeFrame = TimeFrame.defaultTimeFrameProvider
 ) : WordRepository {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val wordCategories =
-        preferenceRepository.userPreference.map { it.resolveLanguage(defaultSourceLanguage).wordFilterLanguage }
-            .distinctUntilChanged()
-            .flatMapLatest { getWordWithContextsList(it) }
-            .combine(preferenceRepository.userPreference.map { it.wordCategoryType }) { data, categoryType ->
-                data.toWordCategoryList(categoryType, timeFrameProvider)
-            }
+    override val words = preferenceRepository.userPreference
+        .map { it.resolveLanguage(defaultSourceLanguage).wordLibraryLanguage }
+        .distinctUntilChanged()
+        .flatMapLatest { getWordWithContextsList(it) }
 
     override fun getWordWithContextsList(language: Language): Flow<List<WordWithContexts>> {
         return wordBankDao.getWordWithContextsEntities(language.asValue())

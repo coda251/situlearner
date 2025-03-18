@@ -8,4 +8,11 @@
     <string name="word_category_screen_friday">Friday</string>
     <string name="word_category_screen_saturday">Saturday</string>
     <string name="word_category_screen_sunday">Sunday</string>
+    <string name="word_category_screen_sort">Sort</string>
+    <string name="word_category_screen_sort_mode">Mode</string>
+    <string name="word_category_screen_sort_mode_ascending">Ascending</string>
+    <string name="word_category_screen_sort_mode_descending">Descending</string>
+    <string name="word_category_screen_word_sort_by">Type</string>
+    <string name="word_category_screen_word_sort_by_date">Last viewed date</string>
+    <string name="word_category_screen_word_sort_by_proficiency">Proficiency</string>
 </resources>

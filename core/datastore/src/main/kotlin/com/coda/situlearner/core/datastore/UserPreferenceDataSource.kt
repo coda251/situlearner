@@ -6,9 +6,7 @@ interface UserPreferenceDataSource {
 
     val userPreferenceProto: Flow<UserPreferenceProto>
 
-    suspend fun setWordFilterLanguageProto(languageProto: LanguageProto)
-
-    suspend fun setWordCategoryTypeProto(wordCategoryTypeProto: WordCategoryTypeProto)
+    suspend fun setWordLibraryLanguageProto(languageProto: LanguageProto)
 
     suspend fun setDarkThemeModeProto(darkThemeModeProto: DarkThemeModeProto)
 

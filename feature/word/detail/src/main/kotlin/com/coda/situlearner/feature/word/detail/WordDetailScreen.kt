@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -50,13 +49,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.MediaType
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContextView
-import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordWithContexts
 import com.coda.situlearner.core.model.data.mapper.asPlaylistItem
 import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
 import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.core.ui.widget.PlayOrPauseButton
-import com.coda.situlearner.core.ui.widget.ProficiencyIconButtonSet
+import com.coda.situlearner.core.ui.widget.ProficiencyIconSet
 import com.coda.situlearner.core.ui.widget.WordContextText
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
@@ -78,7 +76,6 @@ internal fun WordDetailScreen(
             playerState.clear()
             onBack()
         },
-        onSetProficiency = viewModel::setWordProficiency,
         onViewWord = viewModel::setWordViewedDate,
         onNavigateToPlayer = onNavigateToPlayer
     )
@@ -91,7 +88,6 @@ private fun WordDetailScreen(
     playerState: PlayerState,
     onBack: () -> Unit,
     onViewWord: (Word) -> Unit,
-    onSetProficiency: (Word, WordProficiency) -> Unit,
     onNavigateToPlayer: () -> Unit
 ) {
     BackHandler {
@@ -120,7 +116,6 @@ private fun WordDetailScreen(
                     WordDetailContentBoard(
                         playerState = playerState,
                         wordWithContexts = uiState.wordWithContexts,
-                        onSetProficiency = onSetProficiency,
                         onNavigateToPlayer = onNavigateToPlayer,
                         onViewWord = onViewWord,
                     )
@@ -134,7 +129,6 @@ private fun WordDetailScreen(
 private fun WordDetailContentBoard(
     playerState: PlayerState,
     wordWithContexts: WordWithContexts,
-    onSetProficiency: (Word, WordProficiency) -> Unit,
     onNavigateToPlayer: () -> Unit,
     onViewWord: (Word) -> Unit,
     modifier: Modifier = Modifier
@@ -192,7 +186,6 @@ private fun WordDetailContentBoard(
                         }
                     }
                 },
-                onSetProficiency = onSetProficiency
             )
         }
 
@@ -255,7 +248,6 @@ private fun WordWithContextsCard(
     word: Word,
     contexts: List<WordContextView>,
     onClickWordContext: (WordContextView) -> Unit,
-    onSetProficiency: (Word, WordProficiency) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier) {
@@ -271,12 +263,9 @@ private fun WordWithContextsCard(
                         fontWeight = FontWeight.Bold,
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    ProficiencyIconButtonSet(
-                        modifier = Modifier.offset(x = 12.dp),
+                    ProficiencyIconSet(
+                        modifier = Modifier.padding(vertical = 12.dp),
                         proficiency = word.proficiency,
-                        onSetProficiency = {
-                            onSetProficiency(word, it)
-                        }
                     )
                 }
             },
@@ -366,7 +355,6 @@ private fun WordDetailScreenPreview() {
         playerState = PlayerStateProvider.EmptyPlayerState,
         uiState = uiState,
         onBack = {},
-        onSetProficiency = { _, _ -> },
         onViewWord = {},
         onNavigateToPlayer = {}
     )

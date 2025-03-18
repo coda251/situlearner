@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.Word
-import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordWithContexts
 import com.coda.situlearner.feature.word.detail.navigation.WordDetailRoute
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,12 +31,6 @@ internal class WordDetailViewModel(
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = WordDetailUiState.Loading
         )
-
-    fun setWordProficiency(word: Word, proficiency: WordProficiency) {
-        viewModelScope.launch {
-            wordRepository.setWordProficiency(word, proficiency)
-        }
-    }
 
     fun setWordViewedDate(word: Word, date: Instant = Clock.System.now()) {
         viewModelScope.launch {

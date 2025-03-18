@@ -7,18 +7,10 @@ internal class LocalUserPreferenceDataSource(private val userPreference: DataSto
 
     override val userPreferenceProto = userPreference.data
 
-    override suspend fun setWordFilterLanguageProto(languageProto: LanguageProto) {
+    override suspend fun setWordLibraryLanguageProto(languageProto: LanguageProto) {
         userPreference.updateData {
             it.copy {
-                this.wordFilterLanguage = languageProto
-            }
-        }
-    }
-
-    override suspend fun setWordCategoryTypeProto(wordCategoryTypeProto: WordCategoryTypeProto) {
-        userPreference.updateData {
-            it.copy {
-                this.wordCategoryType = wordCategoryTypeProto
+                this.wordLibraryLanguage = languageProto
             }
         }
     }

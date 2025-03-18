@@ -44,6 +44,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.coda.situlearner.core.model.data.PlaylistItem
+import com.coda.situlearner.core.model.data.WordCategoryType
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
 import com.coda.situlearner.core.ui.widget.PlayNextButton
 import com.coda.situlearner.core.ui.widget.PlayOrPauseButton
@@ -61,7 +62,7 @@ import kotlin.reflect.KClass
 
 @Composable
 internal fun HomeScreen(
-    onNavigateToWordCategory: (String) -> Unit,
+    onNavigateToWordCategory: (WordCategoryType, String) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToPlayer: () -> Unit,
     navController: NavHostController = rememberNavController()

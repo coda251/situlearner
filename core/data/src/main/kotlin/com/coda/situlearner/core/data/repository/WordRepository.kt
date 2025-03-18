@@ -6,13 +6,12 @@ import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordWithContexts
-import com.coda.situlearner.core.model.domain.WordCategoryList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 
 interface WordRepository {
 
-    val wordCategories: Flow<WordCategoryList>
+    val words: Flow<List<WordWithContexts>>
 
     fun getWordWithContextsList(language: Language): Flow<List<WordWithContexts>>
 

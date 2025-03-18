@@ -8,7 +8,6 @@ import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.ThemeColorMode
 import com.coda.situlearner.core.model.data.UserPreference
-import com.coda.situlearner.core.model.data.WordCategoryType
 import com.coda.situlearner.core.model.data.mapper.resolveLanguage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -23,12 +22,8 @@ internal class LocalUserPreferenceRepository(
             it.asExternalModel().resolveLanguage(defaultSourceLanguage)
         }
 
-    override suspend fun setWordFilterLanguage(language: Language) {
-        dataSource.setWordFilterLanguageProto(language.asProto())
-    }
-
-    override suspend fun setWordCategoryType(wordCategoryType: WordCategoryType) {
-        dataSource.setWordCategoryTypeProto(wordCategoryType.asProto())
+    override suspend fun setWordLibraryLanguage(language: Language) {
+        dataSource.setWordLibraryLanguageProto(language.asProto())
     }
 
     override suspend fun setDarkThemeMode(darkThemeMode: DarkThemeMode) {

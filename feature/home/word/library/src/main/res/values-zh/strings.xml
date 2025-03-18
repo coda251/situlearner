@@ -1,23 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="home_word_library_screen_title">单词库</string>
-    <string name="home_word_library_screen_category_type">类别</string>
-    <string name="home_word_library_screen_category_type_by_date">上次查看</string>
-    <string name="home_word_library_screen_category_type_by_proficiency">熟练度</string>
-    <string name="home_word_library_screen_category_type_by_media">媒体合集</string>
-    <string name="home_word_library_screen_category_type_by_pos">词性</string>
     <string name="home_word_library_screen_no_word_contexts_available">无例句</string>
     <string name="home_word_library_screen_words">单词</string>
-    <string name="home_word_library_screen_more">更多</string>
-    <string name="home_word_library_screen_time_frame_never">从未</string>
-    <string name="home_word_library_screen_time_frame_today">今天</string>
-    <string name="home_word_library_screen_time_frame_last_three_days">最近三天</string>
-    <string name="home_word_library_screen_time_frame_last_week">最近一周</string>
-    <string name="home_word_library_screen_time_frame_last_two_weeks">最近两周</string>
-    <string name="home_word_library_screen_time_frame_last_month">最近一月</string>
-    <string name="home_word_library_screen_time_frame_over_a_month">更早</string>
-    <string name="home_word_library_screen_proficiency_unset">不熟悉</string>
-    <string name="home_word_library_screen_proficiency_beginner">初学</string>
-    <string name="home_word_library_screen_proficiency_intermediate">中级</string>
-    <string name="home_word_library_screen_proficiency_proficient">熟练</string>
+    <string name="home_word_library_screen_all_words">全部单词</string>
+    <string name="home_word_library_screen_word_books">单词本</string>
+    <string name="home_word_library_screen_word_recommendation">单词推荐</string>
 </resources>

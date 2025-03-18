@@ -46,13 +46,10 @@ class UserPreferenceDataSourceTest : KoinTest {
         assertNotNull(userPreferenceDataSource)
 
         var preferenceProto = userPreferenceDataSource.userPreferenceProto.first()
-        assertEquals(LanguageProto.LANGUAGE_UNSPECIFIED, preferenceProto.wordFilterLanguage)
-        assertEquals(WordCategoryTypeProto.WORD_CATEGORY_TYPE_UNSPECIFIED, preferenceProto.wordCategoryType)
+        assertEquals(LanguageProto.LANGUAGE_UNSPECIFIED, preferenceProto.wordLibraryLanguage)
 
-        userPreferenceDataSource.setWordFilterLanguageProto(LanguageProto.LANGUAGE_ENGLISH)
-        userPreferenceDataSource.setWordCategoryTypeProto(WordCategoryTypeProto.WORD_CATEGORY_TYPE_MEDIA)
+        userPreferenceDataSource.setWordLibraryLanguageProto(LanguageProto.LANGUAGE_ENGLISH)
         preferenceProto = userPreferenceDataSource.userPreferenceProto.first()
-        assertEquals(LanguageProto.LANGUAGE_ENGLISH, preferenceProto.wordFilterLanguage)
-        assertEquals(WordCategoryTypeProto.WORD_CATEGORY_TYPE_MEDIA, preferenceProto.wordCategoryType)
+        assertEquals(LanguageProto.LANGUAGE_ENGLISH, preferenceProto.wordLibraryLanguage)
     }
 }

@@ -10,8 +10,6 @@ import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordWithContexts
 import kotlinx.datetime.Instant
 
-val currentDateTestData = Instant.parse("2021-11-01T00:00:00.000Z")
-
 val wordsTestData = listOf(
     Word(
         id = "0",

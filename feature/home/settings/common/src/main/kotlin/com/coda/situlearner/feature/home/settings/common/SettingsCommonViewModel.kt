@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.model.data.DarkThemeMode
+import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.ThemeColorMode
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -16,7 +17,8 @@ internal class SettingsCommonViewModel(private val userPreferenceRepository: Use
     val uiState = userPreferenceRepository.userPreference.map {
         SettingsCommonUiState.Success(
             darkThemeMode = it.darkThemeMode,
-            themeColorMode = it.themeColorMode
+            themeColorMode = it.themeColorMode,
+            wordLibraryLanguage = it.wordLibraryLanguage
         )
     }.stateIn(
         scope = viewModelScope,
@@ -35,12 +37,19 @@ internal class SettingsCommonViewModel(private val userPreferenceRepository: Use
             userPreferenceRepository.setThemeColorMode(themeColorMode)
         }
     }
+
+    fun setWordLibraryLanguage(language: Language) {
+        viewModelScope.launch {
+            userPreferenceRepository.setWordLibraryLanguage(language)
+        }
+    }
 }
 
 internal sealed interface SettingsCommonUiState {
     data object Loading : SettingsCommonUiState
     data class Success(
         val darkThemeMode: DarkThemeMode,
-        val themeColorMode: ThemeColorMode
+        val themeColorMode: ThemeColorMode,
+        val wordLibraryLanguage: Language,
     ) : SettingsCommonUiState
 }

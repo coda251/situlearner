@@ -2,26 +2,10 @@
 <resources>
     <string name="home_word_library_screen_title">Word Library</string>
 
-    <string name="home_word_library_screen_category_type">Category</string>
-    <string name="home_word_library_screen_category_type_by_date">Last viewed date</string>
-    <string name="home_word_library_screen_category_type_by_proficiency">Proficiency</string>
-    <string name="home_word_library_screen_category_type_by_media">Media</string>
-    <string name="home_word_library_screen_category_type_by_pos">Part of speech</string>
-
     <string name="home_word_library_screen_no_word_contexts_available">No sentences available</string>
     <string name="home_word_library_screen_words">words</string>
-    <string name="home_word_library_screen_more">More</string>
 
-    <string name="home_word_library_screen_time_frame_never">Never</string>
-    <string name="home_word_library_screen_time_frame_today">Today</string>
-    <string name="home_word_library_screen_time_frame_last_three_days">Last three days</string>
-    <string name="home_word_library_screen_time_frame_last_week">Last week</string>
-    <string name="home_word_library_screen_time_frame_last_two_weeks">Last two weeks</string>
-    <string name="home_word_library_screen_time_frame_last_month">Last month</string>
-    <string name="home_word_library_screen_time_frame_over_a_month">Even earlier</string>
-
-    <string name="home_word_library_screen_proficiency_unset">Unfamiliar</string>
-    <string name="home_word_library_screen_proficiency_beginner">Beginner</string>
-    <string name="home_word_library_screen_proficiency_intermediate">Intermediate</string>
-    <string name="home_word_library_screen_proficiency_proficient">Proficient</string>
+    <string name="home_word_library_screen_all_words">All words</string>
+    <string name="home_word_library_screen_word_books">Books</string>
+    <string name="home_word_library_screen_word_recommendation">Recommendation</string>
 </resources>

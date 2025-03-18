@@ -26,8 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coda.situlearner.core.cfg.LanguageConfig
 import com.coda.situlearner.core.model.data.DarkThemeMode
+import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.ThemeColorMode
+import com.coda.situlearner.core.ui.util.asText
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -41,6 +44,7 @@ internal fun SettingsCommonScreen(
         uiState = uiState,
         onSelectDarkThemeMode = viewModel::setDarkThemeMode,
         onSelectThemeColorMode = viewModel::setThemeColorMode,
+        onSelectWordLibraryLanguage = viewModel::setWordLibraryLanguage,
         modifier = modifier
     )
 }
@@ -51,6 +55,7 @@ private fun SettingsCommonScreen(
     uiState: SettingsCommonUiState,
     onSelectDarkThemeMode: (DarkThemeMode) -> Unit,
     onSelectThemeColorMode: (ThemeColorMode) -> Unit,
+    onSelectWordLibraryLanguage: (Language) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -75,8 +80,10 @@ private fun SettingsCommonScreen(
                     SettingsContentBoard(
                         darkThemeMode = uiState.darkThemeMode,
                         themeColorMode = uiState.themeColorMode,
+                        wordLibraryLanguage = uiState.wordLibraryLanguage,
                         onSelectDarkThemeMode = onSelectDarkThemeMode,
-                        onSelectThemeColorMode = onSelectThemeColorMode
+                        onSelectThemeColorMode = onSelectThemeColorMode,
+                        onSelectWordLibraryLanguage = onSelectWordLibraryLanguage
                     )
                 }
             }
@@ -88,12 +95,15 @@ private fun SettingsCommonScreen(
 private fun SettingsContentBoard(
     darkThemeMode: DarkThemeMode,
     themeColorMode: ThemeColorMode,
+    wordLibraryLanguage: Language,
     onSelectDarkThemeMode: (DarkThemeMode) -> Unit,
-    onSelectThemeColorMode: (ThemeColorMode) -> Unit
+    onSelectThemeColorMode: (ThemeColorMode) -> Unit,
+    onSelectWordLibraryLanguage: (Language) -> Unit,
 ) {
     Column {
         ThemeColorModeSelector(themeColorMode, onSelectThemeColorMode)
         DarkThemeModeSelector(darkThemeMode, onSelectDarkThemeMode)
+        WordFilterLanguageSelector(wordLibraryLanguage, onSelectWordLibraryLanguage)
     }
 }
 
@@ -195,6 +205,60 @@ private fun DarkThemeModeSelector(
                             RadioButton(
                                 selected = it == darkThemeMode,
                                 onClick = { onSelect(it) },
+                            )
+                            Text(text = it.asText())
+                        }
+                    }
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun WordFilterLanguageSelector(
+    language: Language,
+    onSelectLanguage: (Language) -> Unit,
+) {
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    ListItem(
+        headlineContent = {
+            Text(
+                text = stringResource(R.string.home_settings_common_screen_word_library_language)
+            )
+        },
+        supportingContent = {
+            Text(
+                text = language.asText()
+            )
+        },
+        modifier = Modifier.clickable {
+            showDialog = true
+        }
+    )
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                    }
+                ) {
+                    Text(text = stringResource(R.string.home_settings_common_screen_dialog_ok))
+                }
+            },
+            text = {
+                Column {
+                    LanguageConfig.sourceLanguages.forEach {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(
+                                selected = it == language,
+                                onClick = { onSelectLanguage(it) },
                             )
                             Text(text = it.asText())
                         }

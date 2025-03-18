@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.coda.situlearner.core.data"
+    namespace = "com.coda.situlearner.core.cache"
 }
 
 dependencies {

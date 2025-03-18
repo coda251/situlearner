@@ -7,9 +7,4 @@
     <string name="core_ui_language_chinese">汉语</string>
     <string name="core_ui_language_english">英语</string>
     <string name="core_ui_language_japanese">日语</string>
-    <string name="core_ui_part_of_speech_noun">名词</string>
-    <string name="core_ui_part_of_speech_verb">动词</string>
-    <string name="core_ui_part_of_speech_adjective">形容词</string>
-    <string name="core_ui_part_of_speech_adverb">副词</string>
-    <string name="core_ui_part_of_speech_unknown">未知</string>
 </resources>
