@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -57,6 +58,7 @@ import com.coda.situlearner.core.ui.R as coreR
 @Composable
 internal fun MediaLibraryScreen(
     onNavigateToCollection: (MediaCollection) -> Unit,
+    onNavigateToExplore: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MediaLibraryViewModel = koinViewModel()
 ) {
@@ -67,6 +69,7 @@ internal fun MediaLibraryScreen(
         onClickCollection = onNavigateToCollection,
         onDeleteCollection = viewModel::deleteMediaCollection,
         onRenameCollection = viewModel::setMediaCollectionName,
+        onAdd = onNavigateToExplore,
         modifier = modifier,
     )
 }
@@ -78,6 +81,7 @@ private fun MediaLibraryScreen(
     onClickCollection: (MediaCollection) -> Unit,
     onDeleteCollection: (MediaCollection) -> Unit,
     onRenameCollection: (MediaCollection, String) -> Unit,
+    onAdd: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -88,6 +92,16 @@ private fun MediaLibraryScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAdd,
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.add_24dp_000000_fill0_wght400_grad0_opsz24),
+                    contentDescription = null
+                )
+            }
         }
     ) {
         Box(
@@ -389,6 +403,7 @@ private fun MediaCollectionsScreenPreview() {
         uiState = uiState,
         onClickCollection = {},
         onRenameCollection = { _, _ -> },
-        onDeleteCollection = {}
+        onDeleteCollection = {},
+        onAdd = {}
     )
 }

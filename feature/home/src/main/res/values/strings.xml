@@ -1,6 +1,5 @@
 <resources>
     <string name="home_screen_media">Media</string>
     <string name="home_screen_word">Word</string>
-    <string name="home_screen_explore">Explore</string>
     <string name="home_screen_settings">Settings</string>
 </resources>

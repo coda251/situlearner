@@ -33,12 +33,14 @@ import coil3.ImageLoader
 import com.coda.situlearner.core.model.data.MediaType
 import com.coda.situlearner.core.model.infra.SourceCollection
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
+import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.feature.home.explore.library.util.AudioCoverFetcher
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun ExploreLibraryScreen(
     onNavigateToCollection: (SourceCollection) -> Unit,
+    onBack: () -> Unit,
     viewModel: ExploreLibraryViewModel = koinViewModel()
 ) {
     val videoUiState by viewModel.videoUiState.collectAsStateWithLifecycle()
@@ -47,7 +49,8 @@ internal fun ExploreLibraryScreen(
     ExploreLibraryScreen(
         videoUiState = videoUiState,
         audioUiState = audioUiState,
-        onClickCollection = onNavigateToCollection
+        onClickCollection = onNavigateToCollection,
+        onBack = onBack
     )
 }
 
@@ -57,6 +60,7 @@ private fun ExploreLibraryScreen(
     videoUiState: ExploreLibraryUiState,
     audioUiState: ExploreLibraryUiState,
     onClickCollection: (SourceCollection) -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -73,7 +77,8 @@ private fun ExploreLibraryScreen(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.home_explore_library_screen_title)) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                navigationIcon = { BackButton(onBack) }
             )
         },
         modifier = modifier,
@@ -215,6 +220,7 @@ private fun ExploreCollectionsScreenPreview() {
     ExploreLibraryScreen(
         videoUiState = videoUiState,
         audioUiState = audioUiState,
-        onClickCollection = {}
+        onClickCollection = {},
+        onBack = {}
     )
 }

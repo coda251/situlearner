@@ -48,8 +48,6 @@ import com.coda.situlearner.core.model.data.WordCategoryType
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
 import com.coda.situlearner.core.ui.widget.PlayNextButton
 import com.coda.situlearner.core.ui.widget.PlayOrPauseButton
-import com.coda.situlearner.feature.home.explore.library.navigation.ExploreLibraryBaseRoute
-import com.coda.situlearner.feature.home.explore.library.navigation.navigateToExploreLibrary
 import com.coda.situlearner.feature.home.media.library.navigation.MediaLibraryBaseRoute
 import com.coda.situlearner.feature.home.media.library.navigation.navigateToMediaLibrary
 import com.coda.situlearner.feature.home.settings.common.navigation.SettingsCommonRoute
@@ -199,7 +197,6 @@ private fun NavBottomBar(navController: NavController) {
                     when (item) {
                         BottomNavRoute.Media -> navController.navigateToMediaLibrary(options)
                         BottomNavRoute.Word -> navController.navigateToWordLibrary(options)
-                        BottomNavRoute.Explore -> navController.navigateToExploreLibrary(options)
                         BottomNavRoute.Settings -> navController.navigateToSettingsCommon(options)
                     }
                 }
@@ -226,13 +223,6 @@ private enum class BottomNavRoute(
         R.drawable.event_note_24dp_000000_fill1_wght400_grad0_opsz24,
         R.drawable.event_note_24dp_000000_fill0_wght400_grad0_opsz24,
         WordLibraryRoute::class
-    ),
-
-    Explore(
-        R.string.home_screen_explore,
-        R.drawable.explore_24dp_000000_fill1_wght400_grad0_opsz24,
-        R.drawable.explore_24dp_000000_fill0_wght400_grad0_opsz24,
-        ExploreLibraryBaseRoute::class
     ),
 
     Settings(

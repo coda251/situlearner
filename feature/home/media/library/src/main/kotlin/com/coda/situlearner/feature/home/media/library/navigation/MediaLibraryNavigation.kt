@@ -21,12 +21,14 @@ fun NavController.navigateToMediaLibrary(navOptions: NavOptions) {
 
 fun NavGraphBuilder.mediaLibrarySection(
     onNavigateToCollection: (MediaCollection) -> Unit,
+    onNavigateToExplore: () -> Unit,
     destination: NavGraphBuilder.() -> Unit
 ) {
     navigation<MediaLibraryBaseRoute>(startDestination = MediaLibraryRoute) {
         composable<MediaLibraryRoute> {
             MediaLibraryScreen(
-                onNavigateToCollection = onNavigateToCollection
+                onNavigateToCollection = onNavigateToCollection,
+                onNavigateToExplore = onNavigateToExplore,
             )
         }
 
