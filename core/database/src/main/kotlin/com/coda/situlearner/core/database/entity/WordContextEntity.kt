@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.coda.situlearner.core.database.model.PartOfSpeech
 import kotlinx.datetime.Instant
 
 @Entity(
@@ -28,7 +27,6 @@ data class WordContextEntity(
     @ColumnInfo(index = true) val wordId: String,
     @ColumnInfo(index = true) val mediaId: String?,
     val createdDate: Instant,
-    val partOfSpeech: PartOfSpeech,
     val subtitleStartTimeInMs: Long,
     val subtitleEndTimeInMs: Long,
     val subtitleSourceText: String,

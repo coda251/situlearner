@@ -1,7 +1,6 @@
 package com.coda.situlearner.core.data.repository
 
 import com.coda.situlearner.core.model.data.Language
-import com.coda.situlearner.core.model.data.PartOfSpeech
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordProficiency
@@ -42,11 +41,6 @@ interface WordRepository {
 
     suspend fun deleteWordContext(wordContext: WordContext)
 
-    suspend fun setWordContextPOS(
-        wordContext: WordContext,
-        pos: PartOfSpeech
-    )
-
     suspend fun setWordLastViewedDate(
         word: Word,
         date: Instant
@@ -58,7 +52,7 @@ interface WordRepository {
         count: UInt
     ): List<WordWithContexts>
 
-    suspend fun getWordQuizInfo(ids: Set<String>): List<WordQuizInfo?>
+    suspend fun getWordQuizInfo(ids: Set<String>): List<WordQuizInfo>
 
     suspend fun upsertWordQuizInfo(infoList: List<WordQuizInfo>)
 

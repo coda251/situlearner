@@ -1,19 +1,14 @@
 package com.coda.situlearner.feature.player.entry
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -36,12 +31,10 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.coda.situlearner.core.model.data.PartOfSpeech
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.testing.data.wordContextsTestData
 import com.coda.situlearner.core.testing.data.wordsTestData
@@ -68,7 +61,6 @@ internal fun PlayerWordBottomSheet(
         wordInfoUiState = wordInfoUiState,
         onAddWordContext = viewModel::insertWordWithContext,
         onDeleteWordContext = viewModel::deleteWordContext,
-        onChangePOSOfWordContext = viewModel::updateWordContextPOS,
         onDismiss = onDismiss,
     )
 }
@@ -79,8 +71,7 @@ private fun PlayerWordBottomSheet(
     word: String,
     wordContextUiState: WordContextUiState,
     wordInfoUiState: WordInfoUiState,
-    onAddWordContext: (WordInfoUiState, PartOfSpeech) -> Unit,
-    onChangePOSOfWordContext: (WordContext, PartOfSpeech) -> Unit,
+    onAddWordContext: (WordInfoUiState) -> Unit,
     onDeleteWordContext: (WordContext) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -94,17 +85,7 @@ private fun PlayerWordBottomSheet(
             word = word,
             wordContextUiState = wordContextUiState,
             wordInfoUiState = wordInfoUiState,
-            onSelectPOS = {
-                when (wordContextUiState) {
-                    is WordContextUiState.Success -> onChangePOSOfWordContext(
-                        wordContextUiState.wordContext,
-                        it
-                    )
-
-                    is WordContextUiState.Empty -> onAddWordContext(wordInfoUiState, it)
-                    else -> {}
-                }
-            },
+            onAddWordContext = onAddWordContext,
             onDeleteWordContext = onDeleteWordContext,
             modifier = modifier
                 .height(350.dp)
@@ -123,7 +104,7 @@ private fun WordContextBoard(
     word: String,
     wordContextUiState: WordContextUiState,
     wordInfoUiState: WordInfoUiState,
-    onSelectPOS: (PartOfSpeech) -> Unit,
+    onAddWordContext: (WordInfoUiState) -> Unit,
     onDeleteWordContext: (WordContext) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -157,7 +138,7 @@ private fun WordContextBoard(
                 when (wordContextUiState) {
                     WordContextUiState.Loading -> {}
                     WordContextUiState.Empty -> IconButton(
-                        onClick = { showPOSChips = true }
+                        onClick = { onAddWordContext(wordInfoUiState) }
                     ) {
                         Icon(
                             painter = painterResource(
@@ -183,16 +164,6 @@ private fun WordContextBoard(
             },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
         )
-
-        AnimatedVisibility(visible = showPOSChips) {
-            WordPOSChips(
-                selectedPOS = when (wordContextUiState) {
-                    is WordContextUiState.Success -> wordContextUiState.wordContext.partOfSpeech
-                    else -> null
-                },
-                onSelectPOS = onSelectPOS,
-            )
-        }
 
         WordInfoBoard(
             wordInfoUiState = wordInfoUiState,
@@ -242,39 +213,6 @@ private fun WordInfoBoard(
 }
 
 @Composable
-private fun WordPOSChips(
-    selectedPOS: PartOfSpeech?,
-    onSelectPOS: (PartOfSpeech) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(horizontal = 28.dp)
-    ) {
-        items(
-            items = PartOfSpeech.entries.sortedBy { it.level },
-            key = { it.name }
-        ) {
-            FilterChip(
-                onClick = { onSelectPOS(it) },
-                label = { Text(it.asText()) },
-                selected = it == selectedPOS,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PartOfSpeech.asText(): String = when (this) {
-    PartOfSpeech.Unknown -> stringResource(R.string.player_entry_screen_part_of_speech_unknown)
-    PartOfSpeech.Noun -> stringResource(R.string.player_entry_screen_part_of_speech_noun)
-    PartOfSpeech.Verb -> stringResource(R.string.player_entry_screen_part_of_speech_verb)
-    PartOfSpeech.Adjective -> stringResource(R.string.player_entry_screen_part_of_speech_adjective)
-    PartOfSpeech.Adverb -> stringResource(R.string.player_entry_screen_part_of_speech_adverb)
-}
-
-@Composable
 @Preview(showBackground = true)
 private fun PlayerWordBottomSheetPreview() {
 
@@ -299,14 +237,9 @@ private fun PlayerWordBottomSheetPreview() {
         onDeleteWordContext = {
             wordContextUiState = WordContextUiState.Empty
         },
-        onChangePOSOfWordContext = { _, pos ->
+        onAddWordContext = {
             wordContextUiState = WordContextUiState.Success(
-                wordContext = wordContextsTestData[0].copy(partOfSpeech = pos)
-            )
-        },
-        onAddWordContext = { _, pos ->
-            wordContextUiState = WordContextUiState.Success(
-                wordContext = wordContextsTestData[0].copy(partOfSpeech = pos)
+                wordContext = wordContextsTestData[0]
             )
         },
         onDismiss = {}

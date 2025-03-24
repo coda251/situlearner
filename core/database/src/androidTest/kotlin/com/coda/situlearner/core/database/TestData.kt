@@ -6,7 +6,6 @@ import com.coda.situlearner.core.database.entity.WordContextEntity
 import com.coda.situlearner.core.database.entity.WordEntity
 import com.coda.situlearner.core.database.model.Audio
 import com.coda.situlearner.core.database.model.Unknown_Language
-import com.coda.situlearner.core.database.model.Unknown_PartOfSpeech
 import com.coda.situlearner.core.database.model.Unset
 import kotlinx.datetime.Clock
 import org.jetbrains.annotations.TestOnly
@@ -58,7 +57,6 @@ internal val wordContexts = listOf(
         wordId = "0",
         mediaId = "0",
         createdDate = Clock.System.now(),
-        partOfSpeech = Unknown_PartOfSpeech,
         subtitleStartTimeInMs = 0L,
         subtitleEndTimeInMs = 1L,
         subtitleSourceText = "",

@@ -1,7 +1,6 @@
 package com.coda.situlearner.core.testing.data
 
 import com.coda.situlearner.core.model.data.Language
-import com.coda.situlearner.core.model.data.PartOfSpeech
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordContextView
@@ -118,7 +117,6 @@ val wordContextsTestData = listOf(
         wordId = "0",
         mediaId = "0",
         createdDate = Instant.parse("2021-10-30T12:00:00.000Z"),
-        partOfSpeech = PartOfSpeech.Noun,
         subtitleStartTimeInMs = 0L,
         subtitleEndTimeInMs = 5000L,
         subtitleSourceText = "This is a good run.",
@@ -131,7 +129,6 @@ val wordContextsTestData = listOf(
         wordId = "0",
         mediaId = "0",
         createdDate = Instant.parse("2021-10-30T13:00:00.000Z"),
-        partOfSpeech = PartOfSpeech.Verb,
         subtitleStartTimeInMs = 10000L,
         subtitleEndTimeInMs = 15000L,
         subtitleSourceText = "Hey, run fast! This baster is gonna bite you!",
@@ -144,7 +141,6 @@ val wordContextsTestData = listOf(
         wordId = "1",
         mediaId = "1",
         createdDate = Instant.parse("2021-10-20T13:00:00.000Z"),
-        partOfSpeech = PartOfSpeech.Adverb,
         subtitleStartTimeInMs = 0L,
         subtitleEndTimeInMs = 5000L,
         subtitleSourceText = "It actively makes sound.",
@@ -157,7 +153,6 @@ val wordContextsTestData = listOf(
         wordId = "2",
         mediaId = "2",
         createdDate = Instant.parse("2021-10-19T13:00:00.000Z"),
-        partOfSpeech = PartOfSpeech.Unknown,
         subtitleStartTimeInMs = 50000L,
         subtitleEndTimeInMs = 55000L,
         subtitleSourceText = "hello?",
@@ -170,7 +165,6 @@ val wordContextsTestData = listOf(
         wordId = "3",
         mediaId = "2",
         createdDate = Instant.parse("2021-10-19T13:00:00.000Z"),
-        partOfSpeech = PartOfSpeech.Adjective,
         subtitleStartTimeInMs = 0L,
         subtitleEndTimeInMs = 5000L,
         subtitleSourceText = "This is an unconstitutional behavior",
@@ -183,7 +177,6 @@ val wordContextsTestData = listOf(
         wordId = "5",
         mediaId = "1",
         createdDate = Instant.parse("2021-10-17T13:00:00.000Z"),
-        partOfSpeech = PartOfSpeech.Noun,
         subtitleStartTimeInMs = 18000L,
         subtitleEndTimeInMs = 23000L,
         subtitleSourceText = "えと、これ？",
@@ -196,7 +189,6 @@ val wordContextsTestData = listOf(
         wordId = "6",
         mediaId = null,
         createdDate = Instant.parse("2021-10-15T13:00:00.000Z"),
-        partOfSpeech = PartOfSpeech.Adjective,
         subtitleStartTimeInMs = 18000L,
         subtitleEndTimeInMs = 23000L,
         subtitleSourceText = "君はきれいだ",

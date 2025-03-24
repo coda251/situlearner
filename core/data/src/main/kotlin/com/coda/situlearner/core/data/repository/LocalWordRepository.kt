@@ -7,9 +7,9 @@ import com.coda.situlearner.core.data.mapper.asExternalModel
 import com.coda.situlearner.core.data.mapper.asValue
 import com.coda.situlearner.core.database.dao.WordBankDao
 import com.coda.situlearner.core.database.entity.WordContextEntity
+import com.coda.situlearner.core.database.entity.WordQuizInfoEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.model.data.Language
-import com.coda.situlearner.core.model.data.PartOfSpeech
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordProficiency
@@ -103,16 +103,12 @@ internal class LocalWordRepository(
         return wordBankDao.deleteWordContextEntity(wordContext.id)
     }
 
-    override suspend fun setWordContextPOS(wordContext: WordContext, pos: PartOfSpeech) {
-        return wordBankDao.updateWordContextEntity(wordContext.id, pos.asValue())
-    }
-
     override suspend fun setWordLastViewedDate(word: Word, date: Instant) {
         return wordBankDao.updateWordEntity(word.id, date)
     }
 
-    override suspend fun getWordQuizInfo(ids: Set<String>): List<WordQuizInfo?> {
-        return wordBankDao.getWordQuizInfoEntities(ids).map { it?.asExternalModel() }
+    override suspend fun getWordQuizInfo(ids: Set<String>): List<WordQuizInfo> {
+        return wordBankDao.getWordQuizInfoEntities(ids).map(WordQuizInfoEntity::asExternalModel)
     }
 
     override suspend fun upsertWordQuizInfo(infoList: List<WordQuizInfo>) {

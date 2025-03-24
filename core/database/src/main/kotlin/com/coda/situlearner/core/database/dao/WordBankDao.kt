@@ -10,7 +10,6 @@ import com.coda.situlearner.core.database.entity.WordEntity
 import com.coda.situlearner.core.database.entity.WordQuizInfoEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.database.model.Language
-import com.coda.situlearner.core.database.model.PartOfSpeech
 import com.coda.situlearner.core.database.model.WordProficiency
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -80,9 +79,6 @@ interface WordBankDao {
     @Query("DELETE FROM WordContextEntity WHERE id = :id")
     suspend fun deleteWordContextEntity(id: String)
 
-    @Query("UPDATE WordContextEntity SET partOfSpeech = :pos WHERE id = :id")
-    suspend fun updateWordContextEntity(id: String, pos: PartOfSpeech)
-
     @Query("UPDATE WordEntity SET lastViewedDate = :lastViewedDate WHERE id = :id")
     suspend fun updateWordEntity(id: String, lastViewedDate: Instant)
 
@@ -107,7 +103,7 @@ interface WordBankDao {
     ): List<WordWithContextsEntity>
 
     @Query("SELECT * FROM WordQuizInfoEntity WHERE wordId IN (:ids)")
-    suspend fun getWordQuizInfoEntities(ids: Set<String>): List<WordQuizInfoEntity?>
+    suspend fun getWordQuizInfoEntities(ids: Set<String>): List<WordQuizInfoEntity>
 
     @Upsert
     suspend fun upsertWordQuizInfoEntities(infoList: List<WordQuizInfoEntity>)

@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.Language
-import com.coda.situlearner.core.model.data.PartOfSpeech
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordMeaning
@@ -93,10 +92,7 @@ internal class PlayerWordViewModel(
     )
 
     @OptIn(ExperimentalUuidApi::class)
-    fun insertWordWithContext(
-        wordInfoUiState: WordInfoUiState,
-        partOfSpeech: PartOfSpeech,
-    ) {
+    fun insertWordWithContext(wordInfoUiState: WordInfoUiState) {
         viewModelScope.launch {
             val wordId = Uuid.random().toString()
             val wordContextId = Uuid.random().toString()
@@ -124,7 +120,6 @@ internal class PlayerWordViewModel(
                 id = wordContextId,
                 wordId = wordId,
                 mediaId = route.mediaId,
-                partOfSpeech = partOfSpeech,
                 subtitleStartTimeInMs = route.subtitleStartTimeInMs,
                 subtitleEndTimeInMs = route.subtitleEndTimeInMs,
                 subtitleSourceText = route.subtitleSourceText,
@@ -140,12 +135,6 @@ internal class PlayerWordViewModel(
     fun deleteWordContext(wordContext: WordContext) {
         viewModelScope.launch {
             wordRepository.deleteWordContext(wordContext)
-        }
-    }
-
-    fun updateWordContextPOS(wordContext: WordContext, partOfSpeech: PartOfSpeech) {
-        viewModelScope.launch {
-            wordRepository.setWordContextPOS(wordContext, partOfSpeech)
         }
     }
 }

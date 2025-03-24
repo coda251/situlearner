@@ -8,7 +8,6 @@ data class WordContext(
     val wordId: String,
     val mediaId: String?,
     val createdDate: Instant = Clock.System.now(),
-    val partOfSpeech: PartOfSpeech,
     val subtitleStartTimeInMs: Long,
     val subtitleEndTimeInMs: Long,
     val subtitleSourceText: String,

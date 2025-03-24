@@ -71,7 +71,7 @@ internal class WordQuizViewModel(
         _uiState.value = WordQuizUiState.Summarizing
         viewModelScope.launch {
             val quizInfoList = buildList {
-                val infoInDb = wordRepository.getWordQuizInfo(quizResult.keys).filterNotNull()
+                val infoInDb = wordRepository.getWordQuizInfo(quizResult.keys)
                 addAll(infoInDb)
                 val keysInDb = infoInDb.map { it.wordId }.toSet()
                 quizResult.keys.forEach {
