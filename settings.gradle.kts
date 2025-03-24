@@ -47,3 +47,4 @@ include(":feature:player:playlist")
 include(":feature:word:detail")
 include(":feature:word:category") // do not use "group" to name the module
 include(":feature:word:echo")
+include(":feature:word:quiz")

@@ -42,3 +42,7 @@ kuromoji分词。
 ### 词典
 
 使用jsoup解析youdao词典返回的html文件。
+
+### 复习算法
+
+参考[SM-2算法](https://faqs.ankiweb.net/what-spaced-repetition-algorithm.html)。

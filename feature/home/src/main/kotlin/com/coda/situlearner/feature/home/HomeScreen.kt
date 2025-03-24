@@ -64,6 +64,7 @@ import kotlin.reflect.KClass
 internal fun HomeScreen(
     onNavigateToWordCategory: (WordCategoryType, String) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
+    onNavigateToWordQuiz: () -> Unit,
     onNavigateToPlayer: () -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
@@ -89,6 +90,7 @@ internal fun HomeScreen(
             HomeNavHost(
                 onNavigateToWordCategory = onNavigateToWordCategory,
                 onNavigateToWordDetail = onNavigateToWordDetail,
+                onNavigateToWordQuiz = onNavigateToWordQuiz,
                 navController = navController,
             )
         }

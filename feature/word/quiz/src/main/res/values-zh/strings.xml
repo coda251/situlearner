@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="word_quiz_screen_hint">提示</string>
+    <string name="word_quiz_screen_next">下一个</string>
+    <string name="word_quiz_screen_know">认识</string>
+    <string name="word_quiz_screen_do_not_know">不认识</string>
+    <string name="word_quiz_screen_done">完成</string>
+    <string name="word_quiz_screen_quiz_result">测验结果</string>
+    <string name="word_quiz_screen_rating_easy">简单</string>
+    <string name="word_quiz_screen_rating_good">一般</string>
+    <string name="word_quiz_screen_rating_hard">困难</string>
+    <string name="word_quiz_screen_rating_again">忘记</string>
+    <string name="word_quiz_screen_no_words_to_quiz">当前没有单词需要测试</string>
+</resources>

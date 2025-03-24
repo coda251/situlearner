@@ -4,4 +4,5 @@ data class UserPreference(
     val wordLibraryLanguage: Language,
     val darkThemeMode: DarkThemeMode,
     val themeColorMode: ThemeColorMode,
+    val quizWordCount: UInt,
 )

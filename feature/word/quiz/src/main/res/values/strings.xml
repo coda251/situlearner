@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="word_quiz_screen_hint">Hint</string>
+    <string name="word_quiz_screen_next">Next</string>
+    <string name="word_quiz_screen_know">Know</string>
+    <string name="word_quiz_screen_do_not_know">Don\'t know</string>
+    <string name="word_quiz_screen_done">Done</string>
+    <string name="word_quiz_screen_quiz_result">Quiz result</string>
+    <string name="word_quiz_screen_rating_easy">Easy</string>
+    <string name="word_quiz_screen_rating_good">Okay</string>
+    <string name="word_quiz_screen_rating_hard">Hard</string>
+    <string name="word_quiz_screen_rating_again">Forgot</string>
+    <string name="word_quiz_screen_no_words_to_quiz">No words to quiz right now</string>
+</resources>

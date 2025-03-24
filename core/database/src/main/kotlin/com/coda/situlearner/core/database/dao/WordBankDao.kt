@@ -4,8 +4,10 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Upsert
 import com.coda.situlearner.core.database.entity.WordContextEntity
 import com.coda.situlearner.core.database.entity.WordEntity
+import com.coda.situlearner.core.database.entity.WordQuizInfoEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.database.model.Language
 import com.coda.situlearner.core.database.model.PartOfSpeech
@@ -83,4 +85,37 @@ interface WordBankDao {
 
     @Query("UPDATE WordEntity SET lastViewedDate = :lastViewedDate WHERE id = :id")
     suspend fun updateWordEntity(id: String, lastViewedDate: Instant)
+
+    @Transaction
+    @Query(
+        """
+        SELECT w.* FROM WordEntity w
+        LEFT JOIN WordQuizInfoEntity q ON w.id = q.wordId
+        WHERE 
+            w.language == :language
+            AND (q.wordId IS NULL OR (q.nextQuizDate <= :currentDate))
+        ORDER BY
+            CASE WHEN q.wordId IS NULL THEN 0 ELSE 1 END,
+            q.intervalDays ASC
+        LIMIT :number
+        """
+    )
+    suspend fun getWordWithContextEntities(
+        language: Language,
+        currentDate: Instant,
+        number: Int
+    ): List<WordWithContextsEntity>
+
+    @Query("SELECT * FROM WordQuizInfoEntity WHERE wordId IN (:ids)")
+    suspend fun getWordQuizInfoEntities(ids: Set<String>): List<WordQuizInfoEntity?>
+
+    @Upsert
+    suspend fun upsertWordQuizInfoEntities(infoList: List<WordQuizInfoEntity>)
+
+    @Transaction
+    suspend fun updateWordEntities(idToProficiency: Map<String, WordProficiency>) {
+        idToProficiency.entries.forEach {
+            updateWordEntity(id = it.key, proficiency = it.value)
+        }
+    }
 }

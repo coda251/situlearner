@@ -3,11 +3,13 @@ package com.coda.situlearner.core.data.mapper
 import com.coda.situlearner.core.database.entity.WordContextEntity
 import com.coda.situlearner.core.database.entity.WordContextEntityView
 import com.coda.situlearner.core.database.entity.WordEntity
+import com.coda.situlearner.core.database.entity.WordQuizInfoEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.WordMeaning
+import com.coda.situlearner.core.model.data.WordQuizInfo
 import com.coda.situlearner.core.model.data.WordWithContexts
 
 internal fun WordEntity.asExternalModel() = Word(
@@ -79,4 +81,18 @@ internal fun WordContext.asEntity() = WordContextEntity(
     subtitleTargetText = subtitleTargetText,
     wordStartIndex = wordStartIndex,
     wordEndIndex = wordEndIndex,
+)
+
+internal fun WordQuizInfo.asEntity() = WordQuizInfoEntity(
+    wordId = wordId,
+    easeFactor = easeFactor,
+    intervalDays = intervalDays,
+    nextQuizDate = nextQuizDate
+)
+
+internal fun WordQuizInfoEntity.asExternalModel() = WordQuizInfo(
+    wordId = wordId,
+    easeFactor = easeFactor,
+    intervalDays = intervalDays,
+    nextQuizDate = nextQuizDate
 )

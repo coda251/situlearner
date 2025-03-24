@@ -19,6 +19,7 @@ import com.coda.situlearner.feature.home.word.library.navigation.wordLibrarySect
 internal fun HomeNavHost(
     onNavigateToWordCategory: (WordCategoryType, String) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
+    onNavigateToWordQuiz: () -> Unit,
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
@@ -37,7 +38,8 @@ internal fun HomeNavHost(
 
         wordLibrarySection(
             onNavigateToWordDetail = onNavigateToWordDetail,
-            onNavigateToWordCategory = onNavigateToWordCategory
+            onNavigateToWordCategory = onNavigateToWordCategory,
+            onNavigateToWordQuiz = onNavigateToWordQuiz
         )
 
         exploreLibrarySection(

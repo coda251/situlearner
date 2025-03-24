@@ -13,12 +13,14 @@ fun NavGraphBuilder.homeScreen(
     onNavigateToWordCategory: (WordCategoryType, String) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToPlayer: () -> Unit,
+    onNavigateToWordQuiz: () -> Unit,
 ) {
     composable<HomeRoute> {
         HomeScreen(
             onNavigateToWordCategory = onNavigateToWordCategory,
             onNavigateToWordDetail = onNavigateToWordDetail,
-            onNavigateToPlayer = onNavigateToPlayer
+            onNavigateToPlayer = onNavigateToPlayer,
+            onNavigateToWordQuiz = onNavigateToWordQuiz
         )
     }
 }

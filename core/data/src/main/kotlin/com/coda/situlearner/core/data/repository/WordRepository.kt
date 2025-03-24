@@ -5,6 +5,7 @@ import com.coda.situlearner.core.model.data.PartOfSpeech
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordProficiency
+import com.coda.situlearner.core.model.data.WordQuizInfo
 import com.coda.situlearner.core.model.data.WordWithContexts
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
@@ -50,4 +51,16 @@ interface WordRepository {
         word: Word,
         date: Instant
     )
+
+    suspend fun getWordWithContexts(
+        language: Language,
+        currentDate: Instant,
+        count: UInt
+    ): List<WordWithContexts>
+
+    suspend fun getWordQuizInfo(ids: Set<String>): List<WordQuizInfo?>
+
+    suspend fun upsertWordQuizInfo(infoList: List<WordQuizInfo>)
+
+    suspend fun updateWords(idToProficiency: Map<String, WordProficiency>)
 }

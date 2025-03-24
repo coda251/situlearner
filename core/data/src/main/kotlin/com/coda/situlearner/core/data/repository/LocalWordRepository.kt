@@ -2,7 +2,6 @@ package com.coda.situlearner.core.data.repository
 
 import com.coda.situlearner.core.cache.CoverImageCacheManager
 import com.coda.situlearner.core.cache.SubtitleCacheManager
-import com.coda.situlearner.core.cfg.LanguageConfig
 import com.coda.situlearner.core.data.mapper.asEntity
 import com.coda.situlearner.core.data.mapper.asExternalModel
 import com.coda.situlearner.core.data.mapper.asValue
@@ -14,8 +13,8 @@ import com.coda.situlearner.core.model.data.PartOfSpeech
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordProficiency
+import com.coda.situlearner.core.model.data.WordQuizInfo
 import com.coda.situlearner.core.model.data.WordWithContexts
-import com.coda.situlearner.core.model.data.mapper.resolveLanguage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -28,35 +27,20 @@ internal class LocalWordRepository(
     private val subtitleCacheManager: SubtitleCacheManager,
     private val imageCacheManager: CoverImageCacheManager,
     preferenceRepository: UserPreferenceRepository,
-    defaultSourceLanguage: Language = LanguageConfig.sourceLanguages.first(),
 ) : WordRepository {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val words = preferenceRepository.userPreference
-        .map { it.resolveLanguage(defaultSourceLanguage).wordLibraryLanguage }
+        .map { it.wordLibraryLanguage }
         .distinctUntilChanged()
         .flatMapLatest { getWordWithContextsList(it) }
 
     override fun getWordWithContextsList(language: Language): Flow<List<WordWithContexts>> {
         return wordBankDao.getWordWithContextsEntities(language.asValue())
             .map { wordWithContextsEntities ->
-                wordWithContextsEntities.map(WordWithContextsEntity::asExternalModel)
-                    .map { wordWithContexts ->
-                        wordWithContexts.copy(
-                            word = wordWithContexts.word,
-                            contexts = wordWithContexts.contexts.map {
-                                it.copy(
-                                    wordContext = it.wordContext,
-                                    mediaFile = subtitleCacheManager.run {
-                                        it.mediaFile?.resolveUrl()
-                                    },
-                                    mediaCollection = imageCacheManager.run {
-                                        it.mediaCollection?.resolveUrl()
-                                    }
-                                )
-                            }
-                        )
-                    }
+                wordWithContextsEntities
+                    .map(WordWithContextsEntity::asExternalModel)
+                    .map { it.resolveMediaUrl(subtitleCacheManager, imageCacheManager) }
             }
     }
 
@@ -82,23 +66,22 @@ internal class LocalWordRepository(
 
     override fun getWordWithContexts(wordId: String): Flow<WordWithContexts?> {
         return wordBankDao.getWordWithContextEntity(wordId).map { wordWithContextsEntity ->
-            wordWithContextsEntity?.asExternalModel()?.let { wordWithContexts ->
-                wordWithContexts.copy(
-                    word = wordWithContexts.word,
-                    contexts = wordWithContexts.contexts.map {
-                        it.copy(
-                            wordContext = it.wordContext,
-                            mediaFile = subtitleCacheManager.run {
-                                it.mediaFile?.resolveUrl()
-                            },
-                            mediaCollection = imageCacheManager.run {
-                                it.mediaCollection?.resolveUrl()
-                            }
-                        )
-                    }
-                )
-            }
+            wordWithContextsEntity?.asExternalModel()?.resolveMediaUrl(
+                subtitleCacheManager, imageCacheManager
+            )
         }
+    }
+
+    override suspend fun getWordWithContexts(
+        language: Language,
+        currentDate: Instant,
+        count: UInt
+    ): List<WordWithContexts> {
+        return wordBankDao.getWordWithContextEntities(
+            language.asValue(),
+            currentDate,
+            count.toInt()
+        ).map { it.asExternalModel().resolveMediaUrl(subtitleCacheManager, imageCacheManager) }
     }
 
     override fun getWordContexts(ids: Set<String>): Flow<List<WordContext>> {
@@ -127,4 +110,34 @@ internal class LocalWordRepository(
     override suspend fun setWordLastViewedDate(word: Word, date: Instant) {
         return wordBankDao.updateWordEntity(word.id, date)
     }
+
+    override suspend fun getWordQuizInfo(ids: Set<String>): List<WordQuizInfo?> {
+        return wordBankDao.getWordQuizInfoEntities(ids).map { it?.asExternalModel() }
+    }
+
+    override suspend fun upsertWordQuizInfo(infoList: List<WordQuizInfo>) {
+        return wordBankDao.upsertWordQuizInfoEntities(infoList.map(WordQuizInfo::asEntity))
+    }
+
+    override suspend fun updateWords(idToProficiency: Map<String, WordProficiency>) {
+        return wordBankDao.updateWordEntities(idToProficiency.mapValues { it.value.asValue() })
+    }
+
+    private fun WordWithContexts.resolveMediaUrl(
+        subtitleCacheManager: SubtitleCacheManager,
+        imageCacheManager: CoverImageCacheManager
+    ) = this.copy(
+        word = word,
+        contexts = contexts.map {
+            it.copy(
+                wordContext = it.wordContext,
+                mediaFile = subtitleCacheManager.run {
+                    it.mediaFile?.resolveUrl()
+                },
+                mediaCollection = imageCacheManager.run {
+                    it.mediaCollection?.resolveUrl()
+                }
+            )
+        }
+    )
 }

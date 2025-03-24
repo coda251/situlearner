@@ -59,6 +59,7 @@ import org.koin.androidx.compose.koinViewModel
 internal fun WordLibraryScreen(
     onNavigateToWordCategory: (WordCategoryType, String) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
+    onNavigateToWordQuiz: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WordLibraryViewModel = koinViewModel()
 ) {
@@ -76,6 +77,7 @@ internal fun WordLibraryScreen(
             )
         },
         onClickContextView = { onNavigateToWordDetail(it.wordContext.wordId) },
+        onQuiz = onNavigateToWordQuiz,
         modifier = modifier,
     )
 }
@@ -86,6 +88,7 @@ private fun WordLibraryScreen(
     uiState: WordLibraryUiState,
     onClickBook: (WordBook) -> Unit,
     onClickContextView: (WordContextView) -> Unit,
+    onQuiz: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -94,6 +97,22 @@ private fun WordLibraryScreen(
             TopAppBar(
                 title = {
                     Text(text = stringResource(R.string.home_word_library_screen_title))
+                },
+                actions = {
+                    when (uiState) {
+                        is WordLibraryUiState.Success -> {
+                            IconButton(
+                                onClick = onQuiz
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.quiz_24dp_000000_fill0_wght400_grad0_opsz24),
+                                    contentDescription = null
+                                )
+                            }
+                        }
+
+                        else -> {}
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
@@ -340,5 +359,6 @@ private fun WordLibraryScreenPreview() {
         uiState = uiState,
         onClickBook = {},
         onClickContextView = {},
+        onQuiz = {},
     )
 }

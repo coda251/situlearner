@@ -2,7 +2,7 @@ package com.coda.situlearner.feature.player.entry
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.coda.situlearner.core.cfg.LanguageConfig
+import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.PartOfSpeech
@@ -22,7 +22,7 @@ import kotlin.uuid.Uuid
 internal class PlayerWordViewModel(
     private val route: PlayerWordBottomSheetRoute,
     private val wordRepository: WordRepository,
-    defaultTargetLanguage: Language = LanguageConfig.targetLanguage
+    defaultTargetLanguage: Language = AppConfig.targetLanguage
 ) : ViewModel() {
 
     val wordContextUiState = wordRepository.getWordContext(

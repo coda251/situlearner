@@ -28,6 +28,9 @@ import com.coda.situlearner.feature.word.detail.navigation.navigateToWordDetail
 import com.coda.situlearner.feature.word.detail.navigation.wordDetailScreen
 import com.coda.situlearner.feature.word.echo.navigation.navigateToWordEcho
 import com.coda.situlearner.feature.word.echo.navigation.wordEchoScreen
+import com.coda.situlearner.feature.word.quiz.navigation.WordQuizRoute
+import com.coda.situlearner.feature.word.quiz.navigation.navigateToWordQuiz
+import com.coda.situlearner.feature.word.quiz.navigation.wordQuizScreen
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 
@@ -45,7 +48,8 @@ fun AppNavHost(
         homeScreen(
             onNavigateToWordCategory = appNavController::navigateToWordCategory,
             onNavigateToWordDetail = appNavController::navigateToWordDetail,
-            onNavigateToPlayer = appNavController::navigateToPlayerEntry
+            onNavigateToPlayer = appNavController::navigateToPlayerEntry,
+            onNavigateToWordQuiz = appNavController::navigateToWordQuiz
         )
 
         wordCategoryScreen(
@@ -62,6 +66,10 @@ fun AppNavHost(
         wordDetailScreen(
             onBack = appNavController::popBackStack,
             onNavigateToPlayer = appNavController::navigateToPlayerEntry
+        )
+
+        wordQuizScreen(
+            onBack = appNavController::popBackStack
         )
 
         playerEntryScreen(
@@ -92,8 +100,9 @@ private fun SwitchPlaylistType(
     val currentPlaylistType by remember {
         derivedStateOf {
             if (navBackStack.any {
-                    it.destination.hasRoute(WordDetailRoute::class)
-                            || it.destination.hasRoute(WordCategoryRoute::class)
+                    it.destination.hasRoute(WordDetailRoute::class) ||
+                            it.destination.hasRoute(WordCategoryRoute::class) ||
+                            it.destination.hasRoute(WordQuizRoute::class)
                 }) PlaylistType.Temporary
             else PlaylistType.Persistent
         }

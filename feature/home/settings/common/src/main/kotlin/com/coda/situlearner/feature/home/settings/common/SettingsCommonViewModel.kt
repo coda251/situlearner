@@ -18,7 +18,8 @@ internal class SettingsCommonViewModel(private val userPreferenceRepository: Use
         SettingsCommonUiState.Success(
             darkThemeMode = it.darkThemeMode,
             themeColorMode = it.themeColorMode,
-            wordLibraryLanguage = it.wordLibraryLanguage
+            wordLibraryLanguage = it.wordLibraryLanguage,
+            quizWordCount = it.quizWordCount
         )
     }.stateIn(
         scope = viewModelScope,
@@ -43,6 +44,12 @@ internal class SettingsCommonViewModel(private val userPreferenceRepository: Use
             userPreferenceRepository.setWordLibraryLanguage(language)
         }
     }
+
+    fun setQuizWordCount(count: UInt) {
+        viewModelScope.launch {
+            userPreferenceRepository.setQuizWordCount(count)
+        }
+    }
 }
 
 internal sealed interface SettingsCommonUiState {
@@ -51,5 +58,6 @@ internal sealed interface SettingsCommonUiState {
         val darkThemeMode: DarkThemeMode,
         val themeColorMode: ThemeColorMode,
         val wordLibraryLanguage: Language,
+        val quizWordCount: UInt,
     ) : SettingsCommonUiState
 }

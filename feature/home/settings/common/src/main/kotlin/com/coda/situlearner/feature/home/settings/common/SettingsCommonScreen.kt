@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -25,8 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.coda.situlearner.core.cfg.LanguageConfig
+import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.ThemeColorMode
@@ -45,6 +48,7 @@ internal fun SettingsCommonScreen(
         onSelectDarkThemeMode = viewModel::setDarkThemeMode,
         onSelectThemeColorMode = viewModel::setThemeColorMode,
         onSelectWordLibraryLanguage = viewModel::setWordLibraryLanguage,
+        onSetQuizWordCount = viewModel::setQuizWordCount,
         modifier = modifier
     )
 }
@@ -56,6 +60,7 @@ private fun SettingsCommonScreen(
     onSelectDarkThemeMode: (DarkThemeMode) -> Unit,
     onSelectThemeColorMode: (ThemeColorMode) -> Unit,
     onSelectWordLibraryLanguage: (Language) -> Unit,
+    onSetQuizWordCount: (UInt) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -81,9 +86,11 @@ private fun SettingsCommonScreen(
                         darkThemeMode = uiState.darkThemeMode,
                         themeColorMode = uiState.themeColorMode,
                         wordLibraryLanguage = uiState.wordLibraryLanguage,
+                        quizWordCount = uiState.quizWordCount,
                         onSelectDarkThemeMode = onSelectDarkThemeMode,
                         onSelectThemeColorMode = onSelectThemeColorMode,
-                        onSelectWordLibraryLanguage = onSelectWordLibraryLanguage
+                        onSelectWordLibraryLanguage = onSelectWordLibraryLanguage,
+                        onSetQuizWordCount = onSetQuizWordCount,
                     )
                 }
             }
@@ -96,14 +103,17 @@ private fun SettingsContentBoard(
     darkThemeMode: DarkThemeMode,
     themeColorMode: ThemeColorMode,
     wordLibraryLanguage: Language,
+    quizWordCount: UInt,
     onSelectDarkThemeMode: (DarkThemeMode) -> Unit,
     onSelectThemeColorMode: (ThemeColorMode) -> Unit,
     onSelectWordLibraryLanguage: (Language) -> Unit,
+    onSetQuizWordCount: (UInt) -> Unit,
 ) {
     Column {
         ThemeColorModeSelector(themeColorMode, onSelectThemeColorMode)
         DarkThemeModeSelector(darkThemeMode, onSelectDarkThemeMode)
         WordFilterLanguageSelector(wordLibraryLanguage, onSelectWordLibraryLanguage)
+        QuizWordCountSelector(quizWordCount, onSetQuizWordCount)
     }
 }
 
@@ -254,7 +264,7 @@ private fun WordFilterLanguageSelector(
             },
             text = {
                 Column {
-                    LanguageConfig.sourceLanguages.forEach {
+                    AppConfig.sourceLanguages.forEach {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             RadioButton(
                                 selected = it == language,
@@ -267,6 +277,82 @@ private fun WordFilterLanguageSelector(
             }
         )
     }
+}
+
+@Composable
+private fun QuizWordCountSelector(
+    quizWordCount: UInt,
+    onSetQuizWordCount: (UInt) -> Unit
+) {
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    ListItem(
+        headlineContent = {
+            Text(
+                text = stringResource(R.string.home_settings_common_screen_quiz_word_count)
+            )
+        },
+        supportingContent = {
+            Text(text = quizWordCount.toString())
+        },
+        modifier = Modifier.clickable {
+            showDialog = true
+        }
+    )
+
+    if (showDialog) {
+        QuizWordCountSelectorDialog(
+            initialCount = quizWordCount,
+            onDismiss = {
+                showDialog = false
+            },
+            onConfirm = {
+                onSetQuizWordCount(it)
+                showDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+private fun QuizWordCountSelectorDialog(
+    initialCount: UInt,
+    onDismiss: () -> Unit,
+    onConfirm: (UInt) -> Unit,
+) {
+    var count by remember {
+        mutableStateOf(initialCount)
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(count) }
+            ) {
+                Text(text = stringResource(R.string.home_settings_common_screen_dialog_ok))
+            }
+        },
+        text = {
+            Column {
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.home_settings_common_screen_count)) },
+                    trailingContent = { Text("$count") },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                )
+
+                Slider(
+                    modifier = Modifier.padding(12.dp),
+                    value = count.toFloat(),
+                    onValueChange = { count = it.toUInt() },
+                    valueRange = 5f..50f,
+                    steps = 8
+                )
+            }
+        }
+    )
 }
 
 @Composable

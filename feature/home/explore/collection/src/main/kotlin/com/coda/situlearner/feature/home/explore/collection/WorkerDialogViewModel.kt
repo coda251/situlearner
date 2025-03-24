@@ -2,7 +2,7 @@ package com.coda.situlearner.feature.home.explore.collection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.coda.situlearner.core.cfg.LanguageConfig
+import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.data.repository.MediaRepository
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.infra.SourceCollectionWithFiles
@@ -28,7 +28,7 @@ internal class WorkerDialogViewModel(
     fun insert(
         collectionWithFiles: SourceCollectionWithFiles,
         sourceLanguage: Language,
-        targetLanguage: Language = LanguageConfig.targetLanguage,
+        targetLanguage: Language = AppConfig.targetLanguage,
     ) {
         viewModelScope.launch {
             _workerStatusUiState.value = WorkerStatusUiState.Ongoing

@@ -30,4 +30,12 @@ internal class LocalUserPreferenceDataSource(private val userPreference: DataSto
             }
         }
     }
+
+    override suspend fun setQuizWordCountProto(quizWordCount: UInt) {
+        userPreference.updateData {
+            it.copy {
+                this.quizWordCount = quizWordCount.toInt()
+            }
+        }
+    }
 }

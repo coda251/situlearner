@@ -17,12 +17,14 @@ fun NavController.navigateToWordLibrary(navOptions: NavOptions) {
 
 fun NavGraphBuilder.wordLibrarySection(
     onNavigateToWordCategory: (WordCategoryType, String) -> Unit,
-    onNavigateToWordDetail: (String) -> Unit
+    onNavigateToWordDetail: (String) -> Unit,
+    onNavigateToWordQuiz: () -> Unit,
 ) {
     composable<WordLibraryRoute> {
         WordLibraryScreen(
             onNavigateToWordCategory = onNavigateToWordCategory,
-            onNavigateToWordDetail = onNavigateToWordDetail
+            onNavigateToWordDetail = onNavigateToWordDetail,
+            onNavigateToWordQuiz = onNavigateToWordQuiz
         )
     }
 }
