@@ -17,4 +17,5 @@
     <string name="home_settings_common_screen_word_library_language">Word library language</string>
     <string name="home_settings_common_screen_quiz_word_count">Quiz word count</string>
     <string name="home_settings_common_screen_count">Count</string>
+    <string name="home_settings_common_screen_recommended_word_count">Recommended word count (applies on next launch)</string>
 </resources>

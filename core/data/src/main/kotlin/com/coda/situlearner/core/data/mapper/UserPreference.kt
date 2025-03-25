@@ -6,11 +6,14 @@ import com.coda.situlearner.core.model.data.UserPreference
 
 internal fun UserPreferenceProto.asExternalModel(
     defaultWordLibraryLanguage: Language,
-    defaultQuizWordCount: UInt
+    defaultQuizWordCount: UInt,
+    defaultRecommendedWordCount: UInt,
 ) = UserPreference(
     wordLibraryLanguage = wordLibraryLanguage.asExternalModel().takeIf { it != Language.Unknown }
         ?: defaultWordLibraryLanguage,
     darkThemeMode = darkThemeMode.asExternalModel(),
     themeColorMode = themeColorMode.asExternalModel(),
     quizWordCount = quizWordCount.toUInt().takeIf { it != 0u } ?: defaultQuizWordCount,
+    recommendedWordCount = recommendedWordCount.toUInt().takeIf { it != 0u }
+        ?: defaultRecommendedWordCount
 )

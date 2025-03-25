@@ -38,4 +38,12 @@ internal class LocalUserPreferenceDataSource(private val userPreference: DataSto
             }
         }
     }
+
+    override suspend fun setRecommendedWordCountProto(recommendedWordCount: UInt) {
+        userPreference.updateData {
+            it.copy {
+                this.recommendedWordCount = recommendedWordCount.toInt()
+            }
+        }
+    }
 }

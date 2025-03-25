@@ -3,6 +3,7 @@ package com.coda.situlearner.core.data.repository
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
+import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordQuizInfo
 import com.coda.situlearner.core.model.data.WordWithContexts
@@ -57,4 +58,6 @@ interface WordRepository {
     suspend fun upsertWordQuizInfo(infoList: List<WordQuizInfo>)
 
     suspend fun updateWords(idToProficiency: Map<String, WordProficiency>)
+
+    suspend fun getRecommendedWords(count: UInt): List<WordContextView>
 }

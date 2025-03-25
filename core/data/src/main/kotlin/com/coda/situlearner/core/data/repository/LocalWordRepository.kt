@@ -5,6 +5,7 @@ import com.coda.situlearner.core.cache.SubtitleCacheManager
 import com.coda.situlearner.core.data.mapper.asEntity
 import com.coda.situlearner.core.data.mapper.asExternalModel
 import com.coda.situlearner.core.data.mapper.asValue
+import com.coda.situlearner.core.data.util.selectRecommendedWords
 import com.coda.situlearner.core.database.dao.WordBankDao
 import com.coda.situlearner.core.database.entity.WordContextEntity
 import com.coda.situlearner.core.database.entity.WordQuizInfoEntity
@@ -12,12 +13,14 @@ import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
+import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordQuizInfo
 import com.coda.situlearner.core.model.data.WordWithContexts
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Instant
@@ -117,6 +120,10 @@ internal class LocalWordRepository(
 
     override suspend fun updateWords(idToProficiency: Map<String, WordProficiency>) {
         return wordBankDao.updateWordEntities(idToProficiency.mapValues { it.value.asValue() })
+    }
+
+    override suspend fun getRecommendedWords(count: UInt): List<WordContextView> {
+        return words.firstOrNull()?.let { selectRecommendedWords(it, count.toInt()) } ?: emptyList()
     }
 
     private fun WordWithContexts.resolveMediaUrl(

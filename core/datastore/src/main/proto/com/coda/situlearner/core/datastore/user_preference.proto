@@ -13,4 +13,5 @@ message UserPreferenceProto {
   DarkThemeModeProto dark_theme_mode = 3;
   ThemeColorModeProto theme_color_mode = 4;
   uint32 quiz_word_count = 5;
+  uint32 recommended_word_count = 6;
 }

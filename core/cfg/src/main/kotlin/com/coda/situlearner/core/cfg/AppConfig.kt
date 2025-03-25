@@ -17,6 +17,7 @@ object AppConfig {
      */
     val defaultSourceLanguage = Language.English
 
-    // quiz config
+    // word config
     const val DEFAULT_QUIZ_WORD_COUNT = 15u
+    const val DEFAULT_RECOMMENDED_WORD_COUNT = 20u
 }

@@ -5,4 +5,5 @@ data class UserPreference(
     val darkThemeMode: DarkThemeMode,
     val themeColorMode: ThemeColorMode,
     val quizWordCount: UInt,
+    val recommendedWordCount: UInt,
 )

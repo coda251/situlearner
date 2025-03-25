@@ -30,9 +30,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -63,10 +62,12 @@ internal fun WordLibraryScreen(
     modifier: Modifier = Modifier,
     viewModel: WordLibraryViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val booksUiState by viewModel.booksUiState.collectAsStateWithLifecycle()
+    val wordsUiState by viewModel.wordsUiState.collectAsStateWithLifecycle()
 
     WordLibraryScreen(
-        uiState = uiState,
+        booksUiState = booksUiState,
+        wordsUiState = wordsUiState,
         onClickBook = {
             onNavigateToWordCategory(
                 when (it.type) {
@@ -78,6 +79,7 @@ internal fun WordLibraryScreen(
         },
         onClickContextView = { onNavigateToWordDetail(it.wordContext.wordId) },
         onQuiz = onNavigateToWordQuiz,
+        onSetOffset = viewModel::setWordsOffset,
         modifier = modifier,
     )
 }
@@ -85,10 +87,12 @@ internal fun WordLibraryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun WordLibraryScreen(
-    uiState: WordLibraryUiState,
+    booksUiState: WordBooksUiState,
+    wordsUiState: RecommendedWordsUiState,
     onClickBook: (WordBook) -> Unit,
     onClickContextView: (WordContextView) -> Unit,
     onQuiz: () -> Unit,
+    onSetOffset: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -99,8 +103,8 @@ private fun WordLibraryScreen(
                     Text(text = stringResource(R.string.home_word_library_screen_title))
                 },
                 actions = {
-                    when (uiState) {
-                        is WordLibraryUiState.Success -> {
+                    when (booksUiState) {
+                        is WordBooksUiState.Success -> {
                             IconButton(
                                 onClick = onQuiz
                             ) {
@@ -123,39 +127,28 @@ private fun WordLibraryScreen(
                 .fillMaxSize()
                 .padding(it)
         ) {
-            when (uiState) {
-                WordLibraryUiState.Empty -> {}
+            when (booksUiState) {
+                WordBooksUiState.Empty -> {}
+                WordBooksUiState.Loading -> {}
+                is WordBooksUiState.Success ->
+                    WordBooksBoard(
+                        books = booksUiState.books,
+                        onClickBook = onClickBook,
+                    )
+            }
 
-                WordLibraryUiState.Loading -> {}
-
-                is WordLibraryUiState.Success -> WordLibraryContentBoard(
-                    books = uiState.books,
-                    wordContexts = uiState.wordContexts,
-                    onClickBook = onClickBook,
-                    onClickContextView = onClickContextView,
-                )
+            when (wordsUiState) {
+                RecommendedWordsUiState.Loading -> {}
+                RecommendedWordsUiState.Empty -> {}
+                is RecommendedWordsUiState.Success ->
+                    WordRecommendationBoard(
+                        wordContexts = wordsUiState.wordContexts,
+                        offset = wordsUiState.offset,
+                        onClickContextView = onClickContextView,
+                        onSetOffset = onSetOffset
+                    )
             }
         }
-    }
-}
-
-@Composable
-private fun WordLibraryContentBoard(
-    books: List<WordBook>,
-    wordContexts: List<WordContextView>,
-    onClickBook: (WordBook) -> Unit,
-    onClickContextView: (WordContextView) -> Unit,
-) {
-    Column {
-        WordBooksBoard(
-            books = books,
-            onClickBook = onClickBook,
-        )
-
-        WordRecommendationBoard(
-            wordContexts = wordContexts,
-            onClickContextView = onClickContextView,
-        )
     }
 }
 
@@ -235,7 +228,9 @@ private fun WordBookItem(
 @Composable
 private fun WordRecommendationBoard(
     wordContexts: List<WordContextView>,
+    offset: Int,
     onClickContextView: (WordContextView) -> Unit,
+    onSetOffset: (Int) -> Unit,
 ) {
     Column {
         ListItem(
@@ -251,7 +246,9 @@ private fun WordRecommendationBoard(
         ) {
             WordsRecommendationContent(
                 wordContexts = wordContexts,
+                offset = offset,
                 onClickContextView = onClickContextView,
+                onSetOffset = onSetOffset
             )
         }
     }
@@ -260,21 +257,13 @@ private fun WordRecommendationBoard(
 @Composable
 private fun WordsRecommendationContent(
     wordContexts: List<WordContextView>,
+    offset: Int,
     onClickContextView: (WordContextView) -> Unit,
+    onSetOffset: (Int) -> Unit,
     displayWindowSize: Int = 2,
 ) {
-    var displayIndexOffset by remember {
-        mutableIntStateOf(0)
-    }
-
-    val displayItems by remember(displayIndexOffset, wordContexts) {
-        derivedStateOf {
-            wordContexts.drop(displayIndexOffset).take(displayWindowSize)
-        }
-    }
-
     AnimatedContent(
-        targetState = displayItems,
+        targetState = wordContexts.drop(offset).take(displayWindowSize),
         transitionSpec = {
             (slideInVertically { it } + fadeIn()).togetherWith(slideOutVertically { -it } + fadeOut())
         }, label = ""
@@ -324,10 +313,9 @@ private fun WordsRecommendationContent(
             trailingContent = {
                 IconButton(
                     onClick = {
-                        displayIndexOffset += displayWindowSize
-                        if (displayIndexOffset >= wordContexts.size) {
-                            displayIndexOffset = 0
-                        }
+                        onSetOffset(
+                            (offset + displayWindowSize).takeIf { it < wordContexts.size } ?: 0
+                        )
                     }
                 ) {
                     Icon(
@@ -346,19 +334,33 @@ private fun WordsRecommendationContent(
 @Composable
 private fun WordLibraryScreenPreview() {
 
-    val uiState by remember {
-        derivedStateOf {
-            WordLibraryUiState.Success(
+    val booksUiState by remember {
+        mutableStateOf(
+            WordBooksUiState.Success(
                 books = wordWithContextsListTestData.toWordBooks(),
-                wordContexts = wordWithContextsListTestData.flatMap { it.contexts }
             )
-        }
+        )
+    }
+
+    var wordsUiState by remember {
+        mutableStateOf(
+            RecommendedWordsUiState.Success(
+                wordContexts = wordWithContextsListTestData.flatMap { it.contexts },
+                offset = 0
+            )
+        )
     }
 
     WordLibraryScreen(
-        uiState = uiState,
+        booksUiState = booksUiState,
+        wordsUiState = wordsUiState,
         onClickBook = {},
         onClickContextView = {},
+        onSetOffset = {
+            wordsUiState = wordsUiState.copy(
+                offset = if (it >= wordsUiState.wordContexts.size) 0 else it
+            )
+        },
         onQuiz = {},
     )
 }

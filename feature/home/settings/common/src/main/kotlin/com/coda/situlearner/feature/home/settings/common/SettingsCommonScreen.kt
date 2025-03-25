@@ -49,6 +49,7 @@ internal fun SettingsCommonScreen(
         onSelectThemeColorMode = viewModel::setThemeColorMode,
         onSelectWordLibraryLanguage = viewModel::setWordLibraryLanguage,
         onSetQuizWordCount = viewModel::setQuizWordCount,
+        onSetRecommendedWordCount = viewModel::setRecommendedWordCount,
         modifier = modifier
     )
 }
@@ -61,6 +62,7 @@ private fun SettingsCommonScreen(
     onSelectThemeColorMode: (ThemeColorMode) -> Unit,
     onSelectWordLibraryLanguage: (Language) -> Unit,
     onSetQuizWordCount: (UInt) -> Unit,
+    onSetRecommendedWordCount: (UInt) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -87,10 +89,12 @@ private fun SettingsCommonScreen(
                         themeColorMode = uiState.themeColorMode,
                         wordLibraryLanguage = uiState.wordLibraryLanguage,
                         quizWordCount = uiState.quizWordCount,
+                        recommendedWordCount = uiState.recommendedWordCount,
                         onSelectDarkThemeMode = onSelectDarkThemeMode,
                         onSelectThemeColorMode = onSelectThemeColorMode,
                         onSelectWordLibraryLanguage = onSelectWordLibraryLanguage,
                         onSetQuizWordCount = onSetQuizWordCount,
+                        onSetRecommendedWordCount = onSetRecommendedWordCount
                     )
                 }
             }
@@ -104,16 +108,19 @@ private fun SettingsContentBoard(
     themeColorMode: ThemeColorMode,
     wordLibraryLanguage: Language,
     quizWordCount: UInt,
+    recommendedWordCount: UInt,
     onSelectDarkThemeMode: (DarkThemeMode) -> Unit,
     onSelectThemeColorMode: (ThemeColorMode) -> Unit,
     onSelectWordLibraryLanguage: (Language) -> Unit,
     onSetQuizWordCount: (UInt) -> Unit,
+    onSetRecommendedWordCount: (UInt) -> Unit,
 ) {
     Column {
         ThemeColorModeSelector(themeColorMode, onSelectThemeColorMode)
         DarkThemeModeSelector(darkThemeMode, onSelectDarkThemeMode)
         WordFilterLanguageSelector(wordLibraryLanguage, onSelectWordLibraryLanguage)
         QuizWordCountSelector(quizWordCount, onSetQuizWordCount)
+        RecommendedWordCountSelector(recommendedWordCount, onSetRecommendedWordCount)
     }
 }
 
@@ -303,8 +310,10 @@ private fun QuizWordCountSelector(
     )
 
     if (showDialog) {
-        QuizWordCountSelectorDialog(
+        WordCountSelectorDialog(
             initialCount = quizWordCount,
+            valueRange = 5f..50f,
+            steps = 8,
             onDismiss = {
                 showDialog = false
             },
@@ -317,8 +326,49 @@ private fun QuizWordCountSelector(
 }
 
 @Composable
-private fun QuizWordCountSelectorDialog(
+private fun RecommendedWordCountSelector(
+    recommendedWordCount: UInt,
+    onSetRecommendedWordCount: (UInt) -> Unit,
+) {
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    ListItem(
+        headlineContent = {
+            Text(
+                text = stringResource(R.string.home_settings_common_screen_recommended_word_count)
+            )
+        },
+        supportingContent = {
+            Text(text = recommendedWordCount.toString())
+        },
+        modifier = Modifier.clickable {
+            showDialog = true
+        }
+    )
+
+    if (showDialog) {
+        WordCountSelectorDialog(
+            initialCount = recommendedWordCount,
+            valueRange = 10f..50f,
+            steps = 3,
+            onDismiss = {
+                showDialog = false
+            },
+            onConfirm = {
+                onSetRecommendedWordCount(it)
+                showDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+private fun WordCountSelectorDialog(
     initialCount: UInt,
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
     onDismiss: () -> Unit,
     onConfirm: (UInt) -> Unit,
 ) {
@@ -347,8 +397,8 @@ private fun QuizWordCountSelectorDialog(
                     modifier = Modifier.padding(12.dp),
                     value = count.toFloat(),
                     onValueChange = { count = it.toUInt() },
-                    valueRange = 5f..50f,
-                    steps = 8
+                    valueRange = valueRange,
+                    steps = steps
                 )
             }
         }

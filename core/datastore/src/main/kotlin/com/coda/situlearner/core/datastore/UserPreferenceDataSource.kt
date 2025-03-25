@@ -13,4 +13,6 @@ interface UserPreferenceDataSource {
     suspend fun setThemeColorModeProto(themeColorModeProto: ThemeColorModeProto)
 
     suspend fun setQuizWordCountProto(quizWordCount: UInt)
+
+    suspend fun setRecommendedWordCountProto(recommendedWordCount: UInt)
 }
