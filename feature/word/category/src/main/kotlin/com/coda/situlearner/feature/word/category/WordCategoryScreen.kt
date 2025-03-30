@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.MediaFile
+import com.coda.situlearner.core.model.data.RepeatMode
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordCategoryType
 import com.coda.situlearner.core.model.data.WordWithContexts
@@ -106,6 +107,7 @@ private fun WordCategoryScreen(
                         is WordCategoryUiState.Success -> {
                             IconButton(
                                 onClick = {
+                                    playerState.setRepeatMode(RepeatMode.All)
                                     playerState.setRepeatNumber(3)
                                     playerState.setItems(
                                         uiState.data.toPlaylistItems(
