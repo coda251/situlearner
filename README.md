@@ -22,21 +22,23 @@ SituLearner是综合影视字幕或音乐歌词的android单词学习软件，
    - 文件夹下为所有媒体文件和字幕文件，字幕文件与对应的媒体文件应当同名。
    - 支持常见的媒体格式（.mp3，.wav，.flac，.mp4，.mkv）和字幕格式（.ass，.srt，.lrc）。android 11开始限制了对外部存储的访问，此时即使申请访问外部存储的权限`android.permission.READ_EXTERNAL_STORAGE`也无法读取到.ass文件，因此app目前需要获取完全的外部存储管理权限。
 
-2. 在app中`发现`模块添加对应的媒体合集。单个文件大约花费1s的解析时间。
+2. 在app中`媒体`模块添加对应的媒体合集。单个文件大约花费1s的解析时间。
 
 ### 添加与回顾单词
 
 1. 在`播放器`界面点击对应的单词，收藏即可。字幕经过分词，单词也已还原至原形。但是目前仅支持查询分词后的结果，不支持自定义选择单词。单词释义取自网络，因此查询释义需要正常的网络连接。另外：双击对应字幕的空白区域可循环播放该例句；长按对应字幕的空白区域可复制该例句的原文。
 <div style="display: flex; justify-content: center; gap: 10px;">
-<img width="270" src=".readme/image/player.png" alt="player">
-<img width="270" src=".readme/image/player-word_context.png" alt="player-word_context">
+<img width="250" src=".readme/image/player.png" alt="player">
+<img width="250" src=".readme/image/player_word_context.jpg" alt="player_word_context">
 </div>
 
-2. `单词库`界面，提供了不同类别的单词组；`单词组`界面包含了该分组下的所有单词。
+2. `单词`界面，提供了不同媒体组对应的所有单词，同时根据掌握熟练度为用户推荐需要学习的单词。
 3. `单词详情`页面，点击某一个例句即可循环播放该例句的界面。
+4. `单词测验`界面，依据anki SM-2算法的简化版本，从单词库中挑选部分单词进行测验。
 <div style="display: flex; justify-content: center; gap: 10px;">
-<img width="270" src=".readme/image/word_library.png" alt="word_library">
-<img width="270" src=".readme/image/word_detail.png" alt="word_detail">
+<img width="250" src=".readme/image/word.jpg" alt="word">
+<img width="250" src=".readme/image/word_detail.jpg" alt="word_detail">
+<img width="250" src=".readme/image/word_quiz.jpg" alt="word_quiz">
 </div>
 
 
