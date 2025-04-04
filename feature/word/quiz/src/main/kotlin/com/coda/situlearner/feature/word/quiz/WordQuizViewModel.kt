@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.Word
+import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordQuizInfo
-import com.coda.situlearner.core.model.data.WordWithContexts
 import com.coda.situlearner.feature.word.quiz.model.UserRating
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,7 +42,12 @@ internal class WordQuizViewModel(
 
             if (words.isEmpty()) _uiState.value = WordQuizUiState.Empty
             else _uiState.value = WordQuizUiState.Success(
-                words = words,
+                words = words.map { wordWithContexts ->
+                    wordWithContexts.word to wordWithContexts.contexts.run {
+                        if (isEmpty()) null
+                        else filter { it.mediaFile != null }.randomOrNull() ?: random()
+                    }
+                },
                 currentIndex = 0
             )
         }
@@ -161,7 +166,7 @@ internal sealed interface WordQuizUiState {
     data object Loading : WordQuizUiState
     data object Empty : WordQuizUiState
     data class Success(
-        val words: List<WordWithContexts>,
+        val words: List<Pair<Word, WordContextView?>>,
         val currentIndex: Int,
     ) : WordQuizUiState
 

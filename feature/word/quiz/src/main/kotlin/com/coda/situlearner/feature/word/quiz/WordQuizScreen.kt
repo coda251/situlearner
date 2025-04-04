@@ -51,7 +51,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.MediaType
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContextView
-import com.coda.situlearner.core.model.data.WordWithContexts
 import com.coda.situlearner.core.model.data.mapper.asPlaylistItem
 import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
@@ -197,7 +196,7 @@ private fun InProgressBoard() {
 
 @Composable
 private fun QuizContentBoard(
-    words: List<WordWithContexts>,
+    words: List<Pair<Word, WordContextView?>>,
     currentIndex: Int,
     playerState: PlayerState,
     onRate: (Word, UserRating) -> Unit,
@@ -210,11 +209,8 @@ private fun QuizContentBoard(
         userScrollEnabled = false,
     ) { index ->
         QuizItem(
-            word = words[index].word,
-            wordContext = words[index].contexts.run {
-                if (isEmpty()) null
-                else filter { it.mediaFile != null }.randomOrNull() ?: random()
-            },
+            word = words[index].first,
+            wordContext = words[index].second,
             isLastItem = index == words.lastIndex,
             playerState = playerState,
             onRate = onRate,
@@ -491,17 +487,33 @@ private fun UserRating.asText() = when (this) {
 @Preview
 @Composable
 private fun QuizContentScreenPreview() {
-    val uiState = WordQuizUiState.Success(
-        words = wordWithContextsListTestData,
-        currentIndex = 0
-    )
+    var uiState by remember {
+        mutableStateOf(
+            WordQuizUiState.Success(
+                words = wordWithContextsListTestData.shuffled().map { wordWithContexts ->
+                    wordWithContexts.word to wordWithContexts.contexts.run {
+                        if (isEmpty()) null
+                        else filter { it.mediaFile != null }.randomOrNull() ?: random()
+                    }
+                },
+                currentIndex = 0
+            )
+        )
+    }
 
     WordQuizScreen(
         uiState = uiState,
         playerState = PlayerStateProvider.EmptyPlayerState,
         onBack = {},
         onRate = { _, _ -> },
-        onNext = {}
+        onNext = {
+            val nextIndex = it + 1
+            uiState = if (nextIndex in uiState.words.indices) {
+                uiState.copy(currentIndex = nextIndex)
+            } else {
+                uiState.copy(currentIndex = 0)
+            }
+        }
     )
 }
 
