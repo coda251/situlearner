@@ -42,8 +42,10 @@ internal class WordLibraryViewModel(
     private fun getRecommendedWords() {
         viewModelScope.launch {
             val preference = userPreferenceRepository.userPreference.first()
-            _wordsUiState.value = RecommendedWordsUiState.Success(
-                wordContexts = wordRepository.getRecommendedWords(preference.recommendedWordCount),
+            val data = wordRepository.getRecommendedWords(preference.recommendedWordCount)
+            if (data.isEmpty()) _wordsUiState.value = RecommendedWordsUiState.Empty
+            else _wordsUiState.value = RecommendedWordsUiState.Success(
+                wordContexts = data,
                 offset = 0
             )
         }

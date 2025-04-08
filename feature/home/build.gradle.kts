@@ -18,4 +18,5 @@ dependencies {
     implementation(projects.feature.home.media.collection)
     implementation(projects.feature.home.settings.common)
     implementation(projects.feature.home.word.library)
+    implementation(projects.feature.home.word.book)
 }

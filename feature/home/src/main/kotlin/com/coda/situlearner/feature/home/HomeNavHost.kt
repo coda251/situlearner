@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.coda.situlearner.core.model.data.WordCategoryType
+import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.feature.home.explore.collection.navigation.exploreCollectionSection
 import com.coda.situlearner.feature.home.explore.collection.navigation.navigateToExploreCollection
 import com.coda.situlearner.feature.home.explore.library.navigation.exploreLibrarySection
@@ -13,12 +13,14 @@ import com.coda.situlearner.feature.home.media.collection.navigation.mediaCollec
 import com.coda.situlearner.feature.home.media.collection.navigation.navigateToMediaCollection
 import com.coda.situlearner.feature.home.media.library.navigation.mediaLibrarySection
 import com.coda.situlearner.feature.home.settings.common.navigation.settingsCommonSection
-import com.coda.situlearner.feature.home.word.library.navigation.WordLibraryRoute
+import com.coda.situlearner.feature.home.word.book.navigation.navigateToWordBook
+import com.coda.situlearner.feature.home.word.book.navigation.wordBookSection
+import com.coda.situlearner.feature.home.word.library.navigation.WordLibraryBaseRoute
 import com.coda.situlearner.feature.home.word.library.navigation.wordLibrarySection
 
 @Composable
 internal fun HomeNavHost(
-    onNavigateToWordCategory: (WordCategoryType, String) -> Unit,
+    onNavigateToWordList: (WordListType, String?) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
     navController: NavHostController,
@@ -27,7 +29,7 @@ internal fun HomeNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = WordLibraryRoute
+        startDestination = WordLibraryBaseRoute
     ) {
         mediaLibrarySection(
             onNavigateToCollection = navController::navigateToMediaCollection,
@@ -49,9 +51,15 @@ internal fun HomeNavHost(
 
         wordLibrarySection(
             onNavigateToWordDetail = onNavigateToWordDetail,
-            onNavigateToWordCategory = onNavigateToWordCategory,
-            onNavigateToWordQuiz = onNavigateToWordQuiz
-        )
+            onNavigateToWordBook = navController::navigateToWordBook,
+            onNavigateToWordQuiz = onNavigateToWordQuiz,
+            onNavigateToWordList = onNavigateToWordList
+        ) {
+            wordBookSection(
+                onBack = navController::popBackStack,
+                onNavigateToWordList = onNavigateToWordList
+            )
+        }
 
         settingsCommonSection()
     }

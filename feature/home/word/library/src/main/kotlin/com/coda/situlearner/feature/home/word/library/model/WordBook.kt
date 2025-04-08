@@ -10,25 +10,28 @@ internal data class WordBook(
     val coverUrl: String?
 )
 
-internal fun List<WordWithContexts>.toWordBooks(): List<WordBook> {
-    return listOf(
-        WordBook(
-            id = "",
-            type = WordBookType.All,
-            name = "",
-            wordCount = this.size,
-            coverUrl = null,
-        )
-    ) + this.flatMap { it.contexts }
-        .groupBy { it.mediaCollection }.entries.mapNotNull { entry ->
-            entry.key?.let { collection ->
-                WordBook(
-                    id = collection.id,
-                    type = WordBookType.MediaCollection,
-                    name = collection.name,
-                    wordCount = entry.value.map { it.wordContext.wordId }.toSet().size,
-                    coverUrl = collection.coverImageUrl,
-                )
-            }
-        }.sortedBy { -it.wordCount }
-}
+internal fun List<WordWithContexts>.toWordBooks(): List<WordBook> = (listOf(
+    WordBook(
+        id = "",
+        type = WordBookType.All,
+        name = "",
+        wordCount = this.size,
+        coverUrl = null,
+    ), WordBook(
+        id = "",
+        type = WordBookType.NoMedia,
+        name = "",
+        wordCount = this.filter { wordWithContexts -> wordWithContexts.contexts.all { it.mediaCollection == null } }.size,
+        coverUrl = null,
+    )
+) + this.flatMap { it.contexts }.groupBy { it.mediaCollection }.entries.mapNotNull { entry ->
+        entry.key?.let { collection ->
+            WordBook(
+                id = collection.id,
+                type = WordBookType.MediaCollection,
+                name = collection.name,
+                wordCount = entry.value.map { it.wordContext.wordId }.toSet().size,
+                coverUrl = collection.coverImageUrl,
+            )
+        }
+    }).sortedBy { -it.wordCount }

@@ -44,7 +44,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.coda.situlearner.core.model.data.PlaylistItem
-import com.coda.situlearner.core.model.data.WordCategoryType
+import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
 import com.coda.situlearner.core.ui.widget.PlayNextButton
 import com.coda.situlearner.core.ui.widget.PlayOrPauseButton
@@ -52,7 +52,7 @@ import com.coda.situlearner.feature.home.media.library.navigation.MediaLibraryBa
 import com.coda.situlearner.feature.home.media.library.navigation.navigateToMediaLibrary
 import com.coda.situlearner.feature.home.settings.common.navigation.SettingsCommonRoute
 import com.coda.situlearner.feature.home.settings.common.navigation.navigateToSettingsCommon
-import com.coda.situlearner.feature.home.word.library.navigation.WordLibraryRoute
+import com.coda.situlearner.feature.home.word.library.navigation.WordLibraryBaseRoute
 import com.coda.situlearner.feature.home.word.library.navigation.navigateToWordLibrary
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
@@ -60,7 +60,7 @@ import kotlin.reflect.KClass
 
 @Composable
 internal fun HomeScreen(
-    onNavigateToWordCategory: (WordCategoryType, String) -> Unit,
+    onNavigateToWordList: (WordListType, String?) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
     onNavigateToPlayer: () -> Unit,
@@ -86,7 +86,7 @@ internal fun HomeScreen(
                 .consumeWindowInsets(it)
         ) {
             HomeNavHost(
-                onNavigateToWordCategory = onNavigateToWordCategory,
+                onNavigateToWordList = onNavigateToWordList,
                 onNavigateToWordDetail = onNavigateToWordDetail,
                 onNavigateToWordQuiz = onNavigateToWordQuiz,
                 navController = navController,
@@ -222,7 +222,7 @@ private enum class BottomNavRoute(
         R.string.home_screen_word,
         R.drawable.event_note_24dp_000000_fill1_wght400_grad0_opsz24,
         R.drawable.event_note_24dp_000000_fill0_wght400_grad0_opsz24,
-        WordLibraryRoute::class
+        WordLibraryBaseRoute::class
     ),
 
     Settings(

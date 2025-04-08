@@ -4,27 +4,38 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.coda.situlearner.core.model.data.WordCategoryType
+import androidx.navigation.compose.navigation
+import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.feature.home.word.library.WordLibraryScreen
 import kotlinx.serialization.Serializable
+
+@Serializable
+data object WordLibraryBaseRoute
 
 @Serializable
 data object WordLibraryRoute
 
 fun NavController.navigateToWordLibrary(navOptions: NavOptions) {
-    navigate(route = WordLibraryRoute, navOptions = navOptions)
+    navigate(route = WordLibraryBaseRoute, navOptions = navOptions)
 }
 
 fun NavGraphBuilder.wordLibrarySection(
-    onNavigateToWordCategory: (WordCategoryType, String) -> Unit,
+    onNavigateToWordBook: (String) -> Unit,
+    onNavigateToWordList: (WordListType, String?) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
+    destination: NavGraphBuilder.() -> Unit,
 ) {
-    composable<WordLibraryRoute> {
-        WordLibraryScreen(
-            onNavigateToWordCategory = onNavigateToWordCategory,
-            onNavigateToWordDetail = onNavigateToWordDetail,
-            onNavigateToWordQuiz = onNavigateToWordQuiz
-        )
+    navigation<WordLibraryBaseRoute>(startDestination = WordLibraryRoute) {
+        composable<WordLibraryRoute> {
+            WordLibraryScreen(
+                onNavigateToWordBook = onNavigateToWordBook,
+                onNavigateToWordDetail = onNavigateToWordDetail,
+                onNavigateToWordQuiz = onNavigateToWordQuiz,
+                onNavigateToWordList = onNavigateToWordList
+            )
+        }
+
+        destination()
     }
 }

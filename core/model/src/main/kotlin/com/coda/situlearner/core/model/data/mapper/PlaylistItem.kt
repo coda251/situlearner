@@ -4,6 +4,7 @@ import com.coda.situlearner.core.model.data.MediaCollection
 import com.coda.situlearner.core.model.data.MediaCollectionWithFiles
 import com.coda.situlearner.core.model.data.MediaFile
 import com.coda.situlearner.core.model.data.PlaylistItem
+import com.coda.situlearner.core.model.data.WordContextView
 
 fun Pair<MediaCollection, MediaFile>.asPlaylistItem(): PlaylistItem =
     PlaylistItem(
@@ -17,6 +18,22 @@ fun Pair<MediaCollection, MediaFile>.asPlaylistItem(): PlaylistItem =
         durationInMs = second.durationInMs,
         lastPositionInMs = null
     )
+
+fun WordContextView.asPlaylistItem(): PlaylistItem? {
+    val file = mediaFile
+    val collection = mediaCollection
+    return if (file != null && collection != null) {
+        Pair(collection, file).asPlaylistItem().copy(
+            id = wordContext.id,
+            clipInMs = Pair(
+                first = wordContext.subtitleStartTimeInMs,
+                second = wordContext.subtitleEndTimeInMs
+            )
+        )
+    } else {
+        null
+    }
+}
 
 fun MediaCollectionWithFiles.asPlaylist(): List<PlaylistItem> =
     buildList {

@@ -304,18 +304,9 @@ private fun QuizItem(
             onNext = onNext,
             onHint = {
                 if (it is QuizItemState.HintWithMedia) {
-                    val mediaFile = it.context.mediaFile
-                    val mediaCollection = it.context.mediaCollection
-                    if (mediaCollection != null && mediaFile != null) {
-                        val item = (mediaCollection to mediaFile).asPlaylistItem()
-
+                    it.context.asPlaylistItem()?.let { item ->
                         playerState.addItems(listOf(item), item)
                         playerState.play()
-                        playerState.setPlaybackLoop(
-                            start = it.context.wordContext.subtitleStartTimeInMs,
-                            end = it.context.wordContext.subtitleEndTimeInMs
-                        )
-                        playerState.seekTo(it.context.wordContext.subtitleStartTimeInMs)
                     }
                 }
                 quizItemState = it

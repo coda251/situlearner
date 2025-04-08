@@ -20,9 +20,9 @@ import com.coda.situlearner.feature.player.entry.navigation.navigateToPlayerEntr
 import com.coda.situlearner.feature.player.entry.navigation.playerEntryScreen
 import com.coda.situlearner.feature.player.playlist.navigation.navigateToPlaylist
 import com.coda.situlearner.feature.player.playlist.navigation.playlistScreen
-import com.coda.situlearner.feature.word.category.navigation.WordCategoryRoute
-import com.coda.situlearner.feature.word.category.navigation.navigateToWordCategory
-import com.coda.situlearner.feature.word.category.navigation.wordCategoryScreen
+import com.coda.situlearner.feature.word.list.navigation.WordListRoute
+import com.coda.situlearner.feature.word.list.navigation.navigateToWordList
+import com.coda.situlearner.feature.word.list.navigation.wordListScreen
 import com.coda.situlearner.feature.word.detail.navigation.WordDetailRoute
 import com.coda.situlearner.feature.word.detail.navigation.navigateToWordDetail
 import com.coda.situlearner.feature.word.detail.navigation.wordDetailScreen
@@ -46,17 +46,16 @@ fun AppNavHost(
         startDestination = HomeRoute,
     ) {
         homeScreen(
-            onNavigateToWordCategory = appNavController::navigateToWordCategory,
+            onNavigateToWordList = appNavController::navigateToWordList,
             onNavigateToWordDetail = appNavController::navigateToWordDetail,
             onNavigateToPlayer = appNavController::navigateToPlayerEntry,
-            onNavigateToWordQuiz = appNavController::navigateToWordQuiz
+            onNavigateToWordQuiz = appNavController::navigateToWordQuiz,
         )
 
-        wordCategoryScreen(
+        wordListScreen(
             onBack = appNavController::popBackStack,
             onNavigateToWordDetail = appNavController::navigateToWordDetail,
             onNavigateToWordEcho = appNavController::navigateToWordEcho,
-            onNavigateToWordCategory = appNavController::navigateToWordCategory
         ) {
             wordEchoScreen(
                 onBack = appNavController::popBackStack
@@ -101,7 +100,7 @@ private fun SwitchPlaylistType(
         derivedStateOf {
             if (navBackStack.any {
                     it.destination.hasRoute(WordDetailRoute::class) ||
-                            it.destination.hasRoute(WordCategoryRoute::class) ||
+                            it.destination.hasRoute(WordListRoute::class) ||
                             it.destination.hasRoute(WordQuizRoute::class)
                 }) PlaylistType.Temporary
             else PlaylistType.Persistent

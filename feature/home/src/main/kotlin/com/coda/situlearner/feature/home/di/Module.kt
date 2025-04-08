@@ -5,6 +5,7 @@ import com.coda.situlearner.feature.home.explore.library.di.homeExploreLibraryMo
 import com.coda.situlearner.feature.home.media.collection.di.homeMediaCollectionModule
 import com.coda.situlearner.feature.home.media.library.di.homeMediaLibraryModule
 import com.coda.situlearner.feature.home.settings.common.di.homeSettingsCommonModule
+import com.coda.situlearner.feature.home.word.book.di.homeWordBookModule
 import com.coda.situlearner.feature.home.word.library.di.homeWordLibraryModule
 
 val homeModules = listOf(
@@ -13,5 +14,6 @@ val homeModules = listOf(
     homeMediaCollectionModule,
     homeMediaLibraryModule,
     homeSettingsCommonModule,
-    homeWordLibraryModule
+    homeWordLibraryModule,
+    homeWordBookModule,
 )

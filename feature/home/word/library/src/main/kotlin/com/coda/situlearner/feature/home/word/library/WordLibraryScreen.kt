@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -39,13 +38,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.coda.situlearner.core.model.data.WordCategoryType
 import com.coda.situlearner.core.model.data.WordContextView
+import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
 import com.coda.situlearner.core.ui.widget.WordContextText
@@ -56,7 +54,8 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun WordLibraryScreen(
-    onNavigateToWordCategory: (WordCategoryType, String) -> Unit,
+    onNavigateToWordBook: (String) -> Unit,
+    onNavigateToWordList: (WordListType, String?) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
     modifier: Modifier = Modifier,
@@ -69,13 +68,11 @@ internal fun WordLibraryScreen(
         booksUiState = booksUiState,
         wordsUiState = wordsUiState,
         onClickBook = {
-            onNavigateToWordCategory(
-                when (it.type) {
-                    WordBookType.All -> WordCategoryType.All
-                    WordBookType.MediaCollection -> WordCategoryType.MediaCollection
-                },
-                it.id
-            )
+            when (it.type) {
+                WordBookType.All -> onNavigateToWordList(WordListType.All, null)
+                WordBookType.NoMedia -> onNavigateToWordList(WordListType.NoMedia, null)
+                WordBookType.MediaCollection -> onNavigateToWordBook(it.id)
+            }
         },
         onClickContextView = { onNavigateToWordDetail(it.wordContext.wordId) },
         onQuiz = onNavigateToWordQuiz,
@@ -196,7 +193,7 @@ private fun WordBookItem(
                     tint = MaterialTheme.colorScheme.outline
                 )
 
-            WordBookType.MediaCollection ->
+            else ->
                 AsyncMediaImage(
                     model = book.coverUrl,
                     modifier = Modifier
@@ -211,6 +208,7 @@ private fun WordBookItem(
                 text = when (book.type) {
                     WordBookType.All -> stringResource(R.string.home_word_library_screen_all_words)
                     WordBookType.MediaCollection -> book.name
+                    WordBookType.NoMedia -> stringResource(R.string.home_word_library_screen_no_media)
                 },
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -265,44 +263,34 @@ private fun WordsRecommendationContent(
     AnimatedContent(
         targetState = wordContexts.drop(offset).take(displayWindowSize),
         transitionSpec = {
-            (slideInVertically { it } + fadeIn()).togetherWith(slideOutVertically { -it } + fadeOut())
-        }, label = ""
-    ) { it ->
-        if (it.isEmpty()) {
-            ListItem(
-                headlineContent = {
-                    Text(
-                        text = stringResource(R.string.home_word_library_screen_no_word_contexts_available),
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-            )
-        } else {
-            Column {
-                it.forEach {
-                    ListItem(
-                        headlineContent = {
-                            WordContextText(it.wordContext)
-                        },
-                        trailingContent = {
-                            IconButton(onClick = {
-                                onClickContextView(it)
-                            }) {
-                                Icon(
-                                    painter = painterResource(R.drawable.arrow_forward_24dp_000000_fill0_wght400_grad0_opsz24),
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        supportingContent = it.mediaFile?.let {
-                            { Text(it.name) }
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable { onClickContextView(it) }
-                    )
-                }
+            (slideInVertically { it } + fadeIn())
+                .togetherWith(slideOutVertically { -it } + fadeOut())
+        },
+        label = ""
+    ) {
+        // contexts will not be empty logically
+        Column {
+            it.forEach {
+                ListItem(
+                    headlineContent = {
+                        WordContextText(it.wordContext)
+                    },
+                    trailingContent = {
+                        IconButton(onClick = {
+                            onClickContextView(it)
+                        }) {
+                            Icon(
+                                painter = painterResource(R.drawable.arrow_forward_24dp_000000_fill0_wght400_grad0_opsz24),
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    supportingContent = it.mediaFile?.let {
+                        { Text(it.name) }
+                    },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { onClickContextView(it) }
+                )
             }
         }
     }
