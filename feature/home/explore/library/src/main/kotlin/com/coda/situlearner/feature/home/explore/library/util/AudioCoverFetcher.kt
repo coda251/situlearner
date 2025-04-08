@@ -1,6 +1,6 @@
 package com.coda.situlearner.feature.home.explore.library.util
 
-import android.net.Uri
+import androidx.core.net.toUri
 import coil3.ImageLoader
 import coil3.asImage
 import coil3.decode.DataSource
@@ -34,7 +34,7 @@ internal class AudioCoverFetcher(
             options: Options,
             imageLoader: ImageLoader
         ): Fetcher? {
-            return data.bitmapProviderUrl?.let { Uri.parse(it).path }?.let {
+            return data.bitmapProviderUrl?.toUri()?.path?.let {
                 AudioCoverFetcher(it)
             }
         }

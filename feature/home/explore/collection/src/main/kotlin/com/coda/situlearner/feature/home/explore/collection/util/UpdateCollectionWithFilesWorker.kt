@@ -1,6 +1,6 @@
 package com.coda.situlearner.feature.home.explore.collection.util
 
-import android.net.Uri
+import androidx.core.net.toUri
 import com.coda.situlearner.core.data.repository.MediaRepository
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.MediaCollection
@@ -52,9 +52,7 @@ internal class UpdateCollectionWithFilesWorker(
         val languageDetector: LanguageDetector by inject()
 
         mediaFiles.forEach { mediaFile ->
-            val subtitlePath = mediaFile.originalSubtitleUrl?.let {
-                Uri.parse(it).path
-            }
+            val subtitlePath = mediaFile.originalSubtitleUrl?.toUri()?.path
             subtitlePath?.let { s ->
                 val content = processor.process(
                     s,
@@ -76,7 +74,7 @@ internal class UpdateCollectionWithFilesWorker(
         val pathToId = mediaFiles.mapNotNull {
             if (it.durationInMs != null) null
             else {
-                val path = Uri.parse(it.url).path
+                val path = it.url.toUri().path
                 path?.let { p -> Pair(p, it.id) }
             }
         }.toMap()

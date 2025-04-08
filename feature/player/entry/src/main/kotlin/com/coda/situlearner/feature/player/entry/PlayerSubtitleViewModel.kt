@@ -1,6 +1,6 @@
 package com.coda.situlearner.feature.player.entry
 
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.model.data.Language
@@ -29,7 +29,7 @@ internal class PlayerSubtitleViewModel(processor: Processor) : ViewModel() {
 
                     playlist.currentItem?.let { item ->
                         val subtitleFileContent = item.subtitleUrl?.let {
-                            Uri.parse(it).path?.let {
+                            it.toUri().path?.let {
                                 withContext(Dispatchers.IO) {
                                     processor.load(it)
                                 }

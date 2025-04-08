@@ -1,6 +1,6 @@
 package com.coda.situlearner.feature.home.explore.collection
 
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,7 +28,7 @@ internal class ExploreCollectionViewModel(
     private val route = savedStateHandle.toRoute<ExploreCollectionRoute>()
 
     val uiState = flowOf(route.url).transform { url ->
-        val path = Uri.parse(url).path
+        val path = url.toUri().path
         if (path == null) emit(ExploreCollectionUiState.Error)
         else emitAll(
             combine(

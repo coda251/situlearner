@@ -285,22 +285,6 @@ private fun ActionBar(
                 )
             }
 
-            IconButton(onClick = {}, enabled = false) {
-                Icon(
-                    painter = painterResource(R.drawable.spacer), contentDescription = null
-                )
-            }
-            IconButton(onClick = {}, enabled = false) {
-                Icon(
-                    painter = painterResource(R.drawable.spacer), contentDescription = null
-                )
-            }
-            IconButton(onClick = {}, enabled = false) {
-                Icon(
-                    painter = painterResource(R.drawable.spacer), contentDescription = null
-                )
-            }
-
             IconButton(
                 onClick = { onToggleLoopEnd(!hasLoopEnd) }
             ) {
