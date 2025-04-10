@@ -31,6 +31,7 @@ object PlayerStateProvider {
         override val positionInMs = MutableStateFlow(0L).asStateFlow()
         override val durationInMs = MutableStateFlow<Long?>(null).asStateFlow()
         override val isPlaying = MutableStateFlow(false).asStateFlow()
+        override val playWhenReady = MutableStateFlow(false).asStateFlow()
         override val loopInMs = MutableStateFlow(Pair(null, null)).asStateFlow()
         override val playlist = MutableStateFlow(Playlist()).asStateFlow()
         override val playlistType = MutableStateFlow(PlaylistType.Temporary).asStateFlow()

@@ -3,6 +3,7 @@ package com.coda.situlearner.feature.word.echo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.WordRepository
+import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.infra.player.PlayerStateProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,14 +25,18 @@ internal class WordEchoViewModel(
         .map { playlist -> playlist.items.map { it.id } }
         .distinctUntilChanged()
         .flatMapLatest { ids ->
-            wordRepository.getWordContexts(ids.toSet()).map { contexts ->
-                val idToWordContext = contexts.associateBy { it.id }
-                ids.mapNotNull { idToWordContext[it] }
+            wordRepository.words.map { wordWithContextsList ->
+                val contextIdToPair = wordWithContextsList.flatMap { wordWithContexts ->
+                    wordWithContexts.contexts.map { context ->
+                        wordWithContexts.word to context.wordContext
+                    }
+                }.associateBy { it.second.id }
+                ids.mapNotNull { contextIdToPair[it] }
             }
         }
         .map {
             if (it.isEmpty()) WordEchoUiState.Empty
-            else WordEchoUiState.Success(wordContexts = it)
+            else WordEchoUiState.Success(it)
         }
         .stateIn(
             scope = viewModelScope,
@@ -43,5 +48,5 @@ internal class WordEchoViewModel(
 internal sealed interface WordEchoUiState {
     data object Loading : WordEchoUiState
     data object Empty : WordEchoUiState
-    data class Success(val wordContexts: List<WordContext>) : WordEchoUiState
+    data class Success(val words: List<Pair<Word, WordContext>>) : WordEchoUiState
 }

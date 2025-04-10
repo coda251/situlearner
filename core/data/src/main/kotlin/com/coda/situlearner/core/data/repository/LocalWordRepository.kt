@@ -7,7 +7,6 @@ import com.coda.situlearner.core.data.mapper.asExternalModel
 import com.coda.situlearner.core.data.mapper.asValue
 import com.coda.situlearner.core.data.util.selectRecommendedWords
 import com.coda.situlearner.core.database.dao.WordBankDao
-import com.coda.situlearner.core.database.entity.WordContextEntity
 import com.coda.situlearner.core.database.entity.WordQuizInfoEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.model.data.Language
@@ -85,15 +84,6 @@ internal class LocalWordRepository(
             currentDate,
             count.toInt()
         ).map { it.asExternalModel().resolveMediaUrl(subtitleCacheManager, imageCacheManager) }
-    }
-
-    override fun getWordContexts(ids: Set<String>): Flow<List<WordContext>> {
-        return wordBankDao.getWordContextEntities(ids)
-            .map { it.map(WordContextEntity::asExternalModel) }
-    }
-
-    override suspend fun setWordProficiency(word: Word, proficiency: WordProficiency) {
-        return wordBankDao.updateWordEntity(word.id, proficiency.asValue())
     }
 
     override suspend fun insertWordWithContext(word: Word, wordContext: WordContext) {

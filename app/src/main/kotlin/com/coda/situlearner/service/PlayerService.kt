@@ -113,6 +113,8 @@ class PlayerService : LifecycleService(), KoinComponent, PlayerState {
         get() = playerEngine.durationInMs
     override val isPlaying: StateFlow<Boolean>
         get() = playerEngine.isPlaying
+    override val playWhenReady: StateFlow<Boolean>
+        get() = playerEngine.playWhenReady
     override val loopInMs: StateFlow<Pair<Long?, Long?>>
         get() = playerEngine.loopInMs
 

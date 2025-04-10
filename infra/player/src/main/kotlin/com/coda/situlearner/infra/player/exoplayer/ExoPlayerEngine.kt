@@ -143,6 +143,10 @@ internal class ExoPlayerEngine(
                     positionInMs.value = this@apply.currentPosition
                 }
             }
+
+            override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+                this@ExoPlayerEngine.playWhenReady.value = playWhenReady
+            }
         })
     }
 
@@ -161,6 +165,7 @@ internal class ExoPlayerEngine(
     override val positionInMs: MutableStateFlow<Long> = MutableStateFlow(0)
     override val durationInMs: MutableStateFlow<Long?> = MutableStateFlow(null)
     override val isPlaying: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val playWhenReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val loopInMs: MutableStateFlow<Pair<Long?, Long?>> = MutableStateFlow(Pair(null, null))
 
     override fun play() {

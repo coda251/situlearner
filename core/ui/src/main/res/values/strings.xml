@@ -8,4 +8,13 @@
     <string name="core_ui_language_chinese">Chinese</string>
     <string name="core_ui_language_english">English</string>
     <string name="core_ui_language_japanese">Japanese</string>
+
+    <string name="core_ui_yesterday">Yesterday</string>
+    <string name="core_ui_monday">Monday</string>
+    <string name="core_ui_tuesday">Tuesday</string>
+    <string name="core_ui_wednesday">Wednesday</string>
+    <string name="core_ui_thursday">Thursday</string>
+    <string name="core_ui_friday">Friday</string>
+    <string name="core_ui_saturday">Saturday</string>
+    <string name="core_ui_sunday">Sunday</string>
 </resources>

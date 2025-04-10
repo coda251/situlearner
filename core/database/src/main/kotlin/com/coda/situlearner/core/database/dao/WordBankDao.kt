@@ -71,11 +71,6 @@ interface WordBankDao {
     )
     fun getWordEntity(word: String, language: Language): Flow<WordEntity?>
 
-    @Query(
-        "SELECT * FROM WordContextEntity WHERE id IN (:ids)"
-    )
-    fun getWordContextEntities(ids: Set<String>): Flow<List<WordContextEntity>>
-
     @Query("DELETE FROM WordContextEntity WHERE id = :id")
     suspend fun deleteWordContextEntity(id: String)
 

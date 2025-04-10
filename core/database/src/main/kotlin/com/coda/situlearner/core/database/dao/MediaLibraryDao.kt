@@ -51,7 +51,4 @@ interface MediaLibraryDao {
             updateMediaFileEntity(it.key, it.value)
         }
     }
-
-    @Query("UPDATE MediaCollectionEntity SET coverUrl = :coverUrl WHERE id = :id")
-    suspend fun updateMediaCollectionEntityCoverUrl(id: String, coverUrl: String?)
 }

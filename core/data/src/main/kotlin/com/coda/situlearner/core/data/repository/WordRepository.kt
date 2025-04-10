@@ -31,10 +31,6 @@ interface WordRepository {
 
     fun getWordWithContexts(wordId: String): Flow<WordWithContexts?>
 
-    fun getWordContexts(ids: Set<String>): Flow<List<WordContext>>
-
-    suspend fun setWordProficiency(word: Word, proficiency: WordProficiency)
-
     suspend fun insertWordWithContext(
         word: Word,
         wordContext: WordContext

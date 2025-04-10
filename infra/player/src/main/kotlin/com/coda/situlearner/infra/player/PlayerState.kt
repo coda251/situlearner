@@ -23,6 +23,8 @@ interface PlayerState {
 
     val isPlaying: StateFlow<Boolean>
 
+    val playWhenReady: StateFlow<Boolean>
+
     val loopInMs: StateFlow<Pair<Long?, Long?>>
 
     fun play()

@@ -26,7 +26,7 @@ internal class WordListViewModel(
     private val _wordOptionUiState = MutableStateFlow(
         WordOptionUiState.Success(
             sortMode = SortMode.Ascending,
-            wordSortBy = WordSortBy.LastViewedDate
+            wordSortBy = WordSortBy.Proficiency
         )
     )
     val wordOptionUiState = _wordOptionUiState.asStateFlow()
