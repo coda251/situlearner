@@ -1,5 +1,6 @@
 package com.coda.situlearner.core.ui.theme
 
+import android.os.Build
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -20,9 +21,13 @@ fun SituLearnerTheme(
 
     val seedColor = when (colorMode) {
         ThemeColorMode.DynamicWithWallpaper -> {
-            val colorScheme = if (useDarkTheme) dynamicDarkColorScheme(context)
-            else dynamicLightColorScheme(context)
-            colorScheme.primary
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val colorScheme = if (useDarkTheme) dynamicDarkColorScheme(context)
+                else dynamicLightColorScheme(context)
+                colorScheme.primary
+            } else {
+                themeColor
+            }
         }
 
         else -> themeColor

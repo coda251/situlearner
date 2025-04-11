@@ -6,7 +6,7 @@ SituLearner是综合影视字幕或音乐歌词的android单词学习软件，
 
 ### 前提
 
-- 设备：Android设备，且Android版本至少为12。
+- 设备：Android设备，且Android版本至少为11。
 
 - 语言：仅支持英语和日语。
 

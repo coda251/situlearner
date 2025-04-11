@@ -1,5 +1,6 @@
 package com.coda.situlearner.feature.home.settings.common
 
+import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -164,12 +165,14 @@ private fun ThemeColorModeSelector(
             text = {
                 Column {
                     ThemeColorMode.entries.forEach {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(
-                                selected = it == themeColorMode,
-                                onClick = { onSelect(it) },
-                            )
-                            Text(text = it.asText())
+                        if (it != ThemeColorMode.DynamicWithWallpaper || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                RadioButton(
+                                    selected = it == themeColorMode,
+                                    onClick = { onSelect(it) },
+                                )
+                                Text(text = it.asText())
+                            }
                         }
                     }
                 }
