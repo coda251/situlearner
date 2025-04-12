@@ -360,7 +360,8 @@ private fun SubtitleList(
                         .height(paddingHeight)
                 )
             }
-            itemsIndexed(items = subtitles,
+            itemsIndexed(
+                items = subtitles,
                 key = { _, it -> it.hashCode() },
                 contentType = { _, _ -> "content" }) { index, it ->
                 SubtitleListItem(
@@ -609,7 +610,7 @@ private const val SubtitleEndBoxWeight = 1f / 6f
 
 @Preview
 @Composable
-fun SubtitleBoardPreview() {
+private fun SubtitleBoardPreview() {
     val subtitles = (0 until 50).map {
         Subtitle(
             sourceText = "source text $it",

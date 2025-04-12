@@ -2,15 +2,19 @@ package com.coda.situlearner.feature.player.entry.widgets.subtitle
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,11 +25,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.coda.situlearner.core.model.infra.Subtitle
 import com.coda.situlearner.core.model.infra.Token
 
 @Composable
-fun SubtitleTextItem(
+internal fun SubtitleTextItem(
     modifier: Modifier = Modifier,
     sourceText: String,
     targetText: String = "",
@@ -70,6 +76,56 @@ fun SubtitleTextItem(
     }
 }
 
+@Composable
+@Suppress("DEPRECATION")
+private fun TextWithClickableTokens(
+    text: String,
+    tokens: List<Token>?,
+    activeTokenStartIndex: Int = -1,
+    onClickToken: (Token) -> Unit = {},
+    textStyle: TextStyle = TextStyle.Default,
+    activeTokenStyle: SpanStyle = TextStyle.Default.toSpanStyle(),
+) {
+
+    val annotatedString = tokens?.let {
+        buildAnnotatedString {
+            var lastEnd = 0
+            tokens.forEach {
+                val start = it.startIndex
+                val end = it.endIndex
+
+                // add left spacer (if exists)
+                if (start > lastEnd) append(text.substring(lastEnd, start))
+
+                // add token
+                val token = text.substring(start, end)
+                pushStringAnnotation(it.lemma, token) // attach lemma data in tag
+
+                // add style for active token (be clicked)
+                if (start == activeTokenStartIndex) withStyle(style = activeTokenStyle) {
+                    append(token)
+                }
+                else append(token)
+                pop()
+
+                lastEnd = end
+            }
+            // add the end section
+            if (lastEnd < text.length) append(text.substring(lastEnd, text.length))
+        }
+    } ?: AnnotatedString(text = text)
+
+    ClickableText(
+        text = annotatedString,
+        style = textStyle,
+        onClick = { offset ->
+            annotatedString.getStringAnnotations(offset, offset).firstOrNull()?.let {
+                onClickToken(Token(startIndex = it.start, endIndex = it.end, lemma = it.tag))
+            }
+        }
+    )
+}
+
 /**
  * @param tokens The tokens.
  * The input should be sorted by the first index and have no intersection between pairs.
@@ -77,7 +133,13 @@ fun SubtitleTextItem(
  * @param onClickToken Token item (String), index of the first character of token item (Int).
  */
 @Composable
-private fun TextWithClickableTokens(
+// FIXME: seems like an internal bug in LinkAnnotation. If the token is located at the end of a
+//  line and the line is not the last line, then the click area for this token could be
+//  incorrectly positioned at the start of the line. See SubtitleListItemPreview.
+//  As a workaround, we currently use TextWithClickableTokens with deprecated ClickableText and
+//  wait for the upgrade of compose library.
+@Suppress("UNUSED")
+private fun TextWithClickableTokensToBeFixed(
     text: String,
     tokens: List<Token>?,
     activeTokenStartIndex: Int = -1,
@@ -184,5 +246,48 @@ class SubtitleTextColors internal constructor(
                 else defaultSourceTextColor
             }
         )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun SubtitleListItemPreview() {
+
+    val subtitle = Subtitle(
+        sourceText = "孤独と我慢の日々は終わった",
+        targetText = "孤独与忍耐的时光终于结束",
+        tokens = listOf(
+            Token(0, 2, "孤独"),
+            Token(2, 3, "と"),
+            Token(3, 5, "我慢"),
+            Token(5, 6, "の"),
+            Token(6, 8, "日々"),
+            Token(8, 9, "は"),
+            Token(9, 12, "終わる"),
+            Token(12, 13, "た")
+        ),
+        startTimeInMs = 0L,
+        endTimeInMs = 1000L,
+    )
+
+    var activeTokenStartIndex by remember {
+        mutableIntStateOf(-1)
+    }
+
+    Row {
+        Box(modifier = Modifier.weight(1f))
+        SubtitleTextItem(
+            sourceText = subtitle.sourceText,
+            targetText = subtitle.targetText,
+            isActive = true,
+            isInClip = false,
+            tokens = subtitle.tokens,
+            activeTokenStartIndex = activeTokenStartIndex,
+            onClickToken = {
+                activeTokenStartIndex = it.startIndex
+            },
+            modifier = Modifier.weight(4f)
+        )
+        Box(modifier = Modifier.weight(1f))
     }
 }
