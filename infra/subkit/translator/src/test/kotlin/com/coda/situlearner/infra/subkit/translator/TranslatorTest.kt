@@ -38,4 +38,15 @@ class TranslatorTest {
         println(situWord.toString())
         assertEquals(definition, situWord.meanings?.firstOrNull()?.definition)
     }
+
+    @Test
+    fun `test YouDaoJapanese multiple pronunciations`() = runTest {
+        val dictionary = YouDaoJapanese()
+        val word = "脅かす"
+        val pronunciation = "おどかす⓪③ · おびやかす④"
+        val info = dictionary.query(word)
+
+        println(info.toString())
+        assertEquals(pronunciation, info.pronunciation)
+    }
 }

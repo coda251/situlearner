@@ -25,3 +25,5 @@ internal fun List<WordMeaning>.simplify(): List<WordMeaning> {
         }
     }
 }
+
+internal fun List<String>.mergePronunciations(): String = this.joinToString(" · ")

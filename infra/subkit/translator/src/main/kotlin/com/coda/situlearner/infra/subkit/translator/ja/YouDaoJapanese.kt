@@ -4,6 +4,7 @@ import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.WordMeaning
 import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.infra.subkit.translator.Translator
+import com.coda.situlearner.infra.subkit.translator.mergePronunciations
 import com.coda.situlearner.infra.subkit.translator.simplify
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -16,7 +17,7 @@ class YouDaoJapanese(
 ) : Translator {
 
     override suspend fun query(word: String): WordInfo {
-        var pronunciation = ""
+        val pronunciations = mutableListOf<String>()
         val meanings = mutableListOf<WordMeaning>()
         try {
             // parse html
@@ -26,8 +27,13 @@ class YouDaoJapanese(
             val wordExp = doc.getElementsByClass("each-sense")
 
             if (pronounces.isNotEmpty()) {
-                pronunciation = pronounces[0].children().firstOrNull { it.tagName() == "span" }
-                    ?.text() ?: ""
+                pronounces.forEach { element ->
+                    element.children().firstOrNull { it.tagName() == "span" }?.text()?.let {
+                        if (it.isNotEmpty()) {
+                            pronunciations.add(it)
+                        }
+                    }
+                }
             }
             if (wordExp.isNotEmpty()) {
                 wordExp.forEach { element ->
@@ -57,7 +63,7 @@ class YouDaoJapanese(
         return WordInfo(
             word = word,
             dictionaryName = name,
-            pronunciation = pronunciation,
+            pronunciation = pronunciations.mergePronunciations(),
             meanings = meanings.simplify(),
         )
     }
