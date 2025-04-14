@@ -41,7 +41,18 @@ kuromoji分词。
 
 ### 词典
 
-使用jsoup解析youdao词典返回的html文件。
+使用jsoup解析返回的html文件，app中的中英词典包含有道词典，中日词典包含有道词典和Tio辞书。
+
+#### 中英词典
+
+- [有道词典](https://www.youdao.com/)
+
+#### 中日词典
+
+- [有道词典](https://www.youdao.com/)：有声调，响应快，词库全
+- [Tio辞书](https://tio.freemdict.com/)：能提供对应同一平假名读音的多个单词，可作为有道词典的补充
+- [DA在线词典](https://dict.asia/)：证书不可信，暂未引入
+- [沪江小D](https://dict.hjenglish.com/)：需要cookie，暂未引入
 
 ### 复习算法
 
