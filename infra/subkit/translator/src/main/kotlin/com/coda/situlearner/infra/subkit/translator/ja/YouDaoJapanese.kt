@@ -7,64 +7,47 @@ import com.coda.situlearner.infra.subkit.translator.Translator
 import com.coda.situlearner.infra.subkit.translator.mergePronunciations
 import com.coda.situlearner.infra.subkit.translator.simplify
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import java.io.IOException
 
 class YouDaoJapanese(
     override val name: String = "YouDao",
     override val sourceLanguage: Language = Language.Japanese,
-    override val targetLanguage: Language = Language.Chinese,
-) : Translator {
+) : Translator(name, sourceLanguage) {
 
-    override suspend fun query(word: String): WordInfo {
+    override fun fetch(word: String): List<WordInfo> {
         val pronunciations = mutableListOf<String>()
         val meanings = mutableListOf<WordMeaning>()
-        try {
-            // parse html
-            val doc: Document =
-                Jsoup.connect("https://dict.youdao.com/result?word=${word}&lang=ja").get()
-            val pronounces = doc.getElementsByClass("head-content")
-            val wordExp = doc.getElementsByClass("each-sense")
 
-            if (pronounces.isNotEmpty()) {
-                pronounces.forEach { element ->
-                    element.children().firstOrNull { it.tagName() == "span" }?.text()?.let {
-                        if (it.isNotEmpty()) {
-                            pronunciations.add(it)
-                        }
-                    }
-                }
-            }
-            if (wordExp.isNotEmpty()) {
-                wordExp.forEach { element ->
-                    var posTag = ""
-                    var paraphrase = ""
-
-                    element.children().forEach {
-                        if (it.className() == "pos-line") {
-                            posTag = it.text()
-                        } else if (it.className() == "sense-con") {
-                            paraphrase += it.text()
-                        }
-                    }
-
-                    meanings.add(
-                        WordMeaning(
-                            partOfSpeechTag = posTag,
-                            definition = paraphrase
-                        )
-                    )
-                }
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
+        // parse html
+        // NOTE： is there a way to get word options from YouDao?
+        val doc = Jsoup.connect("https://dict.youdao.com/result?word=${word}&lang=ja").get()
+        doc.getElementsByClass("head-content").forEach { element ->
+            element.children()
+                .firstOrNull { it.tagName() == "span" }
+                ?.text()
+                ?.takeIf { it.isNotEmpty() }
+                ?.let(pronunciations::add)
         }
 
-        return WordInfo(
-            word = word,
-            dictionaryName = name,
-            pronunciation = pronunciations.mergePronunciations(),
-            meanings = meanings.simplify(),
+        doc.getElementsByClass("each-sense").forEach { element ->
+            var posTag = ""
+            var paraphrase = ""
+
+            element.children().forEach {
+                when (it.className()) {
+                    "pos-line" -> posTag = it.text()
+                    "sense-con" -> paraphrase += it.text()
+                }
+            }
+            meanings += WordMeaning(posTag, paraphrase)
+        }
+
+        return listOf(
+            WordInfo(
+                word = word,
+                dictionaryName = name,
+                pronunciation = pronunciations.mergePronunciations(),
+                meanings = meanings.simplify(),
+            )
         )
     }
 }

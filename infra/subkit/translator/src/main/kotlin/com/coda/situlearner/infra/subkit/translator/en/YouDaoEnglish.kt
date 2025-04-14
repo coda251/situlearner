@@ -7,59 +7,45 @@ import com.coda.situlearner.infra.subkit.translator.Translator
 import com.coda.situlearner.infra.subkit.translator.simplify
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import java.io.IOException
 
 class YouDaoEnglish(
     override val name: String = "YouDao",
     override val sourceLanguage: Language = Language.English,
-    override val targetLanguage: Language = Language.Chinese,
-) : Translator {
+) : Translator(name, sourceLanguage) {
 
-    override suspend fun query(word: String): WordInfo {
+    override fun fetch(word: String): List<WordInfo> {
         var pronunciation = ""
         val meanings = mutableListOf<WordMeaning>()
-        try {
-            // parse html
-            val doc: Document =
-                Jsoup.connect("https://dict.youdao.com/result?word=$word&lang=en").get()
-            val phonetic = doc.getElementsByClass("phonetic")
-            val wordExp = doc.getElementsByClass("word-exp")
 
-            if (phonetic.isNotEmpty()) {
-                pronunciation = phonetic[0].allElements.text()
-            }
-            if (wordExp.isNotEmpty()) {
-                wordExp.forEach { element ->
-                    var posTag: String? = null
-                    var definition = ""
+        // parse html
+        val doc: Document =
+            Jsoup.connect("https://dict.youdao.com/result?word=$word&lang=en").get()
 
-                    element.children().forEach {
-                        if (it.className() == "pos") {
-                            posTag = it.text()
-                        } else if (it.className() == "trans") {
-                            definition += it.text()
-                        }
-                    }
+        doc.getElementsByClass("phonetic").firstOrNull()?.let {
+            pronunciation = it.allElements.text()
 
-                    posTag?.let {
-                        meanings.add(
-                            WordMeaning(
-                                partOfSpeechTag = it,
-                                definition = definition
-                            )
-                        )
-                    }
+        }
+        doc.getElementsByClass("word-exp").forEach { element ->
+            var posTag = ""
+            var paraphrase = ""
+
+            element.children().forEach {
+                when (it.className()) {
+                    "pos" -> posTag = it.text()
+                    "trans" -> paraphrase += it.text()
                 }
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
+
+            meanings += WordMeaning(posTag, paraphrase)
         }
 
-        return WordInfo(
-            word = word,
-            dictionaryName = name,
-            pronunciation = pronunciation,
-            meanings = meanings.simplify(),
+        return listOf(
+            WordInfo(
+                word = word,
+                dictionaryName = name,
+                pronunciation = pronunciation,
+                meanings = meanings.simplify(),
+            )
         )
     }
 }

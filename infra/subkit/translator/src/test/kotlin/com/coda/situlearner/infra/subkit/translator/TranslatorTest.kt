@@ -1,6 +1,7 @@
 package com.coda.situlearner.infra.subkit.translator
 
 import com.coda.situlearner.infra.subkit.translator.en.YouDaoEnglish
+import com.coda.situlearner.infra.subkit.translator.ja.TioJapanese
 import com.coda.situlearner.infra.subkit.translator.ja.YouDaoJapanese
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -12,20 +13,20 @@ class TranslatorTest {
     fun `test YouDaoEnglish`() = runTest {
         val dictionary = YouDaoEnglish()
         val word = "Barney"
-        val situWord = dictionary.query(word)
+        val infos = dictionary.fetch(word)
 
-        println(situWord.toString())
-        assertEquals(word, situWord.word)
+        println(infos.toString())
+        assertEquals(word, infos[0].word)
     }
 
     @Test
     fun `test YouDaoJapanese`() = runTest {
         val dictionary = YouDaoJapanese()
         val word = "これ"
-        val situWord = dictionary.query(word)
+        val infos = dictionary.fetch(word)
 
-        println(situWord.toString())
-        assertEquals(word, situWord.word)
+        println(infos.toString())
+        assertEquals(word, infos[0].word)
     }
 
     @Test
@@ -33,10 +34,10 @@ class TranslatorTest {
         val dictionary = YouDaoJapanese()
         val word = "さつがい"
         val definition = "杀害，杀死"
-        val situWord = dictionary.query(word)
+        val infos = dictionary.fetch(word)
 
-        println(situWord.toString())
-        assertEquals(definition, situWord.meanings?.firstOrNull()?.definition)
+        println(infos.toString())
+        assertEquals(definition, infos[0].meanings?.firstOrNull()?.definition)
     }
 
     @Test
@@ -44,9 +45,33 @@ class TranslatorTest {
         val dictionary = YouDaoJapanese()
         val word = "脅かす"
         val pronunciation = "おどかす⓪③ · おびやかす④"
-        val info = dictionary.query(word)
+        val infos = dictionary.fetch(word)
 
-        println(info.toString())
-        assertEquals(pronunciation, info.pronunciation)
+        println(infos.toString())
+        assertEquals(pronunciation, infos[0].pronunciation)
+    }
+
+    @Test
+    fun `test TioJapanese`() = runTest {
+        // NOTE: the result in web and api does not fully match, e.g. "心配"
+        val dictionary = TioJapanese()
+        val word = "つる"
+        val infos = dictionary.fetch(word)
+
+        println(infos.toString())
+        assertEquals(3, infos.size)
+        assertEquals("提梁.提梁", infos[0].meanings?.first()?.definition)
+    }
+
+    @Test
+    fun `test TioJapanese multiple identical words`() = runTest {
+        val dictionary = TioJapanese()
+        val word = "脅かす"
+        val pronunciation = "おどかす · おびやかす"
+        val infos = dictionary.fetch(word)
+
+        println(infos.toString())
+        assertEquals(1, infos.size)
+        assertEquals(pronunciation, infos[0].pronunciation)
     }
 }
