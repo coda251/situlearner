@@ -62,7 +62,7 @@ private fun WordBookScreen(
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    BackButton { onBack() }
+                    BackButton(onBack)
                 }
             )
         }

@@ -114,7 +114,7 @@ private fun WordEchoScreen(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    BackButton { onBack() }
+                    BackButton(onBack)
                 },
                 title = {},
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)

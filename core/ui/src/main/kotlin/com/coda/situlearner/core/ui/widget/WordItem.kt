@@ -14,8 +14,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.coda.situlearner.core.model.data.Word
+import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.testing.data.wordsTestData
 import com.coda.situlearner.core.ui.util.formatInstant
+import kotlinx.datetime.Instant
 
 @Composable
 fun WordItem(
@@ -23,26 +25,45 @@ fun WordItem(
     showProficiency: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    WordItem(
+        word = word.word,
+        pronunciation = word.pronunciation,
+        definition = word.meanings?.firstOrNull()?.definition,
+        proficiency = if (showProficiency) word.proficiency else null,
+        lastViewedDate = word.lastViewedDate,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun WordItem(
+    word: String,
+    modifier: Modifier = Modifier,
+    pronunciation: String? = null,
+    definition: String? = null,
+    proficiency: WordProficiency? = null,
+    lastViewedDate: Instant? = null
+) {
     // as the vertical padding for two line list item
     Column(modifier = modifier.padding(vertical = 16.dp, horizontal = 16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = word.word,
+                text = word,
                 style = MaterialTheme.typography.bodyLarge
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 modifier = Modifier.weight(1f),
-                text = word.meanings?.firstOrNull()?.definition ?: "",
+                text = definition ?: "",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            if (showProficiency) {
+            if (proficiency != null) {
                 Spacer(modifier = Modifier.width(8.dp))
                 ProficiencyIconSet(
-                    proficiency = word.proficiency,
+                    proficiency = proficiency,
                     onlyShowStarred = true,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.75f)
                 )
@@ -50,18 +71,18 @@ fun WordItem(
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = word.pronunciation ?: "",
+                text = pronunciation ?: "",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
             )
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = word.lastViewedDate?.let {
-                    formatInstant(it)
-                } ?: "",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            if (lastViewedDate != null) {
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = formatInstant(lastViewedDate),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }

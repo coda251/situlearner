@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="home_media_library_screen_title">Media Library</string>
-
-    <string name="home_media_library_screen_delete_collection">Delete</string>
     <string name="home_media_library_screen_rename_collection">Rename</string>
 
     <string name="home_media_library_screen_delete_collection_title">Delete this collection?</string>

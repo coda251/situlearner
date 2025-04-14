@@ -249,7 +249,7 @@ private fun CollectionMenuBottomSheet(
         onDelete?.let {
             ListItem(
                 modifier = Modifier.clickable(onClick = it),
-                headlineContent = { Text(text = stringResource(id = R.string.home_media_library_screen_delete_collection)) },
+                headlineContent = { Text(text = stringResource(id = coreR.string.core_ui_delete)) },
                 leadingContent = {
                     Icon(
                         painter = painterResource(coreR.drawable.delete_24dp_000000_fill0_wght400_grad0_opsz24),
