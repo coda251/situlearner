@@ -20,6 +20,7 @@ kotlinxCoroutinesCore = "1.10.1"
 kotlinxDatetime = "0.6.2"
 kotlinxSerialization = "1.8.0"
 ksp = "2.1.10-1.0.31"
+ktor = "3.1.2"
 kuromojiIpadic = "0.9.0"
 linguaVersion = "1.2.2"
 materialKolor = "2.0.2"
@@ -62,6 +63,10 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 kuromoji-ipadic = { module = "com.atilika.kuromoji:kuromoji-ipadic", version.ref = "kuromojiIpadic" }
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }

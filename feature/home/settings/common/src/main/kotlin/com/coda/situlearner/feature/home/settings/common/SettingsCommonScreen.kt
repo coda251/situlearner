@@ -1,5 +1,6 @@
 package com.coda.situlearner.feature.home.settings.common
 
+import android.content.Intent
 import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -27,14 +28,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.ThemeColorMode
 import com.coda.situlearner.core.ui.util.asText
+import com.coda.situlearner.feature.home.settings.common.model.VersionState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -43,14 +47,17 @@ internal fun SettingsCommonScreen(
     viewModel: SettingsCommonViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val versionState by viewModel.versionState.collectAsStateWithLifecycle()
 
     SettingsCommonScreen(
         uiState = uiState,
+        versionState = versionState,
         onSelectDarkThemeMode = viewModel::setDarkThemeMode,
         onSelectThemeColorMode = viewModel::setThemeColorMode,
         onSelectWordLibraryLanguage = viewModel::setWordLibraryLanguage,
         onSetQuizWordCount = viewModel::setQuizWordCount,
         onSetRecommendedWordCount = viewModel::setRecommendedWordCount,
+        onCheckUpdate = viewModel::checkAppUpdate,
         modifier = modifier
     )
 }
@@ -59,11 +66,13 @@ internal fun SettingsCommonScreen(
 @Composable
 private fun SettingsCommonScreen(
     uiState: SettingsCommonUiState,
+    versionState: VersionState,
     onSelectDarkThemeMode: (DarkThemeMode) -> Unit,
     onSelectThemeColorMode: (ThemeColorMode) -> Unit,
     onSelectWordLibraryLanguage: (Language) -> Unit,
     onSetQuizWordCount: (UInt) -> Unit,
     onSetRecommendedWordCount: (UInt) -> Unit,
+    onCheckUpdate: (String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -91,11 +100,13 @@ private fun SettingsCommonScreen(
                         wordLibraryLanguage = uiState.wordLibraryLanguage,
                         quizWordCount = uiState.quizWordCount,
                         recommendedWordCount = uiState.recommendedWordCount,
+                        versionState = versionState,
                         onSelectDarkThemeMode = onSelectDarkThemeMode,
                         onSelectThemeColorMode = onSelectThemeColorMode,
                         onSelectWordLibraryLanguage = onSelectWordLibraryLanguage,
                         onSetQuizWordCount = onSetQuizWordCount,
-                        onSetRecommendedWordCount = onSetRecommendedWordCount
+                        onSetRecommendedWordCount = onSetRecommendedWordCount,
+                        onCheckUpdate = onCheckUpdate
                     )
                 }
             }
@@ -110,11 +121,13 @@ private fun SettingsContentBoard(
     wordLibraryLanguage: Language,
     quizWordCount: UInt,
     recommendedWordCount: UInt,
+    versionState: VersionState,
     onSelectDarkThemeMode: (DarkThemeMode) -> Unit,
     onSelectThemeColorMode: (ThemeColorMode) -> Unit,
     onSelectWordLibraryLanguage: (Language) -> Unit,
     onSetQuizWordCount: (UInt) -> Unit,
     onSetRecommendedWordCount: (UInt) -> Unit,
+    onCheckUpdate: (String?) -> Unit,
 ) {
     Column {
         ThemeColorModeSelector(themeColorMode, onSelectThemeColorMode)
@@ -122,6 +135,7 @@ private fun SettingsContentBoard(
         WordFilterLanguageSelector(wordLibraryLanguage, onSelectWordLibraryLanguage)
         QuizWordCountSelector(quizWordCount, onSetQuizWordCount)
         RecommendedWordCountSelector(recommendedWordCount, onSetRecommendedWordCount)
+        AppVersionCheckItem(versionState, onCheckUpdate)
     }
 }
 
@@ -405,6 +419,59 @@ private fun WordCountSelectorDialog(
                 )
             }
         }
+    )
+}
+
+@Composable
+private fun AppVersionCheckItem(
+    versionState: VersionState,
+    onCheckUpdate: (String?) -> Unit,
+) {
+    val context = LocalContext.current
+
+    val currentVersion = remember {
+        context.packageManager.getPackageInfo(context.packageName, 0).versionName
+    }
+
+    val handleClick = {
+        when (versionState) {
+            VersionState.NotChecked, VersionState.Failed -> onCheckUpdate(currentVersion)
+            VersionState.Loading, VersionState.UpToDate -> {}
+            is VersionState.UpdateAvailable -> {
+                val intent = Intent(Intent.ACTION_VIEW, versionState.downloadUrl.toUri())
+                context.startActivity(intent)
+            }
+        }
+    }
+
+    ListItem(
+        headlineContent = {
+            Text(text = stringResource(R.string.home_settings_common_screen_current_version))
+        },
+        supportingContent = {
+            currentVersion?.let { Text(text = it) }
+        },
+        trailingContent = {
+            TextButton(
+                onClick = handleClick
+            ) {
+                Text(
+                    text = stringResource(
+                        when (versionState) {
+                            VersionState.Failed -> R.string.home_settings_common_screen_check_failed
+                            VersionState.Loading -> R.string.home_settings_common_screen_checking
+                            VersionState.NotChecked -> R.string.home_settings_common_screen_check_update
+                            VersionState.UpToDate -> R.string.home_settings_common_screen_up_to_date
+                            is VersionState.UpdateAvailable -> R.string.home_settings_common_screen_update_available
+                        }
+                    ) + when (versionState) {
+                        is VersionState.UpdateAvailable -> " ${versionState.version}"
+                        else -> ""
+                    }
+                )
+            }
+        },
+        modifier = Modifier.clickable { handleClick() }
     )
 }
 

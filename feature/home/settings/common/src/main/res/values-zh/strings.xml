@@ -14,4 +14,10 @@
     <string name="home_settings_common_screen_quiz_word_count">测试单词数</string>
     <string name="home_settings_common_screen_count">数量</string>
     <string name="home_settings_common_screen_recommended_word_count">推荐单词数（下次启动时生效）</string>
+    <string name="home_settings_common_screen_check_update">检查更新</string>
+    <string name="home_settings_common_screen_current_version">当前版本</string>
+    <string name="home_settings_common_screen_checking">检查中……</string>
+    <string name="home_settings_common_screen_check_failed">检查失败</string>
+    <string name="home_settings_common_screen_up_to_date">已是最新版本</string>
+    <string name="home_settings_common_screen_update_available">存在新版本</string>
 </resources>

@@ -18,4 +18,10 @@
     <string name="home_settings_common_screen_quiz_word_count">Quiz word count</string>
     <string name="home_settings_common_screen_count">Count</string>
     <string name="home_settings_common_screen_recommended_word_count">Recommended word count (applies on next launch)</string>
+    <string name="home_settings_common_screen_check_update">Check update</string>
+    <string name="home_settings_common_screen_current_version">Current version</string>
+    <string name="home_settings_common_screen_checking">Checking…</string>
+    <string name="home_settings_common_screen_check_failed">Check failed</string>
+    <string name="home_settings_common_screen_up_to_date">Up to date</string>
+    <string name="home_settings_common_screen_update_available">Update available</string>
 </resources>
