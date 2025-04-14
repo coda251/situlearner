@@ -12,7 +12,6 @@ import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.database.model.Language
 import com.coda.situlearner.core.database.model.WordProficiency
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Instant
 
 @Dao
@@ -33,7 +32,7 @@ interface WordBankDao {
         wordEntity: WordEntity,
         wordContextEntity: WordContextEntity
     ) {
-        getWordEntity(wordEntity.word, wordEntity.language).firstOrNull()?.let {
+        getWordEntity(wordEntity.word, wordEntity.language)?.let {
             insertWordContextEntity(wordContextEntity.copy(wordId = it.id))
         } ?: run {
             insertWordEntity(wordEntity)
@@ -69,7 +68,7 @@ interface WordBankDao {
     @Query(
         "SELECT * FROM WordEntity WHERE word = :word AND language = :language"
     )
-    fun getWordEntity(word: String, language: Language): Flow<WordEntity?>
+    suspend fun getWordEntity(word: String, language: Language): WordEntity?
 
     @Query("DELETE FROM WordContextEntity WHERE id = :id")
     suspend fun deleteWordContextEntity(id: String)
@@ -109,4 +108,10 @@ interface WordBankDao {
             updateWordEntity(id = it.key, proficiency = it.value)
         }
     }
+
+    @Query("SELECT * FROM WordEntity WHERE id = :id")
+    fun getWordEntity(id: String): WordEntity?
+
+    @Query("DELETE FROM WordEntity WHERE id = :id")
+    suspend fun deleteWordEntity(id: String)
 }

@@ -7,14 +7,20 @@ import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
-import com.coda.situlearner.core.model.data.WordMeaning
+import com.coda.situlearner.core.model.infra.WordInfo
+import com.coda.situlearner.feature.player.entry.model.Translation
+import com.coda.situlearner.feature.player.entry.model.toTranslationFlow
 import com.coda.situlearner.infra.subkit.translator.Translator
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -24,111 +30,62 @@ internal class PlayerWordViewModel(
     defaultTargetLanguage: Language = AppConfig.targetLanguage
 ) : ViewModel() {
 
-    val wordContextUiState = wordRepository.getWordContext(
+    private val translators = Translator.getTranslators(
+        sourceLanguage = route.language,
+        targetLanguage = defaultTargetLanguage
+    )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val wordContextUiState = wordRepository.getWordWithContext(
         mediaId = route.mediaId,
         subtitleStartTimeInMs = route.subtitleStartTimeInMs,
         subtitleSourceText = route.subtitleSourceText,
         wordStartIndex = route.wordStartIndex,
         wordEndIndex = route.wordEndIndex
-    ).map {
-        it?.let {
-            WordContextUiState.Success(wordContext = it)
-        } ?: WordContextUiState.Empty
-    }.stateIn(
+    ).mapLatest { wordContext ->
+        wordContext?.let { it ->
+            val word = wordRepository.getWord(it.wordId)
+            word?.let {
+                WordContextUiState.Existed(
+                    word = it,
+                    wordContext = wordContext
+                )
+            } ?: WordContextUiState.Empty
+        } ?: run {
+            val word = wordRepository.getWord(route.word, route.language)
+            word?.let {
+                WordContextUiState.OnlyWord(it)
+            } ?: WordContextUiState.Empty
+        }
+    }.flowOn(Dispatchers.IO).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = WordContextUiState.Loading
     )
 
-    val wordInfoUiState = wordRepository.getWord(route.word, route.language).map { word ->
-        // first query local db
-        word?.let {
-            val dictionaryName = it.dictionaryName
-            val meanings = it.meanings
-
-            if (dictionaryName == null) null // go to query network
-            else {
-                if (meanings.isNullOrEmpty()) {
-                    WordInfoUiState.Empty(
-                        dictionaryName = dictionaryName,
-                        pronunciation = it.pronunciation
-                    )
-                } else {
-                    WordInfoUiState.Success(
-                        dictionaryName = dictionaryName,
-                        pronunciation = it.pronunciation,
-                        meanings = meanings,
-                    )
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val wordQueryUiState = wordContextUiState.flatMapLatest { state ->
+        when (state) {
+            WordContextUiState.Loading -> flowOf(WordQueryUiState.Loading)
+            is WordContextUiState.OnlyWord -> flowOf(WordQueryUiState.ResultDb(state.word))
+            is WordContextUiState.Existed -> flowOf(WordQueryUiState.ResultDb(state.word))
+            WordContextUiState.Empty -> {
+                if (translators.isEmpty()) flowOf(WordQueryUiState.NoTranslatorError)
+                else combine(translators.map { it.toTranslationFlow(route.word) }) {
+                    WordQueryUiState.ResultWeb(translations = it.toList())
                 }
-            }
-        } ?:
-        // next query network
-        run {
-            withContext(Dispatchers.IO) {
-                Translator.getTranslators(
-                    route.language, defaultTargetLanguage
-                ).getOrNull(0)?.let {
-                    val wordInfo = it.query(route.word)
-                    val meanings = wordInfo.meanings
-                    if (meanings.isNullOrEmpty()) {
-                        WordInfoUiState.Empty(
-                            dictionaryName = wordInfo.dictionaryName,
-                            pronunciation = wordInfo.pronunciation
-                        )
-                    } else {
-                        WordInfoUiState.Success(
-                            dictionaryName = wordInfo.dictionaryName,
-                            pronunciation = wordInfo.pronunciation,
-                            meanings = meanings,
-                        )
-                    }
-                } ?: WordInfoUiState.Error
             }
         }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = WordInfoUiState.Loading
+        initialValue = WordQueryUiState.Loading
     )
 
-    @OptIn(ExperimentalUuidApi::class)
-    fun insertWordWithContext(wordInfoUiState: WordInfoUiState) {
+    fun insertWordWithContext(wordInfo: WordInfo?) {
         viewModelScope.launch {
-            val wordId = Uuid.random().toString()
-            val wordContextId = Uuid.random().toString()
-            val word = Word(
-                id = wordId,
-                word = route.word,
-                language = route.language,
-                dictionaryName = when (wordInfoUiState) {
-                    WordInfoUiState.Loading, WordInfoUiState.Error -> null
-                    is WordInfoUiState.Empty -> wordInfoUiState.dictionaryName
-                    is WordInfoUiState.Success -> wordInfoUiState.dictionaryName
-                },
-                pronunciation = when (wordInfoUiState) {
-                    WordInfoUiState.Loading, WordInfoUiState.Error -> null
-                    is WordInfoUiState.Empty -> wordInfoUiState.pronunciation
-                    is WordInfoUiState.Success -> wordInfoUiState.pronunciation
-                },
-                meanings = when (wordInfoUiState) {
-                    WordInfoUiState.Loading, WordInfoUiState.Error, is WordInfoUiState.Empty -> null
-                    is WordInfoUiState.Success -> wordInfoUiState.meanings
-                }
-            )
-
-            val wordContext = WordContext(
-                id = wordContextId,
-                wordId = wordId,
-                mediaId = route.mediaId,
-                subtitleStartTimeInMs = route.subtitleStartTimeInMs,
-                subtitleEndTimeInMs = route.subtitleEndTimeInMs,
-                subtitleSourceText = route.subtitleSourceText,
-                subtitleTargetText = route.subtitleTargetText,
-                wordStartIndex = route.wordStartIndex,
-                wordEndIndex = route.wordEndIndex
-            )
-
-            wordRepository.insertWordWithContext(word, wordContext)
+            val wordWithContext = createWordWithContext(wordInfo)
+            wordRepository.insertWordWithContext(wordWithContext.first, wordWithContext.second)
         }
     }
 
@@ -137,6 +94,43 @@ internal class PlayerWordViewModel(
             wordRepository.deleteWordContext(wordContext)
         }
     }
+
+    @OptIn(ExperimentalUuidApi::class)
+    private fun createWordWithContext(wordInfo: WordInfo?): Pair<Word, WordContext> {
+        val wordId = Uuid.random().toString()
+        val wordContextId = Uuid.random().toString()
+        val word = Word(
+            id = wordId,
+            word = wordInfo?.word ?: route.word,
+            language = route.language,
+            dictionaryName = wordInfo?.dictionaryName,
+            pronunciation = wordInfo?.pronunciation,
+            meanings = wordInfo?.meanings
+        )
+
+        val wordContext = WordContext(
+            id = wordContextId,
+            wordId = wordId,
+            mediaId = route.mediaId,
+            subtitleStartTimeInMs = route.subtitleStartTimeInMs,
+            subtitleEndTimeInMs = route.subtitleEndTimeInMs,
+            subtitleSourceText = route.subtitleSourceText,
+            subtitleTargetText = route.subtitleTargetText,
+            wordStartIndex = route.wordStartIndex,
+            wordEndIndex = route.wordEndIndex
+        )
+
+        return word to wordContext
+    }
+}
+
+internal fun Word.asWordInfo() = dictionaryName?.let {
+    WordInfo(
+        word = word,
+        dictionaryName = it,
+        pronunciation = pronunciation,
+        meanings = meanings
+    )
 }
 
 internal data class PlayerWordBottomSheetRoute(
@@ -154,21 +148,17 @@ internal data class PlayerWordBottomSheetRoute(
 
 internal sealed interface WordContextUiState {
     data object Loading : WordContextUiState
-    data object Empty : WordContextUiState // no such word context
-    data class Success(val wordContext: WordContext) : WordContextUiState
+    data object Empty : WordContextUiState
+    data class OnlyWord(val word: Word) : WordContextUiState
+    data class Existed(
+        val word: Word,
+        val wordContext: WordContext
+    ) : WordContextUiState
 }
 
-internal sealed interface WordInfoUiState {
-    data object Loading : WordInfoUiState
-    data object Error : WordInfoUiState
-    data class Empty(
-        val dictionaryName: String,
-        val pronunciation: String? = null
-    ) : WordInfoUiState
-
-    data class Success(
-        val dictionaryName: String,
-        val pronunciation: String? = null,
-        val meanings: List<WordMeaning>,
-    ) : WordInfoUiState
+internal sealed interface WordQueryUiState {
+    data object Loading : WordQueryUiState
+    data object NoTranslatorError : WordQueryUiState
+    data class ResultDb(val word: Word) : WordQueryUiState
+    data class ResultWeb(val translations: List<Translation>) : WordQueryUiState
 }

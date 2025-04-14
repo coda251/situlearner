@@ -1,6 +1,8 @@
 package com.coda.situlearner.feature.word.list
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -12,9 +14,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -59,6 +66,7 @@ internal fun WordListScreen(
         playerState = playerState,
         onBack = onBack,
         onClickWord = { onNavigateToWordDetail(it.id) },
+        onDeleteWord = viewModel::deleteWord,
         onRepeatWordContexts = { onNavigateToWordEcho() },
         modifier = modifier,
     )
@@ -72,10 +80,14 @@ private fun WordListScreen(
     playerState: PlayerState,
     onBack: () -> Unit,
     onClickWord: (Word) -> Unit,
+    onDeleteWord: (Word) -> Unit,
     onRepeatWordContexts: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showOptionBottomSheet by remember { mutableStateOf(false) }
+
+    var currentWord by remember { mutableStateOf<Word?>(null) }
+    var showWordBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -128,12 +140,12 @@ private fun WordListScreen(
             }
         },
         modifier = modifier
-    ) {
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
-                .consumeWindowInsets(it)
+                .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
         ) {
             when (uiState) {
                 WordListUiState.Empty -> {}
@@ -142,25 +154,42 @@ private fun WordListScreen(
                     ContentBoard(
                         words = uiState.data,
                         showProficiency = uiState.wordSortBy == WordSortBy.Proficiency,
-                        onClickWord = onClickWord
+                        onClickWord = onClickWord,
+                        onLongClickWord = {
+                            currentWord = it
+                            showWordBottomSheet = true
+                        }
                     )
                 }
             }
         }
+    }
 
-        if (showOptionBottomSheet) {
-            WordOptionBottomSheet(onDismiss = {
-                showOptionBottomSheet = false
-            })
+    if (showOptionBottomSheet) {
+        WordOptionBottomSheet(onDismiss = {
+            showOptionBottomSheet = false
+        })
+    }
+
+    if (showWordBottomSheet) {
+        currentWord?.let { word ->
+            WordBottomSheet(word = word, onDismiss = {
+                showWordBottomSheet = false
+            }) {
+                showWordBottomSheet = false
+                onDeleteWord(it)
+            }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ContentBoard(
     words: List<WordWithContexts>,
     showProficiency: Boolean,
     onClickWord: (Word) -> Unit,
+    onLongClickWord: (Word) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -174,9 +203,46 @@ private fun ContentBoard(
             WordItem(
                 word = it,
                 showProficiency = showProficiency,
-                modifier = Modifier.clickable { onClickWord(it) }
+                modifier = Modifier.combinedClickable(
+                    onLongClick = { onLongClickWord(it) },
+                    onClick = { onClickWord(it) }
+                )
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun WordBottomSheet(
+    word: Word,
+    onDismiss: () -> Unit,
+    onDelete: (Word) -> Unit,
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        dragHandle = {}
+    ) {
+        ListItem(
+            headlineContent = {
+                Text(word.word)
+            }
+        )
+        ListItem(
+            leadingContent = {
+                Icon(
+                    painter = painterResource(coreR.drawable.delete_24dp_000000_fill0_wght400_grad0_opsz24),
+                    contentDescription = null
+                )
+            },
+            headlineContent = {
+                Text(text = stringResource(coreR.string.core_ui_delete))
+            },
+            modifier = Modifier.clickable {
+                onDelete(word)
+            }
+        )
     }
 }
 
@@ -199,6 +265,7 @@ private fun WordListScreenPreview() {
         playerState = PlayerStateProvider.EmptyPlayerState,
         onBack = {},
         onClickWord = {},
+        onDeleteWord = {},
         onRepeatWordContexts = {}
     )
 }

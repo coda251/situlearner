@@ -1,14 +1,24 @@
 package com.coda.situlearner.feature.player.entry
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -18,8 +28,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,8 +46,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.WordContext
+import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.core.testing.data.wordContextsTestData
 import com.coda.situlearner.core.testing.data.wordsTestData
+import com.coda.situlearner.core.ui.widget.BackButton
+import com.coda.situlearner.core.ui.widget.WordItem
+import com.coda.situlearner.feature.player.entry.model.RemoteWordInfoState
+import com.coda.situlearner.feature.player.entry.model.Translation
+import com.coda.situlearner.infra.subkit.translator.Translator
 import org.koin.compose.getKoin
 
 @Composable
@@ -53,12 +69,12 @@ internal fun PlayerWordBottomSheet(
     val viewModel = remember { PlayerWordViewModel(route, koin.get()) }
 
     val wordContextUiState by viewModel.wordContextUiState.collectAsStateWithLifecycle()
-    val wordInfoUiState by viewModel.wordInfoUiState.collectAsStateWithLifecycle()
+    val wordQueryUiState by viewModel.wordQueryUiState.collectAsStateWithLifecycle()
 
     PlayerWordBottomSheet(
         word = route.word,
         wordContextUiState = wordContextUiState,
-        wordInfoUiState = wordInfoUiState,
+        wordQueryUiState = wordQueryUiState,
         onAddWordContext = viewModel::insertWordWithContext,
         onDeleteWordContext = viewModel::deleteWordContext,
         onDismiss = onDismiss,
@@ -70,8 +86,8 @@ internal fun PlayerWordBottomSheet(
 private fun PlayerWordBottomSheet(
     word: String,
     wordContextUiState: WordContextUiState,
-    wordInfoUiState: WordInfoUiState,
-    onAddWordContext: (WordInfoUiState) -> Unit,
+    wordQueryUiState: WordQueryUiState,
+    onAddWordContext: (WordInfo?) -> Unit,
     onDeleteWordContext: (WordContext) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -81,10 +97,10 @@ private fun PlayerWordBottomSheet(
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         dragHandle = null,
     ) {
-        WordContextBoard(
+        PlayerWordScreen(
             word = word,
             wordContextUiState = wordContextUiState,
-            wordInfoUiState = wordInfoUiState,
+            wordQueryUiState = wordQueryUiState,
             onAddWordContext = onAddWordContext,
             onDeleteWordContext = onDeleteWordContext,
             modifier = modifier
@@ -100,112 +116,310 @@ private fun PlayerWordBottomSheet(
 }
 
 @Composable
-private fun WordContextBoard(
+private fun PlayerWordScreen(
     word: String,
     wordContextUiState: WordContextUiState,
-    wordInfoUiState: WordInfoUiState,
-    onAddWordContext: (WordInfoUiState) -> Unit,
+    wordQueryUiState: WordQueryUiState,
+    onAddWordContext: (WordInfo?) -> Unit,
     onDeleteWordContext: (WordContext) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showPOSChips by remember {
-        mutableStateOf(false)
-    }
-
-    LaunchedEffect(wordContextUiState) {
-        showPOSChips = when (wordContextUiState) {
-            WordContextUiState.Loading, WordContextUiState.Empty -> {
-                false
-            }
-
-            is WordContextUiState.Success -> {
-                true
-            }
-        }
+    var transIndexToInfoIndex by remember(wordQueryUiState is WordQueryUiState.ResultWeb) {
+        mutableStateOf<Pair<Int, Int?>>(0 to null)
     }
 
     Column(modifier = modifier) {
-        ListItem(
-            modifier = Modifier.padding(horizontal = 12.dp),
-            headlineContent = {
-                Text(
-                    text = word,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-            },
-            trailingContent = {
-                when (wordContextUiState) {
-                    WordContextUiState.Loading -> {}
-                    WordContextUiState.Empty -> IconButton(
-                        onClick = { onAddWordContext(wordInfoUiState) }
-                    ) {
-                        Icon(
-                            painter = painterResource(
-                                R.drawable.bookmark_24dp_000000_fill0_wght400_grad0_opsz24
-                            ),
-                            contentDescription = null
-                        )
+        WordContextBoard(
+            word = word,
+            wordContextUiState = wordContextUiState,
+            onAddWordContext = {
+                when (wordQueryUiState) {
+                    is WordQueryUiState.ResultDb -> wordQueryUiState.word.asWordInfo()?.let {
+                        onAddWordContext(it)
                     }
 
-                    is WordContextUiState.Success -> IconButton(
-                        onClick = {
-                            onDeleteWordContext(wordContextUiState.wordContext)
+                    is WordQueryUiState.ResultWeb -> {
+                        val translation = wordQueryUiState.translations[transIndexToInfoIndex.first]
+                        when (val infoState = translation.infoState) {
+                            is RemoteWordInfoState.Multiple -> {
+                                val infoIndex = transIndexToInfoIndex.second
+                                // if no valid infoIndex is provided, do not add wordContext
+                                infoIndex?.let { infoState.infos.getOrNull(it) }
+                                    ?.let(onAddWordContext)
+                            }
+
+                            is RemoteWordInfoState.Single -> onAddWordContext(infoState.info)
+                            else -> onAddWordContext(null)
                         }
-                    ) {
-                        Icon(
-                            painter = painterResource(
-                                R.drawable.bookmark_24dp_000000_fill1_wght400_grad0_opsz24
-                            ),
-                            contentDescription = null
-                        )
+
+                    }
+
+                    else -> {
+                        onAddWordContext(null)
                     }
                 }
             },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+            onDeleteWordContext = onDeleteWordContext
         )
 
-        WordInfoBoard(
-            wordInfoUiState = wordInfoUiState,
-            modifier = Modifier.padding(horizontal = 12.dp),
+        Box(modifier = Modifier.weight(1f)) {
+            when (wordQueryUiState) {
+                WordQueryUiState.NoTranslatorError -> {}
+
+                WordQueryUiState.Loading -> CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+
+                is WordQueryUiState.ResultDb -> wordQueryUiState.word.asWordInfo()?.let {
+                    WordInfoDetailItem(
+                        wordInfo = it,
+                        modifier = Modifier.padding(horizontal = 12.dp)
+                    )
+                }
+
+                is WordQueryUiState.ResultWeb -> {
+                    WordTranslationBoard(
+                        translations = wordQueryUiState.translations,
+                        onSelect = { transIndexToInfoIndex = it }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WordTranslationBoard(
+    translations: List<Translation>,
+    onSelect: (Pair<Int, Int?>) -> Unit
+) {
+    var translationIndex by remember {
+        mutableIntStateOf(0)
+    }
+
+    var infoIndexes by remember {
+        mutableStateOf<List<Int?>>(
+            translations.map { null }.toList()
+        )
+    }
+
+    Column {
+        TranslatorChipsPanel(
+            translators = translations.map { it.translator },
+            selectedTranslatorIndex = translationIndex,
+            onSelect = {
+                translationIndex = it
+                onSelect(translationIndex to infoIndexes[translationIndex])
+            }
+        )
+
+        TranslationResultPanel(
+            translation = translations[translationIndex],
+            selectedInfoIndex = infoIndexes[translationIndex],
+            onSelectInfoIndex = {
+                infoIndexes = infoIndexes.toMutableList().apply {
+                    this[translationIndex] = it
+                }
+                onSelect(translationIndex to it)
+            }
         )
     }
 }
 
 @Composable
-private fun WordInfoBoard(
-    wordInfoUiState: WordInfoUiState,
+private fun WordContextBoard(
+    word: String,
+    wordContextUiState: WordContextUiState,
+    onAddWordContext: () -> Unit,
+    onDeleteWordContext: (WordContext) -> Unit,
+) {
+    ListItem(
+        modifier = Modifier.padding(horizontal = 12.dp),
+        headlineContent = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = word,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+
+                AnimatedContent(targetState = wordContextUiState) { targetState ->
+                    when (targetState) {
+                        is WordContextUiState.Existed -> {
+                            val wordInDb = targetState.word.word
+                            Text(
+                                text = if (wordInDb != word) wordInDb else "",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+
+                        else -> {
+                        }
+                    }
+                }
+            }
+        },
+        trailingContent = {
+            when (wordContextUiState) {
+                WordContextUiState.Loading -> {}
+                is WordContextUiState.Existed -> IconButton(
+                    onClick = {
+                        onDeleteWordContext(wordContextUiState.wordContext)
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            R.drawable.bookmark_24dp_000000_fill1_wght400_grad0_opsz24
+                        ),
+                        contentDescription = null
+                    )
+                }
+
+                WordContextUiState.Empty, is WordContextUiState.OnlyWord -> IconButton(
+                    onClick = onAddWordContext
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            R.drawable.bookmark_24dp_000000_fill0_wght400_grad0_opsz24
+                        ),
+                        contentDescription = null
+                    )
+                }
+            }
+        },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+    )
+}
+
+@Composable
+private fun TranslatorChipsPanel(
+    translators: List<Translator>,
+    selectedTranslatorIndex: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 28.dp)
+    ) {
+        itemsIndexed(
+            items = translators,
+            key = { _, item -> item.name }
+        ) { index, it ->
+            FilterChip(
+                onClick = { onSelect(index) },
+                label = { Text(it.name) },
+                selected = index == selectedTranslatorIndex,
+            )
+        }
+    }
+}
+
+@Composable
+private fun TranslationResultPanel(
+    translation: Translation,
+    selectedInfoIndex: Int?,
+    onSelectInfoIndex: (Int?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
-        when (wordInfoUiState) {
-            WordInfoUiState.Loading -> {
+        when (val wordInfoState = translation.infoState) {
+            RemoteWordInfoState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
 
-            WordInfoUiState.Error -> {}
-            is WordInfoUiState.Empty -> {}
-            is WordInfoUiState.Success -> {
-                Column {
-                    wordInfoUiState.pronunciation?.let {
-                        ListItem(
-                            headlineContent = { Text(text = it) },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                        )
-                    }
+            RemoteWordInfoState.Empty -> {}
+            RemoteWordInfoState.Error -> {}
+            is RemoteWordInfoState.Single -> {
+                WordInfoDetailItem(
+                    wordInfo = wordInfoState.info,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+            }
 
-                    LazyColumn {
-                        items(
-                            items = wordInfoUiState.meanings,
-                            key = { it.partOfSpeechTag }
-                        ) {
-                            ListItem(
-                                headlineContent = { Text(text = it.definition) },
-                                overlineContent = { Text(text = it.partOfSpeechTag) },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                            )
-                        }
-                    }
+            is RemoteWordInfoState.Multiple -> {
+                WordInfosPanel(
+                    wordInfos = wordInfoState.infos,
+                    selectedInfoIndex = selectedInfoIndex,
+                    onSelect = onSelectInfoIndex,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun WordInfosPanel(
+    wordInfos: List<WordInfo>,
+    selectedInfoIndex: Int?,
+    onSelect: (Int?) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val currentSelectedInfo = selectedInfoIndex?.let { wordInfos.getOrNull(it) }
+
+    if (currentSelectedInfo != null) {
+        WordInfoDetailItem(
+            wordInfo = currentSelectedInfo,
+            modifier = modifier,
+            onBack = {
+                onSelect(null)
+            }
+        )
+    } else {
+        LazyColumn(modifier = modifier) {
+            itemsIndexed(
+                items = wordInfos,
+            ) { index, it ->
+                WordItem(
+                    word = it.word,
+                    modifier = Modifier.clickable { onSelect(index) },
+                    pronunciation = it.pronunciation,
+                    definition = it.meanings?.firstOrNull()?.definition,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun WordInfoDetailItem(
+    wordInfo: WordInfo,
+    modifier: Modifier = Modifier,
+    onBack: (() -> Unit)? = null,
+) {
+    Column(modifier = modifier) {
+        if (onBack != null) {
+            ListItem(
+                headlineContent = { Text(text = wordInfo.pronunciation ?: "") },
+                trailingContent = {
+                    BackButton(onBack = onBack, rotated = true)
+                },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+            )
+        } else {
+            wordInfo.pronunciation?.let {
+                ListItem(
+                    headlineContent = { Text(text = it) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                )
+            }
+        }
+
+        wordInfo.meanings?.let {
+            LazyColumn {
+                items(
+                    items = it,
+                    key = { it.partOfSpeechTag }
+                ) {
+                    ListItem(
+                        headlineContent = { Text(text = it.definition) },
+                        overlineContent = { Text(text = it.partOfSpeechTag) },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
                 }
             }
         }
@@ -216,15 +430,14 @@ private fun WordInfoBoard(
 @Preview(showBackground = true)
 private fun PlayerWordBottomSheetPreview() {
 
-    val wordInfoUiState = WordInfoUiState.Success(
-        dictionaryName = wordsTestData[0].dictionaryName!!,
-        pronunciation = wordsTestData[0].pronunciation!!,
-        meanings = wordsTestData[0].meanings!!
+    val wordQueryUiState = WordQueryUiState.ResultDb(
+        word = wordsTestData[0]
     )
 
     var wordContextUiState by remember {
         mutableStateOf<WordContextUiState>(
-            WordContextUiState.Success(
+            WordContextUiState.Existed(
+                word = wordsTestData[0],
                 wordContext = wordContextsTestData[0]
             )
         )
@@ -233,12 +446,13 @@ private fun PlayerWordBottomSheetPreview() {
     PlayerWordBottomSheet(
         word = wordsTestData[0].word,
         wordContextUiState = wordContextUiState,
-        wordInfoUiState = wordInfoUiState,
+        wordQueryUiState = wordQueryUiState,
         onDeleteWordContext = {
             wordContextUiState = WordContextUiState.Empty
         },
         onAddWordContext = {
-            wordContextUiState = WordContextUiState.Success(
+            wordContextUiState = WordContextUiState.Existed(
+                word = wordsTestData[0],
                 wordContext = wordContextsTestData[0]
             )
         },

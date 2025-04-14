@@ -46,7 +46,7 @@ internal class LocalWordRepository(
             }
     }
 
-    override fun getWordContext(
+    override fun getWordWithContext(
         mediaId: String,
         subtitleStartTimeInMs: Long,
         subtitleSourceText: String,
@@ -60,10 +60,12 @@ internal class LocalWordRepository(
         }
     }
 
-    override fun getWord(word: String, language: Language): Flow<Word?> {
-        return wordBankDao.getWordEntity(word, language.asValue()).map {
-            it?.asExternalModel()
-        }
+    override suspend fun getWord(word: String, language: Language): Word? {
+        return wordBankDao.getWordEntity(word, language.asValue())?.asExternalModel()
+    }
+
+    override suspend fun getWord(wordId: String): Word? {
+        return wordBankDao.getWordEntity(wordId)?.asExternalModel()
     }
 
     override fun getWordWithContexts(wordId: String): Flow<WordWithContexts?> {
@@ -114,6 +116,10 @@ internal class LocalWordRepository(
 
     override suspend fun getRecommendedWords(count: UInt): List<WordContextView> {
         return words.firstOrNull()?.let { selectRecommendedWords(it, count.toInt()) } ?: emptyList()
+    }
+
+    override suspend fun deleteWord(word: Word) {
+        return wordBankDao.deleteWordEntity(word.id)
     }
 
     private fun WordWithContexts.resolveMediaUrl(

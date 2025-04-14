@@ -16,7 +16,7 @@ interface WordRepository {
 
     fun getWordWithContextsList(language: Language): Flow<List<WordWithContexts>>
 
-    fun getWordContext(
+    fun getWordWithContext(
         mediaId: String,
         subtitleStartTimeInMs: Long,
         subtitleSourceText: String,
@@ -24,10 +24,14 @@ interface WordRepository {
         wordEndIndex: Int,
     ): Flow<WordContext?>
 
-    fun getWord(
+    suspend fun getWord(
         word: String,
         language: Language
-    ): Flow<Word?>
+    ): Word?
+
+    suspend fun getWord(
+        wordId: String
+    ): Word?
 
     fun getWordWithContexts(wordId: String): Flow<WordWithContexts?>
 
@@ -56,4 +60,6 @@ interface WordRepository {
     suspend fun updateWords(idToProficiency: Map<String, WordProficiency>)
 
     suspend fun getRecommendedWords(count: UInt): List<WordContextView>
+
+    suspend fun deleteWord(word: Word)
 }

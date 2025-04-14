@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.coda.situlearner.core.data.repository.WordRepository
+import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordWithContexts
 import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.feature.word.list.model.SortMode
@@ -15,10 +16,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 internal class WordListViewModel(
     savedStateHandle: SavedStateHandle,
-    wordRepository: WordRepository
+    private val wordRepository: WordRepository
 ) : ViewModel() {
 
     val route = savedStateHandle.toRoute<WordListRoute>()
@@ -93,6 +95,12 @@ internal class WordListViewModel(
         _wordOptionUiState.value = _wordOptionUiState.value.copy(
             wordSortBy = wordSortBy
         )
+    }
+
+    fun deleteWord(word: Word) {
+        viewModelScope.launch {
+            wordRepository.deleteWord(word)
+        }
     }
 }
 
