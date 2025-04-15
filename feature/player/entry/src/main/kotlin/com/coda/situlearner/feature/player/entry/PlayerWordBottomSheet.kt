@@ -41,6 +41,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -331,7 +332,10 @@ private fun TranslationResultPanel(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
 
-            RemoteWordInfoState.Empty -> {}
+            RemoteWordInfoState.Empty -> {
+                WordInfoEmpty(modifier = Modifier.align(Alignment.Center))
+            }
+
             RemoteWordInfoState.Error -> {}
             is RemoteWordInfoState.Single -> {
                 WordInfoDetailItem(
@@ -350,6 +354,14 @@ private fun TranslationResultPanel(
             }
         }
     }
+}
+
+@Composable
+private fun WordInfoEmpty(modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = stringResource(R.string.player_entry_screen_no_web_meanings)
+    )
 }
 
 @Composable
