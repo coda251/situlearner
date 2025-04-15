@@ -12,8 +12,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -42,16 +46,41 @@ internal class WordLibraryViewModel(
         getRecommendedWords()
     }
 
+    /**
+     * The recommended words will be refreshed when one of these scenarios takes place:
+     *  - recommended word count changed
+     *  - word library language changed
+     *  - the size of words has changed and is still smaller than recommended word count
+     */
     private fun getRecommendedWords() {
         viewModelScope.launch {
-            val preference = userPreferenceRepository.userPreference.first()
-            val data = wordRepository.getRecommendedWords(preference.recommendedWordCount)
-            if (data.isEmpty()) _wordsUiState.value = RecommendedWordsUiState.Empty
-            else _wordsUiState.value = RecommendedWordsUiState.Success(
-                wordContexts = data,
-                offset = 0
-            )
+            userPreferenceRepository.userPreference
+                .map { it.recommendedWordCount to it.wordLibraryLanguage }
+                .distinctUntilChanged()
+                .collectLatest { pair ->
+                    val recommendedWordCount = pair.first
+                    refreshWords(recommendedWordCount)
+                    wordRepository.words
+                        .map { it.size }
+                        .distinctUntilChanged()
+                        .filter { it < recommendedWordCount.toInt() }
+                        // drop to avoid calling refreshWords twice when recommendedWordCount changed
+                        // while size of words is still smaller than recommendedWordCount
+                        .drop(1)
+                        .collectLatest {
+                            refreshWords(recommendedWordCount)
+                        }
+                }
         }
+    }
+
+    private suspend fun refreshWords(recommendedWordCount: UInt) {
+        val data = wordRepository.getRecommendedWords(recommendedWordCount)
+        _wordsUiState.value =
+            if (data.isEmpty())
+                RecommendedWordsUiState.Empty
+            else
+                RecommendedWordsUiState.Success(wordContexts = data, offset = 0)
     }
 
     fun setWordsOffset(offset: Int) {

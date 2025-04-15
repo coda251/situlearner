@@ -18,12 +18,14 @@ internal fun selectRecommendedWords(
 
     WordProficiency.entries.sortedByDescending { it.quota }.forEach {
         val layer = proficiencyToWords[it]
-        val quota = proficiencyToCount[it]
-        if (layer == null && quota != null) {
-            remainder += quota
-        } else if (layer != null && quota != null) {
+        val expectedQuota = proficiencyToCount[it]
+        if (layer == null && expectedQuota != null) {
+            remainder += expectedQuota
+        } else if (layer != null && expectedQuota != null) {
+            val actualQuota = minOf(layer.size, expectedQuota)
             layers.add(layer)
-            quotas.add(quota)
+            quotas.add(actualQuota)
+            remainder += expectedQuota - actualQuota
         }
     }
 
