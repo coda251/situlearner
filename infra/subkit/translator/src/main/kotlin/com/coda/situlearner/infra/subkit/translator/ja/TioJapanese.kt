@@ -4,7 +4,6 @@ import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.WordMeaning
 import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.infra.subkit.translator.Translator
-import com.coda.situlearner.infra.subkit.translator.mergePronunciations
 import com.coda.situlearner.infra.subkit.translator.simplify
 import org.jsoup.Jsoup
 
@@ -51,10 +50,10 @@ private fun List<WordInfo>.simplify(): List<WordInfo> {
                 wordInfo = WordInfo(
                     word = it.word,
                     dictionaryName = it.dictionaryName,
-                    pronunciation = listOfNotNull(
+                    pronunciations = listOfNotNull(
                         it.pronunciation,
                         original.pronunciation
-                    ).mergePronunciations(),
+                    ),
                     meanings = buildList {
                         it.meanings?.let(::addAll)
                         original.meanings?.let(::addAll)

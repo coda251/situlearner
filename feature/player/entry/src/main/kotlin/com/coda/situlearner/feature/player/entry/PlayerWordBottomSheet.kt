@@ -47,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.WordContext
+import com.coda.situlearner.core.model.data.mapper.asWordInfo
 import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.core.testing.data.wordContextsTestData
 import com.coda.situlearner.core.testing.data.wordsTestData
@@ -135,7 +136,7 @@ private fun PlayerWordScreen(
             wordContextUiState = wordContextUiState,
             onAddWordContext = {
                 when (wordQueryUiState) {
-                    is WordQueryUiState.ResultDb -> wordQueryUiState.word.asWordInfo()?.let {
+                    is WordQueryUiState.ResultDb -> wordQueryUiState.word.asWordInfo().let {
                         onAddWordContext(it)
                     }
 
@@ -171,7 +172,7 @@ private fun PlayerWordScreen(
                     modifier = Modifier.align(Alignment.Center)
                 )
 
-                is WordQueryUiState.ResultDb -> wordQueryUiState.word.asWordInfo()?.let {
+                is WordQueryUiState.ResultDb -> wordQueryUiState.word.asWordInfo().let {
                     WordInfoDetailItem(
                         wordInfo = it,
                         modifier = Modifier.padding(horizontal = 12.dp)

@@ -124,15 +124,6 @@ internal class PlayerWordViewModel(
     }
 }
 
-internal fun Word.asWordInfo() = dictionaryName?.let {
-    WordInfo(
-        word = word,
-        dictionaryName = it,
-        pronunciation = pronunciation,
-        meanings = meanings
-    )
-}
-
 internal data class PlayerWordBottomSheetRoute(
     val word: String,
     val language: Language,

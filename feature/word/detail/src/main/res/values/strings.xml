@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="word_detail_screen_example_sentences">Examples</string>
-    <string name="word_detail_screen_meanings">Meanings</string>
 </resources>

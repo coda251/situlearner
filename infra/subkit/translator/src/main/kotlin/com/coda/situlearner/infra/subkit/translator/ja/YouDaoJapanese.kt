@@ -4,7 +4,6 @@ import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.WordMeaning
 import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.infra.subkit.translator.Translator
-import com.coda.situlearner.infra.subkit.translator.mergePronunciations
 import com.coda.situlearner.infra.subkit.translator.simplify
 import org.jsoup.Jsoup
 
@@ -45,7 +44,7 @@ class YouDaoJapanese(
             WordInfo(
                 word = word,
                 dictionaryName = name,
-                pronunciation = pronunciations.mergePronunciations(),
+                pronunciations = pronunciations,
                 meanings = meanings.simplify(),
             )
         )

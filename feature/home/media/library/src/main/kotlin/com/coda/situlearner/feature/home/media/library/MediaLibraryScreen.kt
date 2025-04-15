@@ -98,7 +98,7 @@ private fun MediaLibraryScreen(
                 onClick = onAdd,
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.add_24dp_000000_fill0_wght400_grad0_opsz24),
+                    painter = painterResource(coreR.drawable.add_24dp_000000_fill0_wght400_grad0_opsz24),
                     contentDescription = null
                 )
             }
@@ -239,7 +239,7 @@ private fun CollectionMenuBottomSheet(
                 headlineContent = { Text(text = stringResource(id = R.string.home_media_library_screen_rename_collection)) },
                 leadingContent = {
                     Icon(
-                        painter = painterResource(R.drawable.edit_24dp_000000_fill0_wght400_grad0_opsz24),
+                        painter = painterResource(coreR.drawable.edit_24dp_000000_fill0_wght400_grad0_opsz24),
                         contentDescription = null
                     )
                 }
@@ -349,7 +349,7 @@ private fun RenameCollectionDialog(
                 trailingIcon = {
                     AnimatedVisibility(visible = hasEmptyName) {
                         Icon(
-                            painter = painterResource(R.drawable.error_24dp_000000_fill0_wght400_grad0_opsz24),
+                            painter = painterResource(coreR.drawable.error_24dp_000000_fill0_wght400_grad0_opsz24),
                             contentDescription = null
                         )
                     }
