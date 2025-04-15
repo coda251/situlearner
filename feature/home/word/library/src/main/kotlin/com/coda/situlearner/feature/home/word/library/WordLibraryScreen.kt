@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,6 +27,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -33,19 +35,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coda.situlearner.core.cfg.AppConfig
+import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
+import com.coda.situlearner.core.ui.util.asText
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
+import com.coda.situlearner.core.ui.widget.LanguageSelectorDialog
 import com.coda.situlearner.core.ui.widget.WordContextText
 import com.coda.situlearner.feature.home.word.library.model.WordBook
 import com.coda.situlearner.feature.home.word.library.model.WordBookType
@@ -77,6 +85,7 @@ internal fun WordLibraryScreen(
         onClickContextView = { onNavigateToWordDetail(it.wordContext.wordId) },
         onQuiz = onNavigateToWordQuiz,
         onSetOffset = viewModel::setWordsOffset,
+        onChangeLanguage = viewModel::setWordLibraryLanguage,
         modifier = modifier,
     )
 }
@@ -90,6 +99,7 @@ private fun WordLibraryScreen(
     onClickContextView: (WordContextView) -> Unit,
     onQuiz: () -> Unit,
     onSetOffset: (Int) -> Unit,
+    onChangeLanguage: (Language) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -125,13 +135,20 @@ private fun WordLibraryScreen(
                 .padding(it)
         ) {
             when (booksUiState) {
-                WordBooksUiState.Empty -> {}
+                is WordBooksUiState.Empty -> {
+                    EmptyBoard(
+                        language = booksUiState.language,
+                        onChangeLanguage = onChangeLanguage
+                    )
+                }
+
                 WordBooksUiState.Loading -> {}
-                is WordBooksUiState.Success ->
+                is WordBooksUiState.Success -> {
                     WordBooksBoard(
                         books = booksUiState.books,
                         onClickBook = onClickBook,
                     )
+                }
             }
 
             when (wordsUiState) {
@@ -146,6 +163,50 @@ private fun WordLibraryScreen(
                     )
             }
         }
+    }
+}
+
+@Composable
+private fun EmptyBoard(
+    language: Language,
+    onChangeLanguage: (Language) -> Unit,
+) {
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            text = stringResource(
+                R.string.home_word_library_screen_current_language_no_words,
+                language.asText()
+            )
+        )
+        TextButton(
+            onClick = {
+                showDialog = true
+            }
+        ) {
+            Text(
+                text = stringResource(R.string.home_word_library_screen_change_language)
+            )
+        }
+    }
+
+    if (showDialog) {
+        LanguageSelectorDialog(
+            choices = AppConfig.sourceLanguages,
+            currentLanguage = language,
+            onDismiss = { showDialog = false },
+            onConfirm = { showDialog = false },
+            onSelect = { onChangeLanguage(it) }
+        )
     }
 }
 
@@ -320,7 +381,7 @@ private fun WordsRecommendationContent(
 
 @Preview
 @Composable
-private fun WordLibraryScreenPreview() {
+private fun WordLibraryScreenContentPreview() {
 
     val booksUiState by remember {
         mutableStateOf(
@@ -348,6 +409,40 @@ private fun WordLibraryScreenPreview() {
             wordsUiState = wordsUiState.copy(
                 offset = if (it >= wordsUiState.wordContexts.size) 0 else it
             )
+        },
+        onChangeLanguage = {},
+        onQuiz = {},
+    )
+}
+
+@Preview
+@Composable
+private fun WordLibraryScreenEmptyPreview() {
+
+    var booksUiState by remember {
+        mutableStateOf<WordBooksUiState>(
+            WordBooksUiState.Empty(Language.Japanese)
+        )
+    }
+
+    WordLibraryScreen(
+        booksUiState = booksUiState,
+        wordsUiState = RecommendedWordsUiState.Empty,
+        onClickBook = {},
+        onClickContextView = {},
+        onSetOffset = {},
+        onChangeLanguage = {
+            booksUiState = when (it) {
+                Language.English -> {
+                    WordBooksUiState.Success(
+                        books = wordWithContextsListTestData.toWordBooks(),
+                    )
+                }
+
+                else -> {
+                    WordBooksUiState.Empty(it)
+                }
+            }
         },
         onQuiz = {},
     )
