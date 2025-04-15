@@ -20,14 +20,16 @@ import com.coda.situlearner.feature.player.entry.navigation.navigateToPlayerEntr
 import com.coda.situlearner.feature.player.entry.navigation.playerEntryScreen
 import com.coda.situlearner.feature.player.playlist.navigation.navigateToPlaylist
 import com.coda.situlearner.feature.player.playlist.navigation.playlistScreen
-import com.coda.situlearner.feature.word.list.navigation.WordListRoute
-import com.coda.situlearner.feature.word.list.navigation.navigateToWordList
-import com.coda.situlearner.feature.word.list.navigation.wordListScreen
 import com.coda.situlearner.feature.word.detail.navigation.WordDetailRoute
 import com.coda.situlearner.feature.word.detail.navigation.navigateToWordDetail
 import com.coda.situlearner.feature.word.detail.navigation.wordDetailScreen
 import com.coda.situlearner.feature.word.echo.navigation.navigateToWordEcho
 import com.coda.situlearner.feature.word.echo.navigation.wordEchoScreen
+import com.coda.situlearner.feature.word.edit.navigation.navigateToWordEdit
+import com.coda.situlearner.feature.word.edit.navigation.wordEditScreen
+import com.coda.situlearner.feature.word.list.navigation.WordListRoute
+import com.coda.situlearner.feature.word.list.navigation.navigateToWordList
+import com.coda.situlearner.feature.word.list.navigation.wordListScreen
 import com.coda.situlearner.feature.word.quiz.navigation.WordQuizRoute
 import com.coda.situlearner.feature.word.quiz.navigation.navigateToWordQuiz
 import com.coda.situlearner.feature.word.quiz.navigation.wordQuizScreen
@@ -64,8 +66,13 @@ fun AppNavHost(
 
         wordDetailScreen(
             onBack = appNavController::popBackStack,
-            onNavigateToPlayer = appNavController::navigateToPlayerEntry
-        )
+            onNavigateToPlayer = appNavController::navigateToPlayerEntry,
+            onNavigateToWordEdit = appNavController::navigateToWordEdit
+        ) {
+            wordEditScreen(
+                onBack = appNavController::popBackStack
+            )
+        }
 
         wordQuizScreen(
             onBack = appNavController::popBackStack

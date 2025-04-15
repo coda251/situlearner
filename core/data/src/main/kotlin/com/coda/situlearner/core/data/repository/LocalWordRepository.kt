@@ -122,6 +122,10 @@ internal class LocalWordRepository(
         return wordBankDao.deleteWordEntity(word.id)
     }
 
+    override suspend fun updateWord(word: Word) {
+        return wordBankDao.updateWordEntity(word.asEntity())
+    }
+
     private fun WordWithContexts.resolveMediaUrl(
         subtitleCacheManager: SubtitleCacheManager,
         imageCacheManager: CoverImageCacheManager

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import androidx.room.Upsert
 import com.coda.situlearner.core.database.entity.WordContextEntity
 import com.coda.situlearner.core.database.entity.WordEntity
@@ -114,4 +115,7 @@ interface WordBankDao {
 
     @Query("DELETE FROM WordEntity WHERE id = :id")
     suspend fun deleteWordEntity(id: String)
+
+    @Update
+    suspend fun updateWordEntity(wordEntity: WordEntity)
 }

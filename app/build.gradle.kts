@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.coda.situlearner"
         versionCode = 4
-        versionName = "0.4.0-alpha04"
+        versionName = "0.4.0-alpha05"
     }
 
     buildTypes {
@@ -44,6 +44,7 @@ dependencies {
     implementation(projects.feature.word.list)
     implementation(projects.feature.word.detail)
     implementation(projects.feature.word.echo)
+    implementation(projects.feature.word.edit)
     implementation(projects.feature.word.quiz)
 
     implementation(projects.infra.explorerLocal)

@@ -3,8 +3,12 @@ package com.coda.situlearner.feature.word.detail.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import com.coda.situlearner.feature.word.detail.WordDetailScreen
 import kotlinx.serialization.Serializable
+
+@Serializable
+data object WordDetailBaseRoute
 
 @Serializable
 data class WordDetailRoute(val wordId: String)
@@ -15,12 +19,19 @@ fun NavController.navigateToWordDetail(fromWordId: String) {
 
 fun NavGraphBuilder.wordDetailScreen(
     onBack: () -> Unit,
-    onNavigateToPlayer: () -> Unit
+    onNavigateToPlayer: () -> Unit,
+    onNavigateToWordEdit: (String) -> Unit,
+    destination: NavGraphBuilder.() -> Unit,
 ) {
-    composable<WordDetailRoute> {
-        WordDetailScreen(
-            onBack = onBack,
-            onNavigateToPlayer = onNavigateToPlayer
-        )
+    navigation<WordDetailBaseRoute>(startDestination = WordDetailRoute::class) {
+        composable<WordDetailRoute> {
+            WordDetailScreen(
+                onBack = onBack,
+                onNavigateToPlayer = onNavigateToPlayer,
+                onNavigateToWordEdit = onNavigateToWordEdit
+            )
+        }
+
+        destination()
     }
 }

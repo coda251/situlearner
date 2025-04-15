@@ -62,4 +62,6 @@ interface WordRepository {
     suspend fun getRecommendedWords(count: UInt): List<WordContextView>
 
     suspend fun deleteWord(word: Word)
+
+    suspend fun updateWord(word: Word)
 }

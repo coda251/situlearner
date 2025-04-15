@@ -59,11 +59,13 @@ import com.coda.situlearner.core.ui.widget.WordContextText
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 import org.koin.androidx.compose.koinViewModel
+import com.coda.situlearner.core.ui.R as coreR
 
 @Composable
 internal fun WordDetailScreen(
     onBack: () -> Unit,
     onNavigateToPlayer: () -> Unit,
+    onNavigateToWordEdit: (String) -> Unit,
     viewModel: WordDetailViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -77,7 +79,8 @@ internal fun WordDetailScreen(
             onBack()
         },
         onViewWord = viewModel::setWordViewedDate,
-        onNavigateToPlayer = onNavigateToPlayer
+        onNavigateToPlayer = onNavigateToPlayer,
+        onNavigateToWordEdit = onNavigateToWordEdit
     )
 }
 
@@ -88,7 +91,8 @@ private fun WordDetailScreen(
     playerState: PlayerState,
     onBack: () -> Unit,
     onViewWord: (Word) -> Unit,
-    onNavigateToPlayer: () -> Unit
+    onNavigateToPlayer: () -> Unit,
+    onNavigateToWordEdit: (String) -> Unit,
 ) {
     BackHandler {
         onBack()
@@ -99,6 +103,25 @@ private fun WordDetailScreen(
             TopAppBar(
                 title = { },
                 navigationIcon = { BackButton(onBack) },
+                actions = {
+                    when (uiState) {
+                        is WordDetailUiState.Success -> {
+                            IconButton(
+                                onClick = {
+                                    playerState.clear()
+                                    onNavigateToWordEdit(uiState.wordWithContexts.word.id)
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(coreR.drawable.edit_24dp_000000_fill0_wght400_grad0_opsz24),
+                                    contentDescription = null
+                                )
+                            }
+                        }
+
+                        else -> {}
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
@@ -312,7 +335,7 @@ private fun WordWithContextsCard(
                 ListItem(
                     headlineContent = {
                         Text(
-                            text = stringResource(id = R.string.word_detail_screen_meanings),
+                            text = stringResource(id = coreR.string.core_ui_meanings),
                             modifier = Modifier.alpha(0.5f),
                             fontWeight = FontWeight.Bold
                         )
@@ -356,6 +379,7 @@ private fun WordDetailScreenPreview() {
         uiState = uiState,
         onBack = {},
         onViewWord = {},
-        onNavigateToPlayer = {}
+        onNavigateToPlayer = {},
+        onNavigateToWordEdit = {}
     )
 }
