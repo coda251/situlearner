@@ -1,10 +1,6 @@
 package com.coda.situlearner.feature.home.explore.collection
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
@@ -17,12 +13,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.infra.SourceCollectionWithFiles
-import com.coda.situlearner.core.ui.util.asText
+import com.coda.situlearner.core.ui.widget.LanguageSelector
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -54,9 +49,10 @@ private fun WorkerDialog(
         text = {
             when (workerStatusUiState) {
                 WorkerStatusUiState.Idle -> {
-                    WorkerParametersBoard(
-                        onSelectLanguage = onSelectLanguage,
-                        languageChoices = languageChoices
+                    LanguageSelector(
+                        choices = languageChoices,
+                        currentLanguage = null,
+                        onSelect = onSelectLanguage
                     )
                 }
 
@@ -75,63 +71,6 @@ private fun WorkerDialog(
 }
 
 @Composable
-private fun WorkerDialog(
-    onSelectLanguage: (Language) -> Unit,
-    languageChoices: List<Language>,
-    workerStatusUiState: WorkerStatusUiState
-) {
-    AlertDialog(
-        onDismissRequest = {},
-        confirmButton = {},
-        text = {
-            when (workerStatusUiState) {
-                WorkerStatusUiState.Idle -> {
-                    WorkerParametersBoard(
-                        onSelectLanguage = onSelectLanguage,
-                        languageChoices = languageChoices
-                    )
-                }
-
-                else -> {
-                    WorkerStatusBoard()
-                }
-            }
-        }
-    )
-}
-
-@Composable
-private fun WorkerParametersBoard(
-    onSelectLanguage: (Language) -> Unit,
-    languageChoices: List<Language>
-) {
-    ListItem(
-        leadingContent = {
-            Text(
-                text = stringResource(com.coda.situlearner.core.ui.R.string.core_ui_language),
-            )
-        },
-        headlineContent = {
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    items = languageChoices,
-                    key = { it.name }
-                ) {
-                    FilterChip(
-                        selected = false,
-                        onClick = { onSelectLanguage(it) },
-                        label = { Text(text = it.asText()) }
-                    )
-                }
-            }
-        },
-        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-    )
-}
-
-@Composable
 private fun WorkerStatusBoard() {
     ListItem(
         headlineContent = {
@@ -143,7 +82,6 @@ private fun WorkerStatusBoard() {
     )
 }
 
-
 @Preview
 @Composable
 private fun WorkerDialogPreview() {
@@ -152,8 +90,9 @@ private fun WorkerDialogPreview() {
     }
 
     WorkerDialog(
+        workerStatusUiState = workerStatusUiState,
         onSelectLanguage = { workerStatusUiState = WorkerStatusUiState.Ongoing },
-        languageChoices = Language.validLanguages,
-        workerStatusUiState = workerStatusUiState
+        languageChoices = AppConfig.sourceLanguages,
+        onDismiss = {}
     )
 }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="home_settings_common_screen_title">设置</string>
-    <string name="home_settings_common_screen_dialog_ok">好的</string>
     <string name="home_settings_common_screen_dark_theme_mode">深色模式</string>
     <string name="home_settings_common_screen_dark_theme_mode_follow_system">跟随系统</string>
     <string name="home_settings_common_screen_dark_theme_mode_light">浅色</string>

@@ -16,4 +16,5 @@
     <string name="core_ui_friday">周五</string>
     <string name="core_ui_saturday">周六</string>
     <string name="core_ui_sunday">周日</string>
+    <string name="core_ui_ok">好的</string>
 </resources>

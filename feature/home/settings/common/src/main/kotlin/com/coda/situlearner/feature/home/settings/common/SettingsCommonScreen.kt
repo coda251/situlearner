@@ -38,8 +38,10 @@ import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.ThemeColorMode
 import com.coda.situlearner.core.ui.util.asText
+import com.coda.situlearner.core.ui.widget.LanguageSelectorDialog
 import com.coda.situlearner.feature.home.settings.common.model.VersionState
 import org.koin.androidx.compose.koinViewModel
+import com.coda.situlearner.core.ui.R as coreR
 
 @Composable
 internal fun SettingsCommonScreen(
@@ -173,7 +175,7 @@ private fun ThemeColorModeSelector(
                         showDialog = false
                     }
                 ) {
-                    Text(text = stringResource(R.string.home_settings_common_screen_dialog_ok))
+                    Text(text = stringResource(coreR.string.core_ui_ok))
                 }
             },
             text = {
@@ -229,7 +231,7 @@ private fun DarkThemeModeSelector(
                         showDialog = false
                     }
                 ) {
-                    Text(text = stringResource(R.string.home_settings_common_screen_dialog_ok))
+                    Text(text = stringResource(coreR.string.core_ui_ok))
                 }
             },
             text = {
@@ -275,30 +277,12 @@ private fun WordFilterLanguageSelector(
     )
 
     if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDialog = false
-                    }
-                ) {
-                    Text(text = stringResource(R.string.home_settings_common_screen_dialog_ok))
-                }
-            },
-            text = {
-                Column {
-                    AppConfig.sourceLanguages.forEach {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(
-                                selected = it == language,
-                                onClick = { onSelectLanguage(it) },
-                            )
-                            Text(text = it.asText())
-                        }
-                    }
-                }
-            }
+        LanguageSelectorDialog(
+            choices = AppConfig.sourceLanguages,
+            currentLanguage = language,
+            onDismiss = { showDialog = false },
+            onConfirm = { showDialog = false },
+            onSelect = { onSelectLanguage(it) }
         )
     }
 }
@@ -399,7 +383,7 @@ private fun WordCountSelectorDialog(
             TextButton(
                 onClick = { onConfirm(count) }
             ) {
-                Text(text = stringResource(R.string.home_settings_common_screen_dialog_ok))
+                Text(text = stringResource(coreR.string.core_ui_ok))
             }
         },
         text = {
