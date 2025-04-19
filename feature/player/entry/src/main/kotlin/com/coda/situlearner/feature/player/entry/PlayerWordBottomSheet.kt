@@ -404,35 +404,41 @@ private fun WordInfoDetailItem(
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
 ) {
-    Column(modifier = modifier) {
-        if (onBack != null) {
-            ListItem(
-                headlineContent = { Text(text = wordInfo.pronunciation ?: "") },
-                trailingContent = {
-                    BackButton(onBack = onBack, rotated = true)
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-            )
-        } else {
-            wordInfo.pronunciation?.let {
+    if (wordInfo.pronunciation == null && wordInfo.meanings.isEmpty()) {
+        Box(modifier = modifier.fillMaxSize()) {
+            WordInfoEmpty(modifier = Modifier.align(Alignment.Center))
+        }
+    } else {
+        Column(modifier = modifier) {
+            if (onBack != null) {
                 ListItem(
-                    headlineContent = { Text(text = it) },
+                    headlineContent = { Text(text = wordInfo.pronunciation ?: "") },
+                    trailingContent = {
+                        BackButton(onBack = onBack, rotated = true)
+                    },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                 )
-            }
-        }
-
-        wordInfo.meanings.let {
-            LazyColumn {
-                items(
-                    items = it,
-                    key = { it.partOfSpeechTag }
-                ) {
+            } else {
+                wordInfo.pronunciation?.let {
                     ListItem(
-                        headlineContent = { Text(text = it.definition) },
-                        overlineContent = { Text(text = it.partOfSpeechTag) },
+                        headlineContent = { Text(text = it) },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                     )
+                }
+            }
+
+            wordInfo.meanings.let {
+                LazyColumn {
+                    items(
+                        items = it,
+                        key = { it.partOfSpeechTag }
+                    ) {
+                        ListItem(
+                            headlineContent = { Text(text = it.definition) },
+                            overlineContent = { Text(text = it.partOfSpeechTag) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                        )
+                    }
                 }
             }
         }
