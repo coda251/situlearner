@@ -35,6 +35,10 @@ interface WordRepository {
 
     fun getWordWithContexts(wordId: String): Flow<WordWithContexts?>
 
+    /**
+     * This func will assure that no duplicate word (i.e. same word and same language) will
+     * be inserted into the database.
+     */
     suspend fun insertWordWithContext(
         word: Word,
         wordContext: WordContext

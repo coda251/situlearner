@@ -4,7 +4,6 @@ import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.WordMeaning
 import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.infra.subkit.translator.Translator
-import com.coda.situlearner.infra.subkit.translator.simplify
 import org.jsoup.Jsoup
 
 class TioJapanese(
@@ -23,15 +22,15 @@ class TioJapanese(
             pattern.matchEntire(element.text().trim())?.let { matchResult ->
                 val (wordWeb, pronunciation, meaning) = matchResult.destructured
                 if (wordWeb == word || pronunciation == word) {
-                    infos += WordInfo(
+                    infos += WordInfo.fromWebOrUser(
                         word = wordWeb,
                         dictionaryName = name,
-                        pronunciation = pronunciation,
+                        pronunciations = listOf(pronunciation),
                         meanings = meaningPattern.findAll(meaning).map {
                             val pos = it.groupValues[1]
                             val definition = it.groupValues[2].trim()
                             WordMeaning(pos, definition)
-                        }.toList().ifEmpty { listOf(WordMeaning("", meaning.trim())) }.simplify(),
+                        }.toList().ifEmpty { listOf(WordMeaning("", meaning.trim())) },
                     )
                 }
             }
@@ -41,28 +40,13 @@ class TioJapanese(
     }
 }
 
-private fun List<WordInfo>.simplify(): List<WordInfo> {
-    val wordToInfo = mutableMapOf<String, WordInfo>()
-    forEach {
-        var wordInfo = it
-        if (it.word in wordToInfo.keys) {
-            wordToInfo[it.word]?.let { original ->
-                wordInfo = WordInfo(
-                    word = it.word,
-                    dictionaryName = it.dictionaryName,
-                    pronunciations = listOfNotNull(
-                        it.pronunciation,
-                        original.pronunciation
-                    ),
-                    meanings = buildList {
-                        it.meanings?.let(::addAll)
-                        original.meanings?.let(::addAll)
-                    }.simplify()
-                )
-            }
-        }
-        wordToInfo[it.word] = wordInfo
-    }
-
-    return wordToInfo.values.toList()
-}
+private fun List<WordInfo>.simplify() = this
+    .groupBy { it.word }
+    .mapValues { (word, infos) ->
+        WordInfo.fromWebOrUser(
+            word = word,
+            dictionaryName = infos.first().dictionaryName,
+            pronunciations = infos.flatMap { it.getPronunciations() },
+            meanings = infos.flatMap { it.meanings }
+        )
+    }.values.toList()

@@ -348,7 +348,7 @@ private fun WordWithContextsCard(
             }
 
             items(
-                items = word.meanings ?: emptyList(),
+                items = word.meanings,
                 key = { it.partOfSpeechTag },
                 contentType = { "meanings" }
             ) {

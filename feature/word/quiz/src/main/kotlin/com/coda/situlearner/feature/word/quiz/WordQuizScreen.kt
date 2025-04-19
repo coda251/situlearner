@@ -332,7 +332,7 @@ private fun WordAnswerCard(
 
         LazyColumn {
             items(
-                items = word.meanings ?: emptyList(),
+                items = word.meanings,
                 key = { it.partOfSpeechTag }
             ) {
                 ListItem(

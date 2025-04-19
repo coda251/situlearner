@@ -35,7 +35,7 @@ val wordsTestData = listOf(
         language = Language.English,
         dictionaryName = null,
         pronunciation = null,
-        meanings = null,
+        meanings = emptyList(),
         lastViewedDate = null,
         proficiency = WordProficiency.Unset,
     ),
@@ -64,7 +64,7 @@ val wordsTestData = listOf(
         language = Language.English,
         dictionaryName = null,
         pronunciation = null,
-        meanings = null,
+        meanings = emptyList(),
         lastViewedDate = Instant.parse("2021-10-20T00:00:00.000Z"),
         proficiency = WordProficiency.Intermediate
     ),
@@ -74,7 +74,7 @@ val wordsTestData = listOf(
         language = Language.English,
         dictionaryName = null,
         pronunciation = null,
-        meanings = null,
+        meanings = emptyList(),
         lastViewedDate = Instant.parse("2021-10-01T00:00:00.000Z"),
         proficiency = WordProficiency.Proficient
     ),
@@ -105,7 +105,7 @@ val wordsTestData = listOf(
         language = Language.Japanese,
         dictionaryName = null,
         pronunciation = null,
-        meanings = null,
+        meanings = emptyList(),
         lastViewedDate = Instant.parse("2021-10-31T12:00:00.000Z"),
         proficiency = WordProficiency.Unset,
     )

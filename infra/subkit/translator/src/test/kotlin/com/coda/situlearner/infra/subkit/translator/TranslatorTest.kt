@@ -37,18 +37,18 @@ class TranslatorTest {
         val infos = dictionary.fetch(word)
 
         println(infos.toString())
-        assertEquals(definition, infos[0].meanings?.firstOrNull()?.definition)
+        assertEquals(definition, infos[0].meanings.firstOrNull()?.definition)
     }
 
     @Test
     fun `test YouDaoJapanese multiple pronunciations`() = runTest {
         val dictionary = YouDaoJapanese()
         val word = "脅かす"
-        val pronunciation = "おどかす⓪③ · おびやかす④"
+        val pronunciations = setOf("おどかす⓪③", "おびやかす④")
         val infos = dictionary.fetch(word)
 
         println(infos.toString())
-        assertEquals(pronunciation, infos[0].pronunciation)
+        assertEquals(pronunciations, infos[0].getPronunciations().toSet())
     }
 
     @Test
@@ -60,18 +60,18 @@ class TranslatorTest {
 
         println(infos.toString())
         assertEquals(3, infos.size)
-        assertEquals("提梁.提梁", infos[0].meanings?.first()?.definition)
+        assertEquals("提梁.提梁", infos[0].meanings.first().definition)
     }
 
     @Test
     fun `test TioJapanese multiple identical words`() = runTest {
         val dictionary = TioJapanese()
         val word = "脅かす"
-        val pronunciation = "おどかす · おびやかす"
+        val pronunciations = setOf("おどかす", "おびやかす")
         val infos = dictionary.fetch(word)
 
         println(infos.toString())
         assertEquals(1, infos.size)
-        assertEquals(pronunciation, infos[0].pronunciation)
+        assertEquals(pronunciations, infos[0].getPronunciations().toSet())
     }
 }

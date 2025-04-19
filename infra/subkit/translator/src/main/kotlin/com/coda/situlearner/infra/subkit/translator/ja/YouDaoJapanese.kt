@@ -4,7 +4,6 @@ import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.WordMeaning
 import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.infra.subkit.translator.Translator
-import com.coda.situlearner.infra.subkit.translator.simplify
 import org.jsoup.Jsoup
 
 class YouDaoJapanese(
@@ -41,11 +40,11 @@ class YouDaoJapanese(
         }
 
         return listOf(
-            WordInfo(
+            WordInfo.fromWebOrUser(
                 word = word,
                 dictionaryName = name,
                 pronunciations = pronunciations,
-                meanings = meanings.simplify(),
+                meanings = meanings,
             )
         )
     }

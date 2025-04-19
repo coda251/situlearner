@@ -22,7 +22,7 @@ internal fun WordEntity.asExternalModel() = Word(
         meaningsMap.entries.map {
             WordMeaning(it.key, it.value)
         }
-    },
+    } ?: emptyList(),
     lastViewedDate = lastViewedDate,
     proficiency = proficiency.asExternalModel()
 )
@@ -57,7 +57,7 @@ internal fun Word.asEntity() = WordEntity(
     language = language.asValue(),
     dictionaryName = dictionaryName,
     pronunciation = pronunciation,
-    meanings = meanings?.let {
+    meanings = meanings.let {
         buildMap {
             it.forEach {
                 this[it.partOfSpeechTag] = it.definition

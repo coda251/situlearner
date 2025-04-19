@@ -105,7 +105,7 @@ internal class PlayerWordViewModel(
             language = route.language,
             dictionaryName = wordInfo?.dictionaryName,
             pronunciation = wordInfo?.pronunciation,
-            meanings = wordInfo?.meanings
+            meanings = wordInfo?.meanings ?: emptyList()
         )
 
         val wordContext = WordContext(

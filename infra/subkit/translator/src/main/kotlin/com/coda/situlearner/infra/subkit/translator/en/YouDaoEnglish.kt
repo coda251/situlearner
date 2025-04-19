@@ -4,7 +4,6 @@ import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.WordMeaning
 import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.infra.subkit.translator.Translator
-import com.coda.situlearner.infra.subkit.translator.simplify
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
@@ -40,11 +39,11 @@ class YouDaoEnglish(
         }
 
         return listOf(
-            WordInfo(
+            WordInfo.fromWebOrUser(
                 word = word,
                 dictionaryName = name,
-                pronunciation = pronunciation,
-                meanings = meanings.simplify(),
+                pronunciations = listOf(pronunciation),
+                meanings = meanings,
             )
         )
     }

@@ -8,7 +8,7 @@ data class Word(
     val language: Language,
     val dictionaryName: String? = null,
     val pronunciation: String? = null,
-    val meanings: List<WordMeaning>? = null,
+    val meanings: List<WordMeaning> = emptyList(),
     val lastViewedDate: Instant? = null,
     val proficiency: WordProficiency = WordProficiency.Unset,
 )

@@ -391,7 +391,7 @@ private fun WordInfosPanel(
                     word = it.word,
                     modifier = Modifier.clickable { onSelect(index) },
                     pronunciation = it.pronunciation,
-                    definition = it.meanings?.firstOrNull()?.definition,
+                    definition = it.meanings.firstOrNull()?.definition,
                 )
             }
         }
@@ -422,7 +422,7 @@ private fun WordInfoDetailItem(
             }
         }
 
-        wordInfo.meanings?.let {
+        wordInfo.meanings.let {
             LazyColumn {
                 items(
                     items = it,

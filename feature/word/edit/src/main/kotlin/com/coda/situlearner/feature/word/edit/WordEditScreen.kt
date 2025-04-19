@@ -149,48 +149,45 @@ private fun ContentBoard(
 ) {
     var wordInfo by remember(originalWordInfo) { mutableStateOf(originalWordInfo) }
     val pronunciations by remember { derivedStateOf { wordInfo.getPronunciations() } }
-    val meanings by remember { derivedStateOf { wordInfo.meanings ?: emptyList() } }
 
     Column {
         PronunciationPanel(
             pronunciations = pronunciations,
             onAdd = {
-                wordInfo = WordInfo(
-                    word = wordInfo.word,
-                    dictionaryName = wordInfo.dictionaryName,
-                    pronunciations = pronunciations.toMutableList().apply { add(it) },
-                    meanings = wordInfo.meanings
-                )
+                wordInfo =
+                    wordInfo.copyFromUserInput(
+                        pronunciations = pronunciations.toMutableList().apply { add(it) })
                 onChange(wordInfo)
             },
             onChange = { old, new ->
-                wordInfo = wordInfo.copy(pronunciation = wordInfo.pronunciation?.replace(old, new))
+                wordInfo = wordInfo.copyFromUserInput(
+                    pronunciations = pronunciations.toMutableList()
+                        .apply { set(indexOf(old), new) })
                 onChange(wordInfo)
             },
             onDelete = {
-                wordInfo = WordInfo(
-                    word = wordInfo.word,
-                    dictionaryName = wordInfo.dictionaryName,
-                    pronunciations = pronunciations.toMutableList().apply { remove(it) },
-                    meanings = wordInfo.meanings
-                )
+                wordInfo = wordInfo.copyFromUserInput(
+                    pronunciations = pronunciations.toMutableList().apply { remove(it) })
                 onChange(wordInfo)
             }
         )
 
+        val meanings = wordInfo.meanings
         MeaningsPanel(
             meanings = meanings,
             onAdd = {
-                wordInfo = wordInfo.copy(meanings = meanings.toMutableList().apply { add(it) })
+                wordInfo = wordInfo.copyFromUserInput(
+                    meanings = meanings.toMutableList().apply { add(it) })
                 onChange(wordInfo)
             },
             onChange = { old, new ->
-                wordInfo = wordInfo.copy(meanings = meanings.map { if (it == old) new else it })
+                wordInfo =
+                    wordInfo.copyFromUserInput(meanings = meanings.map { if (it == old) new else it })
                 onChange(wordInfo)
             },
             onDelete = { m ->
                 wordInfo =
-                    wordInfo.copy(meanings = meanings.filter { it != m }.takeIf { it.isNotEmpty() })
+                    wordInfo.copyFromUserInput(meanings = meanings.filter { it != m })
                 onChange(wordInfo)
             }
         )
@@ -592,6 +589,16 @@ private fun DeleteDialog(
         title = { Text(text = text) }
     )
 }
+
+private fun WordInfo.copyFromUserInput(
+    pronunciations: List<String> = this.getPronunciations(),
+    meanings: List<WordMeaning> = this.meanings
+) = WordInfo.fromWebOrUser(
+    word = word,
+    dictionaryName = dictionaryName,
+    pronunciations = pronunciations,
+    meanings = meanings
+)
 
 @Composable
 @Preview(showBackground = true)
