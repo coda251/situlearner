@@ -6,12 +6,12 @@ import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.infra.subkit.translator.Translator
 import org.jsoup.Jsoup
 
-class TioJapanese(
+internal class TioJapanese(
     override val name: String = "Tio",
     override val sourceLanguage: Language = Language.Japanese,
 ) : Translator(name, sourceLanguage) {
 
-    override fun fetch(word: String): List<WordInfo> {
+    override suspend fun fetch(word: String): List<WordInfo> {
         val infos = mutableListOf<WordInfo>()
         val pattern = Regex("""^(\S+)\s+【([^】]+)】\s*(.*)$""")
         val meaningPattern = Regex("""((?:\[[^]]+])+)\s*(.*?)(?=\s*\[|$)""")

@@ -13,7 +13,7 @@ import java.io.File
 import kotlin.math.max
 import kotlin.math.min
 
-class ProcessorImpl : Processor {
+internal class ProcessorImpl : Processor {
 
     override suspend fun load(filePath: String): SubtitleFileContent? {
         return try {

@@ -2,13 +2,16 @@ package com.coda.situlearner.infra.subkit.tokenizer
 
 import com.coda.situlearner.core.model.infra.Token
 import com.coda.situlearner.infra.subkit.tokenizer.en.OpenNLP
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Test
 
 class OpenNLPTest {
 
-    private val tokenizer = OpenNLP()
+    private val tokenizer by lazy {
+        runBlocking { OpenNLP.build() }
+    }
 
     @Test
     fun `test OpenNLP`() = runTest {

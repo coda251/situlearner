@@ -6,7 +6,7 @@ import okio.IOException
 import okio.Path.Companion.toPath
 import okio.buffer
 
-class SrtFileParser : SubtitleFileParser {
+internal class SrtFileParser : SubtitleFileParser {
 
     companion object {
         private val TIMESTAMP_FORMAT =

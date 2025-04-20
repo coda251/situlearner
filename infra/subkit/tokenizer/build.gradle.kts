@@ -1,13 +1,5 @@
 plugins {
-    alias(libs.plugins.situlearner.android.library)
-    alias(libs.plugins.situlearner.koin)
-}
-
-android {
-    namespace = "com.coda.situlearner.infra.subkit.tokenizer"
-    defaultConfig {
-        consumerProguardFiles("consumer-proguard-rules.pro")
-    }
+    alias(libs.plugins.situlearner.jvm.library)
 }
 
 dependencies {
@@ -20,9 +12,5 @@ dependencies {
     implementation(libs.slf4j.api)
 
     implementation(libs.kotlinx.coroutines.test)
-    implementation(libs.androidx.test.core.ktx)
     testImplementation(libs.junit)
-
-    androidTestImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.runner)
 }

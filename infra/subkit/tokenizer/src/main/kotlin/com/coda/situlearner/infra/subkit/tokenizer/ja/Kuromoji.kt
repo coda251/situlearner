@@ -2,11 +2,18 @@ package com.coda.situlearner.infra.subkit.tokenizer.ja
 
 import com.coda.situlearner.core.model.infra.Token
 import com.coda.situlearner.infra.subkit.tokenizer.Tokenizer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import com.atilika.kuromoji.ipadic.Tokenizer as JaTokenizer
 
-class Kuromoji : Tokenizer {
+internal class Kuromoji private constructor(
+    private val tokenizer: JaTokenizer
+) : Tokenizer {
 
-    private val tokenizer = JaTokenizer.Builder().build()
+    companion object {
+        suspend fun build() =
+            withContext(Dispatchers.IO) { Kuromoji(JaTokenizer.Builder().build()) }
+    }
 
     override suspend fun tokenize(text: String): List<Token> {
         val tokens = tokenizer.tokenize(text)

@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.flowOn
 abstract class Translator internal constructor(
     open val name: String,
     open val sourceLanguage: Language,
-    open val targetLanguage: Language = Language.Chinese,
 ) {
     fun query(word: String): Flow<WordTranslationResult> = flow {
         emit(WordTranslationResult.Loading)
@@ -26,21 +25,18 @@ abstract class Translator internal constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    internal abstract fun fetch(word: String): List<WordInfo>
+    internal abstract suspend fun fetch(word: String): List<WordInfo>
 
     companion object {
-        private val registeredTranslators by lazy {
-            listOf(
-                YouDaoEnglish(),
-                YouDaoJapanese(),
-                TioJapanese()
-            )
-        }
+        fun getTranslators(sourceLanguage: Language, targetLanguage: Language): List<Translator> {
+            if (targetLanguage != Language.Chinese) return emptyList()
 
-        fun getTranslators(sourceLanguage: Language, targetLanguage: Language): List<Translator> =
-            registeredTranslators.filter {
-                it.sourceLanguage == sourceLanguage && it.targetLanguage == targetLanguage
+            return when (sourceLanguage) {
+                Language.English -> listOf(YouDaoEnglish())
+                Language.Japanese -> listOf(YouDaoJapanese(), TioJapanese())
+                else -> emptyList()
             }
+        }
     }
 }
 

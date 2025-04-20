@@ -8,9 +8,9 @@ import com.coda.situlearner.infra.subkit.tokenizer.ja.Kuromoji
 interface Tokenizer {
 
     companion object {
-        fun getTokenizer(language: Language): Tokenizer? = when (language) {
-            Language.English -> OpenNLP()
-            Language.Japanese -> Kuromoji()
+        suspend fun getTokenizer(language: Language): Tokenizer? = when (language) {
+            Language.English -> OpenNLP.build()
+            Language.Japanese -> Kuromoji.build()
             else -> null
         }
     }

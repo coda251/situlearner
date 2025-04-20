@@ -16,7 +16,7 @@ import okio.Path
 import okio.Path.Companion.toPath
 import java.io.File
 
-class LocalExplorerImpl : LocalExplorer {
+internal class LocalExplorerImpl : LocalExplorer {
 
     override fun getSourceCollections(dir: String): Flow<List<SourceCollection>> = flow {
         val path = dir.toPath()

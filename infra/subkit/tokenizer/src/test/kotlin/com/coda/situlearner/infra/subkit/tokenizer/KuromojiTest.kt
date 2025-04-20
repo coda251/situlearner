@@ -2,13 +2,16 @@ package com.coda.situlearner.infra.subkit.tokenizer
 
 import com.coda.situlearner.core.model.infra.Token
 import com.coda.situlearner.infra.subkit.tokenizer.ja.Kuromoji
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Test
 
 class KuromojiTest {
 
-    private val tokenizer = Kuromoji()
+    private val tokenizer by lazy {
+        runBlocking { Kuromoji.build() }
+    }
 
     @Test
     fun `test Kuromoji`() = runTest {

@@ -6,7 +6,7 @@ import okio.IOException
 import okio.Path.Companion.toPath
 import okio.buffer
 
-class AssFileParser : SubtitleFileParser {
+internal class AssFileParser : SubtitleFileParser {
 
     companion object {
         private const val DIALOG_PREFIX = "Dialogue: "

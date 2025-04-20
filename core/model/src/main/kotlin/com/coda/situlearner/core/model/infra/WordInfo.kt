@@ -59,7 +59,8 @@ private const val PRONUNCIATION_SEPARATOR = " | "
 /**
  * Merge the input pronunciations into a single string using [PRONUNCIATION_SEPARATOR]
  * as separator. This function assures that:
- * -
+ * - no duplicate pronunciations
+ * - no empty pronunciation
  */
 private fun List<String>.merge() = this
     .distinct()

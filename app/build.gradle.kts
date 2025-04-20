@@ -18,7 +18,8 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt")
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }
@@ -49,7 +50,6 @@ dependencies {
 
     implementation(projects.infra.explorerLocal)
     implementation(projects.infra.player)
-    implementation(projects.infra.subkit.langDetector)
     implementation(projects.infra.subkit.processor)
 
     implementation(libs.androidx.activity.compose)

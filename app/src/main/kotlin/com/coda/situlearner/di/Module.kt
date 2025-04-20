@@ -16,7 +16,6 @@ import com.coda.situlearner.feature.word.list.di.wordListModule
 import com.coda.situlearner.feature.word.quiz.di.wordQuizModule
 import com.coda.situlearner.infra.explorer_local.di.exploreLocalModule
 import com.coda.situlearner.infra.player.di.playerModule
-import com.coda.situlearner.infra.subkit.lang_detector.di.languageDetectorModule
 import com.coda.situlearner.infra.subkit.processor.di.processorModule
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -42,7 +41,6 @@ private val featureModules = listOf(
 
 private val infraModules = listOf(
     exploreLocalModule,
-    languageDetectorModule,
     processorModule,
     playerModule,
 )

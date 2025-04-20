@@ -1,10 +1,6 @@
 plugins {
-    alias(libs.plugins.situlearner.android.library)
+    alias(libs.plugins.situlearner.jvm.library)
     alias(libs.plugins.situlearner.koin)
-}
-
-android {
-    namespace = "com.coda.situlearner.infra.subkit.processor"
 }
 
 dependencies {

@@ -14,8 +14,6 @@ import com.coda.situlearner.infra.subkit.tokenizer.Tokenizer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 internal class UpdateCollectionWithFilesWorker(
     // params
@@ -24,7 +22,7 @@ internal class UpdateCollectionWithFilesWorker(
     private val collectionId: String,
     private val mediaRepository: MediaRepository,
     private val processor: Processor
-) : KoinComponent {
+) {
 
     suspend fun doWork() {
         // get data from repo
@@ -49,7 +47,7 @@ internal class UpdateCollectionWithFilesWorker(
         targetLanguage: Language
     ) = withContext(Dispatchers.IO) {
         val tokenizer = Tokenizer.getTokenizer(sourceLanguage) ?: return@withContext
-        val languageDetector: LanguageDetector by inject()
+        val languageDetector = LanguageDetector.getInstance()
 
         mediaFiles.forEach { mediaFile ->
             val subtitlePath = mediaFile.originalSubtitleUrl?.toUri()?.path

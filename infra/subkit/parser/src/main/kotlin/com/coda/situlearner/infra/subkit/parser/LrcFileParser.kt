@@ -6,7 +6,7 @@ import okio.IOException
 import okio.Path.Companion.toPath
 import okio.buffer
 
-class LrcFileParser : SubtitleFileParser {
+internal class LrcFileParser : SubtitleFileParser {
 
     companion object {
         private val TIMESTAMP_FORMAT = """\[\d{2}:\d{2}\.\d{2}]""".toRegex()

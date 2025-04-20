@@ -7,12 +7,12 @@ import com.coda.situlearner.infra.subkit.translator.Translator
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-class YouDaoEnglish(
+internal class YouDaoEnglish(
     override val name: String = "YouDao",
     override val sourceLanguage: Language = Language.English,
 ) : Translator(name, sourceLanguage) {
 
-    override fun fetch(word: String): List<WordInfo> {
+    override suspend fun fetch(word: String): List<WordInfo> {
         var pronunciation = ""
         val meanings = mutableListOf<WordMeaning>()
 
