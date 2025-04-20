@@ -10,28 +10,49 @@ internal data class WordBook(
     val coverUrl: String?
 )
 
-internal fun List<WordWithContexts>.toWordBooks(): List<WordBook> = (listOf(
-    WordBook(
-        id = "",
-        type = WordBookType.All,
-        name = "",
-        wordCount = this.size,
-        coverUrl = null,
-    ), WordBook(
-        id = "",
-        type = WordBookType.NoMedia,
-        name = "",
-        wordCount = this.filter { wordWithContexts -> wordWithContexts.contexts.all { it.mediaCollection == null } }.size,
-        coverUrl = null,
-    )
-) + this.flatMap { it.contexts }.groupBy { it.mediaCollection }.entries.mapNotNull { entry ->
-        entry.key?.let { collection ->
+internal fun List<WordWithContexts>.toWordBooks(): List<WordBook> {
+    val noMediaCount = this.count { wordWithContexts ->
+        wordWithContexts.contexts.all { it.mediaCollection == null }
+    }
+
+    val baseBooks = buildList {
+        add(
             WordBook(
-                id = collection.id,
-                type = WordBookType.MediaCollection,
-                name = collection.name,
-                wordCount = entry.value.map { it.wordContext.wordId }.toSet().size,
-                coverUrl = collection.coverImageUrl,
+                id = "",
+                type = WordBookType.All,
+                name = "",
+                wordCount = this@toWordBooks.size,
+                coverUrl = null,
+            )
+        )
+
+        if (noMediaCount > 0) {
+            add(
+                WordBook(
+                    id = "",
+                    type = WordBookType.NoMedia,
+                    name = "",
+                    wordCount = noMediaCount,
+                    coverUrl = null,
+                )
             )
         }
-    }).sortedBy { -it.wordCount }
+    }
+
+    val mediaBooks = this
+        .flatMap { it.contexts }
+        .groupBy { it.mediaCollection }
+        .entries.mapNotNull { entry ->
+            entry.key?.let { collection ->
+                WordBook(
+                    id = collection.id,
+                    type = WordBookType.MediaCollection,
+                    name = collection.name,
+                    wordCount = entry.value.map { it.wordContext.wordId }.toSet().size,
+                    coverUrl = collection.coverImageUrl,
+                )
+            }
+        }
+
+    return (baseBooks + mediaBooks).sortedBy { -it.wordCount }
+}
