@@ -1,6 +1,5 @@
 package com.coda.situlearner.feature.word.list
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -183,7 +182,6 @@ private fun WordListScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ContentBoard(
     words: List<WordWithContexts>,

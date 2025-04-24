@@ -1,12 +1,10 @@
 package com.coda.situlearner.feature.word.edit
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -194,7 +192,6 @@ private fun ContentBoard(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MeaningsPanel(
     meanings: List<WordMeaning>,
@@ -275,7 +272,6 @@ private fun MeaningsPanel(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PronunciationPanel(
     pronunciations: List<String>,

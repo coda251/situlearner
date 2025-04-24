@@ -1,18 +1,17 @@
 package com.coda.situlearner.infra.player.exoplayer
 
 import android.content.Context
-import android.view.TextureView
+import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.compose.PlayerSurface
+import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
 import com.coda.situlearner.core.model.data.PlayerStateData
 import com.coda.situlearner.core.model.data.Playlist
 import com.coda.situlearner.core.model.data.PlaylistItem
@@ -311,29 +310,17 @@ internal class ExoPlayerEngine(
         playlistType.value = type
     }
 
+    @OptIn(UnstableApi::class)
     @Composable
     override fun VideoOutput(modifier: Modifier) {
-        val context = LocalContext.current
-
         // NOTE:
         // SurfaceView may cause frame retained in the screen during navigation,
-        // see also: https://github.com/androidx/media/issues/1237,
-        // so we followed:
-        // https://github.com/fengdai/compose-media/blob/master/media/src/main/java/com/github/fengdai/compose/media/Media.kt
-        val videoView = remember { TextureView(context) }
-
-        AndroidView(
-            factory = { videoView },
-            modifier = modifier
-        ) {
-            player.setVideoTextureView(videoView)
-        }
-
-        DisposableEffect(Unit) {
-            onDispose {
-                player.clearVideoTextureView(videoView)
-            }
-        }
+        // see also: https://github.com/androidx/media/issues/1237
+        PlayerSurface(
+            player = player,
+            modifier = modifier,
+            surfaceType = SURFACE_TYPE_TEXTURE_VIEW
+        )
     }
 
     private fun seekTo(item: MediaItem) {

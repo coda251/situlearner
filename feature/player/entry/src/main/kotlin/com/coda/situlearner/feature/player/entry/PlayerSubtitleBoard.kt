@@ -1,7 +1,7 @@
 package com.coda.situlearner.feature.player.entry
 
+import android.content.ClipData
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -38,12 +38,11 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -150,7 +149,7 @@ private fun PlayerSubtitleBoard(
         }
     }
 
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
     val context = LocalContext.current
 
     BoxWithConstraints(
@@ -185,10 +184,13 @@ private fun PlayerSubtitleBoard(
                 }
             },
             onLongClickSubtitle = {
-                clipboardManager.setText(AnnotatedString(it.sourceText))
-                Toast.makeText(context, "Copied", Toast.LENGTH_SHORT)
-                    .show()
-
+                clipboard.nativeClipboard.setPrimaryClip(
+                    ClipData.newPlainText(
+                        "text",
+                        it.sourceText
+                    )
+                )
+                Toast.makeText(context, "Copied", Toast.LENGTH_SHORT).show()
             }
         )
     }
@@ -389,7 +391,6 @@ private fun SubtitleList(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SubtitleListItem(
     modifier: Modifier = Modifier,
