@@ -17,5 +17,4 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.protobuf.kotlinlite)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.kotlinx.datetime)
 }

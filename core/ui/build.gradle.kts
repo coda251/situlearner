@@ -15,5 +15,4 @@ dependencies {
     api(libs.coil)
     implementation(libs.coil.compose)
     implementation(libs.materialKolor)
-    implementation(libs.kotlinx.datetime)
 }

@@ -12,6 +12,4 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.testing)
     implementation(projects.infra.player)
-
-    implementation(libs.kotlinx.datetime)
 }
