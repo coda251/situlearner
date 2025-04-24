@@ -4,7 +4,6 @@
     <string name="core_ui_confirm">Confirm</string>
     <string name="core_ui_delete">Delete</string>
 
-    <string name="core_ui_language">Language</string>
     <string name="core_ui_language_unknown">Unknown</string>
     <string name="core_ui_language_chinese">Chinese</string>
     <string name="core_ui_language_english">English</string>

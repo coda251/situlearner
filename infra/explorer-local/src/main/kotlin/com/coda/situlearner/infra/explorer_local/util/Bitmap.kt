@@ -3,6 +3,7 @@ package com.coda.situlearner.infra.explorer_local.util
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
+import androidx.core.graphics.scale
 
 fun extractBitmapFrom(path: String): Bitmap? {
     val retriever = MediaMetadataRetriever()
@@ -29,5 +30,5 @@ fun Bitmap.downscale(
 
     val newWidth = (width * ratio).toInt()
     val newHeight = (height * ratio).toInt()
-    return Bitmap.createScaledBitmap(this, newWidth, newHeight, true)
+    return this.scale(newWidth, newHeight)
 }

@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation(projects.core.model)
 
+    implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.okio)
 }
