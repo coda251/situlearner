@@ -1,5 +1,6 @@
 package com.coda.situlearner.core.model.data
 
+@androidx.annotation.Keep
 enum class Language {
     Unknown,
     Chinese,

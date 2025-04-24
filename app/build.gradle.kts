@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.coda.situlearner"
         versionCode = 4
-        versionName = "0.4.1-alpha01"
+        versionName = "0.4.1-alpha02"
     }
 
     buildTypes {
@@ -42,6 +42,7 @@ dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.player.entry)
     implementation(projects.feature.player.playlist)
+    implementation(projects.feature.player.word)
     implementation(projects.feature.word.list)
     implementation(projects.feature.word.detail)
     implementation(projects.feature.word.echo)
@@ -58,6 +59,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.service)
     implementation(libs.androidx.lifecycle.viewModelCompose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.material.navigation)
 
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)

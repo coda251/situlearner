@@ -14,6 +14,10 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.navigation.ModalBottomSheetLayout
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -23,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.ThemeColorMode
@@ -37,8 +40,6 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
-
-    private lateinit var navController: NavHostController
 
     private val viewModel: MainActivityViewModel by inject()
 
@@ -79,7 +80,9 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            navController = rememberNavController()
+            val navController = rememberNavController()
+            val bottomSheetNavigator = rememberBottomSheetNavigator()
+            navController.navigatorProvider.addNavigator(bottomSheetNavigator)
 
             val useDarkTheme = shouldUseDarkTheme(uiState)
 
@@ -103,9 +106,14 @@ class MainActivity : ComponentActivity() {
                 colorMode = getThemeColorMode(uiState),
                 themeColor = getThemeColor(uiState)
             ) {
-                AppNavHost(
-                    appNavController = navController,
-                )
+                ModalBottomSheetLayout(
+                    bottomSheetNavigator = bottomSheetNavigator,
+                    scrimColor = androidx.compose.ui.graphics.Color.Unspecified
+                ) {
+                    AppNavHost(
+                        appNavController = navController,
+                    )
+                }
             }
         }
     }

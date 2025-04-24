@@ -5,7 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -20,6 +22,8 @@ import com.coda.situlearner.feature.player.entry.navigation.navigateToPlayerEntr
 import com.coda.situlearner.feature.player.entry.navigation.playerEntryScreen
 import com.coda.situlearner.feature.player.playlist.navigation.navigateToPlaylist
 import com.coda.situlearner.feature.player.playlist.navigation.playlistScreen
+import com.coda.situlearner.feature.player.word.navigation.navigateToPlayerWord
+import com.coda.situlearner.feature.player.word.navigation.playerWordBottomSheet
 import com.coda.situlearner.feature.word.detail.navigation.WordDetailRoute
 import com.coda.situlearner.feature.word.detail.navigation.navigateToWordDetail
 import com.coda.situlearner.feature.word.detail.navigation.wordDetailScreen
@@ -42,6 +46,9 @@ fun AppNavHost(
 ) {
     val playerState by PlayerStateProvider.state.collectAsStateWithLifecycle()
     SwitchPlaylistType(playerState, appNavController)
+
+    // NOTE: may seek for a more elegant way to get result from back navigation event
+    var resetTokenFlag by remember { mutableIntStateOf(1) }
 
     NavHost(
         navController = appNavController,
@@ -79,8 +86,10 @@ fun AppNavHost(
         )
 
         playerEntryScreen(
+            resetTokenFlagProvider = { resetTokenFlag },
             onBack = appNavController::popBackStack,
-            onNavigateToPlaylist = appNavController::navigateToPlaylist
+            onNavigateToPlaylist = appNavController::navigateToPlaylist,
+            onNavigateToPlayerWord = appNavController::navigateToPlayerWord
         ) {
             playlistScreen(
                 onBackToPlayer = appNavController::popBackStack,
@@ -89,6 +98,12 @@ fun AppNavHost(
                         PlayerEntryRoute,
                         inclusive = true
                     )
+                }
+            )
+            playerWordBottomSheet(
+                onBack = {
+                    resetTokenFlag = -resetTokenFlag
+                    appNavController.popBackStack()
                 }
             )
         }

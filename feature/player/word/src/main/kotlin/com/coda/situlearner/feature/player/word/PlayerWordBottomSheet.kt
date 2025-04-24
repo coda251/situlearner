@@ -1,4 +1,4 @@
-package com.coda.situlearner.feature.player.entry
+package com.coda.situlearner.feature.player.word
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.clickable
@@ -28,6 +28,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -53,28 +54,27 @@ import com.coda.situlearner.core.testing.data.wordContextsTestData
 import com.coda.situlearner.core.testing.data.wordsTestData
 import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.core.ui.widget.WordItem
-import com.coda.situlearner.feature.player.entry.model.RemoteWordInfoState
-import com.coda.situlearner.feature.player.entry.model.Translation
+import com.coda.situlearner.feature.player.word.model.RemoteWordInfoState
+import com.coda.situlearner.feature.player.word.model.Translation
+import com.coda.situlearner.infra.player.PlayerState
+import com.coda.situlearner.infra.player.PlayerStateProvider
 import com.coda.situlearner.infra.subkit.translator.Translator
-import org.koin.compose.getKoin
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun PlayerWordBottomSheet(
-    route: PlayerWordBottomSheetRoute,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    viewModel: PlayerWordViewModel = koinViewModel()
 ) {
-    // TODO: wait for navGraphBuilder.bottomSheet, see https://issuetracker.google.com/issues/376169507
-    // we need the lifecycle of this viewModel binds with the composable (not the screen),
-    // if the composable dismisses, the viewModel should be destroyed. However, if screen
-    // rotates, the viewModel will be recreated. So this is a workaround currently
-    val koin = getKoin()
-    val viewModel = remember { PlayerWordViewModel(route, koin.get()) }
-
+    val route = viewModel.route
     val wordContextUiState by viewModel.wordContextUiState.collectAsStateWithLifecycle()
     val wordQueryUiState by viewModel.wordQueryUiState.collectAsStateWithLifecycle()
+    val playerState by PlayerStateProvider.state.collectAsStateWithLifecycle()
 
     PlayerWordBottomSheet(
         word = route.word,
+        mediaId = route.mediaId,
+        playerState = playerState,
         wordContextUiState = wordContextUiState,
         wordQueryUiState = wordQueryUiState,
         onAddWordContext = viewModel::insertWordWithContext,
@@ -87,6 +87,8 @@ internal fun PlayerWordBottomSheet(
 @Composable
 private fun PlayerWordBottomSheet(
     word: String,
+    mediaId: String,
+    playerState: PlayerState,
     wordContextUiState: WordContextUiState,
     wordQueryUiState: WordQueryUiState,
     onAddWordContext: (WordInfo?) -> Unit,
@@ -94,6 +96,11 @@ private fun PlayerWordBottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val playlist by playerState.playlist.collectAsStateWithLifecycle()
+    LaunchedEffect(playlist) {
+        if (playlist.currentItem?.id != mediaId) onDismiss()
+    }
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -464,6 +471,8 @@ private fun PlayerWordBottomSheetPreview() {
 
     PlayerWordBottomSheet(
         word = wordsTestData[0].word,
+        mediaId = "",
+        playerState = PlayerStateProvider.EmptyPlayerState,
         wordContextUiState = wordContextUiState,
         wordQueryUiState = wordQueryUiState,
         onDeleteWordContext = {

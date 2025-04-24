@@ -1,4 +1,4 @@
-package com.coda.situlearner.feature.player.entry.model
+package com.coda.situlearner.feature.player.word.model
 
 import com.coda.situlearner.core.model.infra.WordInfo
 

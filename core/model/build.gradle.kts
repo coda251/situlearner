@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.kotlinx.datetime)
+    api(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.annotation.jvm)
 }

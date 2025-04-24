@@ -16,20 +16,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coda.situlearner.core.model.data.Language
+import com.coda.situlearner.core.model.infra.Subtitle
+import com.coda.situlearner.core.model.infra.Token
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 
 @Composable
 internal fun PlayerEntryScreen(
+    resetTokenFlag: Int,
     onBack: () -> Unit,
     onNavigateToPlaylist: () -> Unit,
+    onNavigateToPlayerWord: (Token, Subtitle, Language, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val playerState by PlayerStateProvider.state.collectAsStateWithLifecycle()
     PlayerEntryScreen(
         playerState = playerState,
+        resetTokenFlag = resetTokenFlag,
         onBack = onBack,
         onNavigateToPlaylist = onNavigateToPlaylist,
+        onNavigateToPlayerWord = onNavigateToPlayerWord,
         modifier = modifier
     )
 }
@@ -37,8 +44,10 @@ internal fun PlayerEntryScreen(
 @Composable
 private fun PlayerEntryScreen(
     playerState: PlayerState,
+    resetTokenFlag: Int,
     onBack: () -> Unit,
     onNavigateToPlaylist: () -> Unit,
+    onNavigateToPlayerWord: (Token, Subtitle, Language, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val playlist by playerState.playlist.collectAsStateWithLifecycle()
@@ -48,8 +57,8 @@ private fun PlayerEntryScreen(
         if (isPlaylistEmpty) onBack()
     }
 
-    var playerWordBottomSheetRoute by remember(key1 = playlist) {
-        mutableStateOf<PlayerWordBottomSheetRoute?>(null)
+    var activeTokenId by remember(resetTokenFlag) {
+        mutableStateOf(Pair(-1, -1))
     }
 
     Scaffold(
@@ -80,34 +89,19 @@ private fun PlayerEntryScreen(
             PlayerMediaBoard(playerState = playerState, onBack = onBack)
             PlayerSubtitleBoard(
                 playerState = playerState,
-                activeSubtitleIndex = playerWordBottomSheetRoute?.subtitleIndex ?: -1,
-                activeTokenStartIndex = playerWordBottomSheetRoute?.wordStartIndex ?: -1,
+                activeSubtitleIndex = activeTokenId.first,
+                activeTokenStartIndex = activeTokenId.second,
                 onClickTokenInSubtitleContext = { token, subtitleContext ->
-                    playerWordBottomSheetRoute = PlayerWordBottomSheetRoute(
-                        word = token.lemma,
-                        language = subtitleContext.language,
-                        mediaId = subtitleContext.mediaId,
-                        subtitleIndex = subtitleContext.index,
-                        subtitleSourceText = subtitleContext.subtitle.sourceText,
-                        subtitleTargetText = subtitleContext.subtitle.targetText,
-                        subtitleStartTimeInMs = subtitleContext.subtitle.startTimeInMs,
-                        subtitleEndTimeInMs = subtitleContext.subtitle.endTimeInMs,
-                        wordStartIndex = token.startIndex,
-                        wordEndIndex = token.endIndex,
+                    onNavigateToPlayerWord(
+                        token,
+                        subtitleContext.subtitle,
+                        subtitleContext.language,
+                        subtitleContext.mediaId
                     )
+                    activeTokenId = Pair(subtitleContext.index, token.startIndex)
                 },
                 modifier = Modifier.padding(top = 16.dp)
             )
         }
     }
-
-    playerWordBottomSheetRoute?.let {
-        PlayerWordBottomSheet(
-            route = it,
-            onDismiss = {
-                playerWordBottomSheetRoute = null
-            }
-        )
-    }
 }
-

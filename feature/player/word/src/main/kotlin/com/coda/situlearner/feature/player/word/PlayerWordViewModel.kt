@@ -1,15 +1,18 @@
-package com.coda.situlearner.feature.player.entry
+package com.coda.situlearner.feature.player.word
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.infra.WordInfo
-import com.coda.situlearner.feature.player.entry.model.Translation
-import com.coda.situlearner.feature.player.entry.model.toTranslationFlow
+import com.coda.situlearner.feature.player.word.model.Translation
+import com.coda.situlearner.feature.player.word.model.toTranslationFlow
+import com.coda.situlearner.feature.player.word.navigation.PlayerWordRoute
 import com.coda.situlearner.infra.subkit.translator.Translator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,10 +28,12 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 internal class PlayerWordViewModel(
-    private val route: PlayerWordBottomSheetRoute,
+    savedStateHandle: SavedStateHandle,
     private val wordRepository: WordRepository,
     defaultTargetLanguage: Language = AppConfig.targetLanguage
 ) : ViewModel() {
+
+    val route: PlayerWordRoute = savedStateHandle.toRoute()
 
     private val translators = Translator.getTranslators(
         sourceLanguage = route.language,
@@ -123,19 +128,6 @@ internal class PlayerWordViewModel(
         return word to wordContext
     }
 }
-
-internal data class PlayerWordBottomSheetRoute(
-    val word: String,
-    val language: Language,
-    val mediaId: String,
-    val subtitleIndex: Int,
-    val subtitleStartTimeInMs: Long,
-    val subtitleEndTimeInMs: Long,
-    val subtitleSourceText: String,
-    val subtitleTargetText: String?,
-    val wordStartIndex: Int,
-    val wordEndIndex: Int,
-)
 
 internal sealed interface WordContextUiState {
     data object Loading : WordContextUiState
