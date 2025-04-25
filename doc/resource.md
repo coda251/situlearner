@@ -7,3 +7,4 @@
 ## 资源
 
 - 字幕共享计划：[sub_share](https://github.com/foxofice/sub_share)
+- 在线词典网站汇总：[All_Dictionaries](https://github.com/Dictionaryphile/All_Dictionaries)
