@@ -1,6 +1,6 @@
 package com.coda.situlearner.feature.player.word
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -137,38 +137,50 @@ private fun PlayerWordScreen(
         mutableStateOf<Pair<Int, Int?>>(0 to null)
     }
 
+    val displayedWordInfo = when (wordQueryUiState) {
+        is WordQueryUiState.ResultDb -> DisplayedWordInfoState.Result(wordQueryUiState.word.asWordInfo())
+        is WordQueryUiState.ResultWeb -> {
+            val translation = wordQueryUiState.translations[transIndexToInfoIndex.first]
+            when (val infoState = translation.infoState) {
+                is RemoteWordInfoState.Multiple -> {
+                    val infoIndex = transIndexToInfoIndex.second
+                    infoIndex?.let { infoState.infos.getOrNull(it) }?.let {
+                        DisplayedWordInfoState.Result(it)
+                    } ?: DisplayedWordInfoState.ShouldBeSpecified
+                }
+
+                is RemoteWordInfoState.Single -> DisplayedWordInfoState.Result(infoState.info)
+                else -> DisplayedWordInfoState.Empty
+            }
+        }
+
+        else -> DisplayedWordInfoState.Empty
+    }
+
+    val externalWord = when (wordContextUiState) {
+        is WordContextUiState.Existed -> wordContextUiState.word.word.takeIf { it != word }
+        is WordContextUiState.OnlyWord -> wordContextUiState.word.word.takeIf { it != word }
+        else -> when (displayedWordInfo) {
+            is DisplayedWordInfoState.Result -> displayedWordInfo.wordInfo.word.takeIf { it != word }
+            else -> ""
+        }
+    }
+
     Column(modifier = modifier) {
         WordContextBoard(
             word = word,
+            externalWord = externalWord,
             wordContextUiState = wordContextUiState,
             onAddWordContext = {
-                when (wordQueryUiState) {
-                    is WordQueryUiState.ResultDb -> wordQueryUiState.word.asWordInfo().let {
-                        onAddWordContext(it)
-                    }
-
-                    is WordQueryUiState.ResultWeb -> {
-                        val translation = wordQueryUiState.translations[transIndexToInfoIndex.first]
-                        when (val infoState = translation.infoState) {
-                            is RemoteWordInfoState.Multiple -> {
-                                val infoIndex = transIndexToInfoIndex.second
-                                // if no valid infoIndex is provided, do not add wordContext
-                                infoIndex?.let { infoState.infos.getOrNull(it) }
-                                    ?.let(onAddWordContext)
-                            }
-
-                            is RemoteWordInfoState.Single -> onAddWordContext(infoState.info)
-                            else -> onAddWordContext(null)
-                        }
-
-                    }
-
-                    else -> {
-                        onAddWordContext(null)
-                    }
+                when (displayedWordInfo) {
+                    DisplayedWordInfoState.Empty -> onAddWordContext(null)
+                    // if no valid infoIndex is provided, then do nothing
+                    DisplayedWordInfoState.ShouldBeSpecified -> {}
+                    is DisplayedWordInfoState.Result -> onAddWordContext(displayedWordInfo.wordInfo)
                 }
             },
-            onDeleteWordContext = onDeleteWordContext
+            onDeleteWordContext = onDeleteWordContext,
+            modifier = Modifier.padding(horizontal = 12.dp)
         )
 
         Box(modifier = Modifier.weight(1f)) {
@@ -238,12 +250,14 @@ private fun WordTranslationBoard(
 @Composable
 private fun WordContextBoard(
     word: String,
+    externalWord: String?,
     wordContextUiState: WordContextUiState,
     onAddWordContext: () -> Unit,
     onDeleteWordContext: (WordContext) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     ListItem(
-        modifier = Modifier.padding(horizontal = 12.dp),
+        modifier = modifier,
         headlineContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -253,21 +267,12 @@ private fun WordContextBoard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
 
-                AnimatedContent(targetState = wordContextUiState) { targetState ->
-                    when (targetState) {
-                        is WordContextUiState.Existed -> {
-                            val wordInDb = targetState.word.word
-                            Text(
-                                text = if (wordInDb != word) wordInDb else "",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-
-                        else -> {
-                        }
-                    }
-                }
+                Text(
+                    text = externalWord ?: "",
+                    modifier = Modifier.animateContentSize(),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         },
         trailingContent = {
@@ -450,6 +455,12 @@ private fun WordInfoDetailItem(
             }
         }
     }
+}
+
+private sealed interface DisplayedWordInfoState {
+    data object Empty : DisplayedWordInfoState
+    data object ShouldBeSpecified : DisplayedWordInfoState
+    data class Result(val wordInfo: WordInfo) : DisplayedWordInfoState
 }
 
 @Composable
