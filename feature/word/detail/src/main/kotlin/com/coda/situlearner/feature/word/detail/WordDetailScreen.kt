@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomAppBar
@@ -223,7 +224,7 @@ private fun WordDetailContentBoard(
                 showBottomBar,
                 enter = slideInVertically { it },
             ) {
-                BottomAppBar {
+                BottomAppBar(modifier = Modifier.clickable { onNavigateToPlayer() }) {
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
@@ -244,6 +245,8 @@ private fun WordDetailContentBoard(
                                 contentDescription = null
                             )
                         }
+
+                        Spacer(modifier = Modifier.size(48.dp))
                     }
                 }
             }
