@@ -1,6 +1,7 @@
 package com.coda.situlearner.infra.subkit.translator
 
 import com.coda.situlearner.infra.subkit.translator.en.YouDaoEnglish
+import com.coda.situlearner.infra.subkit.translator.ja.DAJapanese
 import com.coda.situlearner.infra.subkit.translator.ja.TioJapanese
 import com.coda.situlearner.infra.subkit.translator.ja.YouDaoJapanese
 import kotlinx.coroutines.test.runTest
@@ -71,7 +72,18 @@ class TranslatorTest {
         val infos = dictionary.fetch(word)
 
         println(infos.toString())
-        assertEquals(1, infos.size)
-        assertEquals(pronunciations, infos[0].getPronunciations().toSet())
+        assertEquals(2, infos.size)
+        assertEquals(pronunciations, setOf(infos[0].pronunciation, infos[1].pronunciation))
+    }
+
+    @Test
+    fun `test DAJapanese`() = runTest {
+        val dictionary = DAJapanese()
+        val word = "ちょっと"
+        val infos = dictionary.fetch(word)
+
+        println(infos.toString())
+        assertEquals(3, infos.size)
+        assertEquals(2, infos[0].meanings.size)
     }
 }

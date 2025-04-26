@@ -3,6 +3,7 @@ package com.coda.situlearner.infra.subkit.translator
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.infra.subkit.translator.en.YouDaoEnglish
+import com.coda.situlearner.infra.subkit.translator.ja.DAJapanese
 import com.coda.situlearner.infra.subkit.translator.ja.TioJapanese
 import com.coda.situlearner.infra.subkit.translator.ja.YouDaoJapanese
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,7 @@ abstract class Translator internal constructor(
         try {
             val info = fetch(word)
             if (info.isEmpty()) emit(WordTranslationResult.Empty)
-            else emit(WordTranslationResult.Success(info))
+            else emit(WordTranslationResult.Success(info.simplify()))
         } catch (e: Exception) {
             emit(WordTranslationResult.Error)
         }
@@ -33,11 +34,28 @@ abstract class Translator internal constructor(
 
             return when (sourceLanguage) {
                 Language.English -> listOf(YouDaoEnglish())
-                Language.Japanese -> listOf(YouDaoJapanese(), TioJapanese())
+                Language.Japanese -> listOf(YouDaoJapanese(), DAJapanese(), TioJapanese())
                 else -> emptyList()
             }
         }
     }
+}
+
+/**
+ * Merge WordInfo entities with the same word.
+ */
+private fun List<WordInfo>.simplify(): List<WordInfo> {
+    if (this.size == 1) return this
+    return this
+        .groupBy { it.word }
+        .mapValues { (word, infos) ->
+            WordInfo.fromWebOrUser(
+                word = word,
+                dictionaryName = infos.first().dictionaryName,
+                pronunciations = infos.flatMap { it.getPronunciations() },
+                meanings = infos.flatMap { it.meanings }
+            )
+        }.values.toList()
 }
 
 sealed interface WordTranslationResult {

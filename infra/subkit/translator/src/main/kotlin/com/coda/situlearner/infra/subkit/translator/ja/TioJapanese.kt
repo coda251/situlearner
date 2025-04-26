@@ -36,17 +36,6 @@ internal class TioJapanese(
             }
         }
 
-        return infos.simplify()
+        return infos
     }
 }
-
-private fun List<WordInfo>.simplify() = this
-    .groupBy { it.word }
-    .mapValues { (word, infos) ->
-        WordInfo.fromWebOrUser(
-            word = word,
-            dictionaryName = infos.first().dictionaryName,
-            pronunciations = infos.flatMap { it.getPronunciations() },
-            meanings = infos.flatMap { it.meanings }
-        )
-    }.values.toList()
