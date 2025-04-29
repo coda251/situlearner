@@ -47,7 +47,7 @@ internal class WordQuizViewModel(
                         if (isEmpty()) null
                         else filter { it.mediaFile != null }.randomOrNull() ?: random()
                     }
-                },
+                }.shuffled(),
                 currentIndex = 0
             )
         }

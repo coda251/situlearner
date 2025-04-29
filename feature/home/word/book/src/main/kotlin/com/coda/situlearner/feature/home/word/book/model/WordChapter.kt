@@ -41,7 +41,7 @@ internal fun List<WordWithContexts>.toChapters(id: String): List<WordChapter> {
                 progress = idToWord.filterKeys { chapterWordIds.contains(it) }.values.progress
             )
         }
-    }
+    }.sortedBy { it.name }
 }
 
 private val Collection<Word>.progress: Int
