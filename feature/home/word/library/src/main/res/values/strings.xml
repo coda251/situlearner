@@ -10,4 +10,5 @@
     <string name="home_word_library_screen_no_media">No media</string>
     <string name="home_word_library_screen_current_language_no_words">No words in current language (%s)</string>
     <string name="home_word_library_screen_change_language">Change language?</string>
+    <string name="home_word_library_screen_more">More</string>
 </resources>

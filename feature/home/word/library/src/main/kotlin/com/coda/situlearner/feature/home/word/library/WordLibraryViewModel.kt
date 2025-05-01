@@ -77,10 +77,11 @@ internal class WordLibraryViewModel(
     private suspend fun refreshWords(recommendedWordCount: UInt) {
         val data = wordRepository.getRecommendedWords(recommendedWordCount)
         _wordsUiState.value =
-            if (data.isEmpty())
-                RecommendedWordsUiState.Empty
-            else
-                RecommendedWordsUiState.Success(wordContexts = data, offset = 0)
+            if (data.isEmpty()) RecommendedWordsUiState.Empty
+            else RecommendedWordsUiState.Success(
+                wordContexts = data.map { it.contexts.single() },
+                offset = 0
+            )
     }
 
     fun setWordsOffset(offset: Int) {

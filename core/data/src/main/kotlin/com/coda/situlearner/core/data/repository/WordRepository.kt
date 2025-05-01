@@ -3,7 +3,6 @@ package com.coda.situlearner.core.data.repository
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
-import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordQuizInfo
 import com.coda.situlearner.core.model.data.WordWithContexts
@@ -13,6 +12,13 @@ import kotlinx.datetime.Instant
 interface WordRepository {
 
     val words: Flow<List<WordWithContexts>>
+
+    /**
+     * We assure that all the recommended words have one and only one wordContext (safe to use
+     * List.single()). However, we can not assure that all the recommended words are the latest
+     * ones (they could even have been deleted in the database).
+     */
+    val cachedRecommendedWords: List<WordWithContexts>
 
     fun getWordWithContextsList(language: Language): Flow<List<WordWithContexts>>
 
@@ -63,7 +69,7 @@ interface WordRepository {
 
     suspend fun updateWords(idToProficiency: Map<String, WordProficiency>)
 
-    suspend fun getRecommendedWords(count: UInt): List<WordContextView>
+    suspend fun getRecommendedWords(count: UInt): List<WordWithContexts>
 
     suspend fun deleteWord(word: Word)
 

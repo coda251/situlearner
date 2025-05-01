@@ -10,6 +10,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -83,6 +86,7 @@ internal fun WordLibraryScreen(
             }
         },
         onClickContextView = { onNavigateToWordDetail(it.wordContext.wordId) },
+        onClickRecommendations = { onNavigateToWordList(WordListType.Recommendation, null) },
         onQuiz = onNavigateToWordQuiz,
         onSetOffset = viewModel::setWordsOffset,
         onChangeLanguage = viewModel::setWordLibraryLanguage,
@@ -97,6 +101,7 @@ private fun WordLibraryScreen(
     wordsUiState: RecommendedWordsUiState,
     onClickBook: (WordBook) -> Unit,
     onClickContextView: (WordContextView) -> Unit,
+    onClickRecommendations: () -> Unit,
     onQuiz: () -> Unit,
     onSetOffset: (Int) -> Unit,
     onChangeLanguage: (Language) -> Unit,
@@ -159,7 +164,8 @@ private fun WordLibraryScreen(
                         wordContexts = wordsUiState.wordContexts,
                         offset = wordsUiState.offset,
                         onClickContextView = onClickContextView,
-                        onSetOffset = onSetOffset
+                        onSetOffset = onSetOffset,
+                        onClickRecommendations = onClickRecommendations
                     )
             }
         }
@@ -289,6 +295,7 @@ private fun WordRecommendationBoard(
     wordContexts: List<WordContextView>,
     offset: Int,
     onClickContextView: (WordContextView) -> Unit,
+    onClickRecommendations: () -> Unit,
     onSetOffset: (Int) -> Unit,
 ) {
     Column {
@@ -307,7 +314,8 @@ private fun WordRecommendationBoard(
                 wordContexts = wordContexts,
                 offset = offset,
                 onClickContextView = onClickContextView,
-                onSetOffset = onSetOffset
+                onSetOffset = onSetOffset,
+                onClickRecommendations = onClickRecommendations
             )
         }
     }
@@ -319,6 +327,7 @@ private fun WordsRecommendationContent(
     offset: Int,
     onClickContextView: (WordContextView) -> Unit,
     onSetOffset: (Int) -> Unit,
+    onClickRecommendations: () -> Unit,
     displayWindowSize: Int = 2,
 ) {
     AnimatedContent(
@@ -357,25 +366,31 @@ private fun WordsRecommendationContent(
     }
 
     if (wordContexts.size > displayWindowSize) {
-        ListItem(
-            headlineContent = {},
-            trailingContent = {
-                IconButton(
-                    onClick = {
-                        onSetOffset(
-                            (offset + displayWindowSize).takeIf { it < wordContexts.size } ?: 0
-                        )
-                    }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.refresh_24dp_000000_fill0_wght400_grad0_opsz24),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 16.dp, end = 16.dp, start = 8.dp)
+        ) {
+            IconButton(
+                onClick = {
+                    onSetOffset(
+                        (offset + displayWindowSize).takeIf { it < wordContexts.size } ?: 0
                     )
                 }
-            },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-        )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.refresh_24dp_000000_fill0_wght400_grad0_opsz24),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(onClick = onClickRecommendations) {
+                Text(text = stringResource(R.string.home_word_library_screen_more))
+            }
+        }
     }
 }
 
@@ -405,6 +420,7 @@ private fun WordLibraryScreenContentPreview() {
         wordsUiState = wordsUiState,
         onClickBook = {},
         onClickContextView = {},
+        onClickRecommendations = {},
         onSetOffset = {
             wordsUiState = wordsUiState.copy(
                 offset = if (it >= wordsUiState.wordContexts.size) 0 else it
@@ -430,6 +446,7 @@ private fun WordLibraryScreenEmptyPreview() {
         wordsUiState = RecommendedWordsUiState.Empty,
         onClickBook = {},
         onClickContextView = {},
+        onClickRecommendations = {},
         onSetOffset = {},
         onChangeLanguage = {
             booksUiState = when (it) {

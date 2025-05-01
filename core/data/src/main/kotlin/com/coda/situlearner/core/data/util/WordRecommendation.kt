@@ -1,13 +1,12 @@
 package com.coda.situlearner.core.data.util
 
-import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordWithContexts
 
 internal fun selectRecommendedWords(
     words: List<WordWithContexts>,
     count: Int,
-): List<WordContextView> {
+): List<WordWithContexts> {
     val proficiencyToWords =
         words.filter { it.contexts.isNotEmpty() }.groupBy { it.word.proficiency }
     val proficiencyToCount = computeQuotasByProficiency(count)
@@ -31,7 +30,12 @@ internal fun selectRecommendedWords(
 
     if (quotas.isNotEmpty()) quotas[0] += remainder
 
-    return layeredQuotaWords(layers, quotas).map { it.contexts.random() }
+    return layeredQuotaWords(layers, quotas).map {
+        it.copy(
+            word = it.word,
+            contexts = listOf(it.contexts.random())
+        )
+    }
 }
 
 private fun layeredQuotaWords(

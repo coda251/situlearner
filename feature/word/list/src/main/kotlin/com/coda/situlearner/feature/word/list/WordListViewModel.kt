@@ -57,6 +57,26 @@ internal class WordListViewModel(
                     WordListType.NoMedia -> words
                         .filter { word -> word.contexts.all { it.mediaFile == null } }
                         .sortedBy(selector)
+
+                    WordListType.Recommendation -> {
+                        val wordContextIds =
+                            wordRepository.cachedRecommendedWords.map { it.contexts.single().wordContext.id }
+                        // since recommendedWords may not be latest, we use words to filter
+                        // to latest ones and still keep each word has one and only one wordContext
+                        words
+                            .flatMap { wordWithContexts ->
+                                wordWithContexts.contexts.map {
+                                    Pair(wordWithContexts.word, it)
+                                }
+                            }
+                            .filter { it.second.wordContext.id in wordContextIds }
+                            .map {
+                                WordWithContexts(
+                                    word = it.first,
+                                    contexts = listOf(it.second)
+                                )
+                            }.sortedBy(selector)
+                    }
                 }
             )
         }

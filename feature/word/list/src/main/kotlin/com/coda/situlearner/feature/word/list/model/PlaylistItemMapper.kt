@@ -18,4 +18,5 @@ internal fun List<WordWithContexts>.toPlaylistItems(
             ?.asPlaylistItem()
     }
     WordListType.NoMedia -> emptyList()
+    WordListType.Recommendation -> this.mapNotNull { it.contexts.single().asPlaylistItem() }
 }

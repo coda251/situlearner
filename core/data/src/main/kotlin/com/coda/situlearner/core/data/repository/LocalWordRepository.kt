@@ -12,7 +12,6 @@ import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
-import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordQuizInfo
 import com.coda.situlearner.core.model.data.WordWithContexts
@@ -36,6 +35,8 @@ internal class LocalWordRepository(
         .map { it.wordLibraryLanguage }
         .distinctUntilChanged()
         .flatMapLatest { getWordWithContextsList(it) }
+
+    override var cachedRecommendedWords: List<WordWithContexts> = emptyList()
 
     override fun getWordWithContextsList(language: Language): Flow<List<WordWithContexts>> {
         return wordBankDao.getWordWithContextsEntities(language.asValue())
@@ -114,8 +115,10 @@ internal class LocalWordRepository(
         return wordBankDao.updateWordEntities(idToProficiency.mapValues { it.value.asValue() })
     }
 
-    override suspend fun getRecommendedWords(count: UInt): List<WordContextView> {
-        return words.firstOrNull()?.let { selectRecommendedWords(it, count.toInt()) } ?: emptyList()
+    override suspend fun getRecommendedWords(count: UInt): List<WordWithContexts> {
+        cachedRecommendedWords =
+            words.firstOrNull()?.let { selectRecommendedWords(it, count.toInt()) } ?: emptyList()
+        return cachedRecommendedWords
     }
 
     override suspend fun deleteWord(word: Word) {
