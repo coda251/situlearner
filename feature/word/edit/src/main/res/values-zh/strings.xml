@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="word_edit_screen_pronunciation">读音</string>
-    <string name="word_edit_screen_empty_error">%s不能为空</string>
     <string name="word_edit_screen_delete">删除这个%s？</string>
     <string name="word_edit_screen_pos_tag">词性</string>
     <string name="word_edit_screen_definition">释义</string>
     <string name="word_edit_screen_pos_tag_duplicate_error">该词性已存在</string>
-    <string name="word_edit_screen_word">单词</string>
 </resources>

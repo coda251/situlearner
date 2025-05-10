@@ -1,6 +1,5 @@
 package com.coda.situlearner.feature.home.media.library
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -21,7 +20,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,28 +27,22 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.MediaCollection
 import com.coda.situlearner.core.testing.data.mediaCollectionsTestData
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
-import kotlinx.coroutines.delay
+import com.coda.situlearner.core.ui.widget.NonEmptyTextInputDialog
 import org.koin.androidx.compose.koinViewModel
 import com.coda.situlearner.core.ui.R as coreR
 
@@ -194,13 +186,13 @@ private fun MediaLibraryContentBoard(
 
     if (showRenameDialog) {
         currentCollection?.let { collection ->
-            RenameCollectionDialog(
-                name = collection.name,
+            NonEmptyTextInputDialog(
+                text = collection.name,
                 onDismiss = {
                     showRenameDialog = false
                     currentCollection = null
                 },
-                onRename = {
+                onConfirm = {
                     onRenameCollection(collection, it)
                     showRenameDialog = false
                     currentCollection = null
@@ -290,78 +282,6 @@ private fun DeleteCollectionDialog(
         },
         modifier = modifier
     )
-}
-
-@Composable
-private fun RenameCollectionDialog(
-    name: String,
-    onDismiss: () -> Unit,
-    onRename: (String) -> Unit
-) {
-    val focusRequester = remember { FocusRequester() }
-
-    var collectionName by rememberSaveable(name, stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(
-            TextFieldValue(
-                text = name,
-                selection = TextRange(name.length)
-            )
-        )
-    }
-
-    var hasEmptyName by remember { mutableStateOf(false) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    // validate
-                    if (collectionName.text.isEmpty()) {
-                        hasEmptyName = true
-                        return@TextButton
-                    }
-                    onRename(collectionName.text)
-                }
-            ) {
-                Text(text = stringResource(coreR.string.core_ui_confirm))
-            }
-        },
-        text = {
-            OutlinedTextField(
-                value = collectionName,
-                onValueChange = {
-                    collectionName = it
-                    if (hasEmptyName) hasEmptyName = false
-                },
-                label = { Text(text = stringResource(id = R.string.home_media_library_screen_rename_collection_label)) },
-                isError = hasEmptyName,
-                supportingText = {
-                    AnimatedVisibility(visible = hasEmptyName) {
-                        Text(
-                            text = stringResource(
-                                id = R.string.home_media_library_screen_rename_collection_empty_error
-                            )
-                        )
-                    }
-                },
-                trailingIcon = {
-                    AnimatedVisibility(visible = hasEmptyName) {
-                        Icon(
-                            painter = painterResource(coreR.drawable.error_24dp_000000_fill0_wght400_grad0_opsz24),
-                            contentDescription = null
-                        )
-                    }
-                },
-                modifier = Modifier.focusRequester(focusRequester)
-            )
-        }
-    )
-
-    LaunchedEffect(key1 = Unit) {
-        delay(200)
-        focusRequester.requestFocus()
-    }
 }
 
 @Composable

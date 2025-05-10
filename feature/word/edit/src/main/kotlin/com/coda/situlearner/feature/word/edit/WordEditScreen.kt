@@ -53,6 +53,7 @@ import com.coda.situlearner.core.model.data.mapper.asWordInfo
 import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.core.testing.data.wordsTestData
 import com.coda.situlearner.core.ui.widget.BackButton
+import com.coda.situlearner.core.ui.widget.NonEmptyTextInputDialog
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 import com.coda.situlearner.core.ui.R as coreR
@@ -259,7 +260,6 @@ private fun WordPanel(
     if (showDialog) {
         NonEmptyTextInputDialog(
             text = word,
-            alertLabel = stringResource(R.string.word_edit_screen_word),
             onConfirm = {
                 onChange(it)
                 showDialog = false
@@ -405,7 +405,6 @@ private fun PronunciationPanel(
     if (showAddDialog) {
         NonEmptyTextInputDialog(
             text = "",
-            alertLabel = stringResource(R.string.word_edit_screen_pronunciation),
             onConfirm = {
                 if (!pronunciations.contains(it)) onAdd(it)
                 showAddDialog = false
@@ -431,7 +430,6 @@ private fun PronunciationPanel(
     editingItem?.let { s ->
         NonEmptyTextInputDialog(
             text = s,
-            alertLabel = stringResource(R.string.word_edit_screen_pronunciation),
             onConfirm = {
                 if (!pronunciations.contains(it)) {
                     onChange(s, it)
@@ -440,79 +438,6 @@ private fun PronunciationPanel(
             },
             onDismiss = { editingItem = null }
         )
-    }
-}
-
-@Composable
-private fun NonEmptyTextInputDialog(
-    text: String,
-    alertLabel: String,
-    onConfirm: (String) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    val focusRequester = remember { FocusRequester() }
-
-    var currentText by rememberSaveable(text, stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(
-            TextFieldValue(
-                text = text,
-                selection = TextRange(text.length)
-            )
-        )
-    }
-
-    var isEmpty by remember { mutableStateOf(false) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    if (currentText.text.isEmpty()) {
-                        isEmpty = true
-                        return@TextButton
-                    }
-
-                    onConfirm(currentText.text)
-                }
-            ) {
-                Text(text = stringResource(coreR.string.core_ui_confirm))
-            }
-        },
-        text = {
-            OutlinedTextField(
-                value = currentText,
-                onValueChange = {
-                    currentText = it
-                    if (isEmpty) isEmpty = false
-                },
-                isError = isEmpty,
-                supportingText = {
-                    AnimatedVisibility(visible = isEmpty) {
-                        Text(
-                            text = stringResource(
-                                R.string.word_edit_screen_empty_error,
-                                alertLabel,
-                            )
-                        )
-                    }
-                },
-                trailingIcon = {
-                    AnimatedVisibility(visible = isEmpty) {
-                        Icon(
-                            painter = painterResource(coreR.drawable.error_24dp_000000_fill0_wght400_grad0_opsz24),
-                            contentDescription = null
-                        )
-                    }
-                },
-                modifier = Modifier.focusRequester(focusRequester)
-            )
-        }
-    )
-
-    LaunchedEffect(key1 = Unit) {
-        delay(200)
-        focusRequester.requestFocus()
     }
 }
 
@@ -615,10 +540,7 @@ private fun MeaningDialog(
                     supportingText = {
                         AnimatedVisibility(visible = isEmpty) {
                             Text(
-                                text = stringResource(
-                                    R.string.word_edit_screen_empty_error,
-                                    stringResource(R.string.word_edit_screen_definition)
-                                )
+                                text = stringResource(coreR.string.core_ui_empty_error)
                             )
                         }
                     },

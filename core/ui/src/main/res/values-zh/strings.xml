@@ -18,4 +18,5 @@
     <string name="core_ui_ok">好的</string>
     <string name="core_ui_meanings">含义</string>
     <string name="core_ui_no_pronunciation_and_meanings">无发音和释义</string>
+    <string name="core_ui_empty_error">输入不能为空</string>
 </resources>
