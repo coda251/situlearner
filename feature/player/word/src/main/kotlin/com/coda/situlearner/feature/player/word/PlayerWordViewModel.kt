@@ -10,8 +10,7 @@ import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.infra.WordInfo
-import com.coda.situlearner.feature.player.word.model.Translation
-import com.coda.situlearner.feature.player.word.model.toTranslationFlow
+import com.coda.situlearner.core.model.infra.WordTranslation
 import com.coda.situlearner.feature.player.word.navigation.PlayerWordRoute
 import com.coda.situlearner.infra.subkit.translator.Translator
 import kotlinx.coroutines.Dispatchers
@@ -76,7 +75,7 @@ internal class PlayerWordViewModel(
             is WordContextUiState.Existed -> flowOf(WordQueryUiState.ResultDb(state.word))
             WordContextUiState.Empty -> {
                 if (translators.isEmpty()) flowOf(WordQueryUiState.NoTranslatorError)
-                else combine(translators.map { it.toTranslationFlow(route.word) }) {
+                else combine(translators.map { it.query(route.word) }) {
                     WordQueryUiState.ResultWeb(translations = it.toList())
                 }
             }
@@ -143,5 +142,5 @@ internal sealed interface WordQueryUiState {
     data object Loading : WordQueryUiState
     data object NoTranslatorError : WordQueryUiState
     data class ResultDb(val word: Word) : WordQueryUiState
-    data class ResultWeb(val translations: List<Translation>) : WordQueryUiState
+    data class ResultWeb(val translations: List<WordTranslation>) : WordQueryUiState
 }

@@ -1,6 +1,4 @@
-package com.coda.situlearner.feature.player.word.model
-
-import com.coda.situlearner.core.model.infra.WordInfo
+package com.coda.situlearner.core.model.infra
 
 sealed interface RemoteWordInfoState {
     data object Loading : RemoteWordInfoState
