@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
@@ -29,6 +31,11 @@ import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.core.model.infra.WordTranslation
 import com.coda.situlearner.core.testing.data.wordsTestData
 
+/**
+ * @param onSelect passing an index pair in which the first indicates
+ * the translation index and the second indicates the word info index
+ * in that translation.
+ */
 @Composable
 fun WordTranslationBoard(
     translations: List<WordTranslation>,
@@ -51,7 +58,8 @@ fun WordTranslationBoard(
             onSelect = {
                 translationIndex = it
                 onSelect(translationIndex to infoIndexes[translationIndex])
-            }
+            },
+            contentPadding = PaddingValues(horizontal = 28.dp) // 12.dp + 16.dp
         )
 
         TranslationResultPanel(
@@ -62,7 +70,10 @@ fun WordTranslationBoard(
                     this[translationIndex] = it
                 }
                 onSelect(translationIndex to it)
-            }
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 12.dp)
         )
     }
 }
@@ -73,11 +84,12 @@ private fun TranslatorChipsPanel(
     selectedTranslatorIndex: Int,
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(horizontal = 28.dp)
+        contentPadding = contentPadding
     ) {
         itemsIndexed(items = translators) { index, it ->
             FilterChip(
@@ -96,7 +108,7 @@ private fun TranslationResultPanel(
     onSelectInfoIndex: (Int?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier) {
         when (val wordInfoState = translation.infoState) {
             RemoteWordInfoState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -108,18 +120,14 @@ private fun TranslationResultPanel(
 
             RemoteWordInfoState.Error -> {}
             is RemoteWordInfoState.Single -> {
-                WordInfoDetailItem(
-                    wordInfo = wordInfoState.info,
-                    modifier = Modifier.padding(horizontal = 12.dp)
-                )
+                WordInfoDetailItem(wordInfo = wordInfoState.info)
             }
 
             is RemoteWordInfoState.Multiple -> {
                 WordInfosPanel(
                     wordInfos = wordInfoState.infos,
                     selectedInfoIndex = selectedInfoIndex,
-                    onSelect = onSelectInfoIndex,
-                    modifier = Modifier.padding(horizontal = 12.dp)
+                    onSelect = onSelectInfoIndex
                 )
             }
         }
@@ -133,21 +141,21 @@ private fun WordInfosPanel(
     onSelect: (Int?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val listState = rememberLazyListState()
     val currentSelectedInfo = selectedInfoIndex?.let { wordInfos.getOrNull(it) }
 
     if (currentSelectedInfo != null) {
         WordInfoDetailItem(
             wordInfo = currentSelectedInfo,
             modifier = modifier,
-            onBack = {
-                onSelect(null)
-            }
+            onBack = { onSelect(null) }
         )
     } else {
-        LazyColumn(modifier = modifier) {
-            itemsIndexed(
-                items = wordInfos,
-            ) { index, it ->
+        LazyColumn(
+            state = listState,
+            modifier = modifier
+        ) {
+            itemsIndexed(items = wordInfos) { index, it ->
                 WordItem(
                     word = it.word,
                     modifier = Modifier.clickable { onSelect(index) },
@@ -166,11 +174,7 @@ private fun TranslationResultPanelPreview() {
     val translation = WordTranslation(
         translatorName = "",
         infoState = RemoteWordInfoState.Multiple(
-            infos = listOf(
-                wordsTestData[0].asWordInfo(),
-                wordsTestData[1].asWordInfo(),
-                wordsTestData[2].asWordInfo()
-            )
+            infos = wordsTestData.map { it.asWordInfo() }
         )
     )
 
@@ -182,5 +186,6 @@ private fun TranslationResultPanelPreview() {
         translation = translation,
         onSelectInfoIndex = { selectedInfoIndex = it },
         selectedInfoIndex = selectedInfoIndex,
+        modifier = Modifier.height(300.dp)
     )
 }

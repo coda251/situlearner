@@ -6,6 +6,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
@@ -27,12 +29,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -44,6 +46,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordMeaning
 import com.coda.situlearner.core.model.data.mapper.asWordInfo
@@ -59,26 +62,38 @@ internal fun WordEditScreen(
     onBack: () -> Unit,
     viewModel: WordEditViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val editUiState by viewModel.editUiState.collectAsStateWithLifecycle()
+    val queryUiState by viewModel.queryUiState.collectAsStateWithLifecycle()
 
     WordEditScreen(
-        uiState = uiState,
+        editUiState = editUiState,
+        queryUiState = queryUiState,
         onBack = onBack,
-        onSave = viewModel::updateWord
+        onSave = viewModel::updateWord,
+        onQueryWord = viewModel::getTranslation
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun WordEditScreen(
-    uiState: WordEditUiState,
+    editUiState: WordEditUiState,
+    queryUiState: WordQueryUiState,
     onBack: () -> Unit,
     onSave: (Word) -> Unit,
+    onQueryWord: (String, Language) -> Unit,
 ) {
-    var currentWordInfo by remember { mutableStateOf<WordInfo?>(null) }
+    var currentWordInfo by remember(editUiState) {
+        mutableStateOf(
+            if (editUiState is WordEditUiState.Success) editUiState.word.asWordInfo()
+            else null
+        )
+    }
 
-    LaunchedEffect(uiState) {
-        when (uiState) {
+    var showWordTranslationBottomSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(editUiState) {
+        when (editUiState) {
             is WordEditUiState.Saved -> onBack()
             else -> {}
         }
@@ -88,36 +103,58 @@ private fun WordEditScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    when (uiState) {
-                        is WordEditUiState.Success -> Text(text = uiState.word.word)
-                        else -> {}
+                    currentWordInfo?.let { info ->
+                        WordPanel(
+                            word = info.word,
+                            onChange = {
+                                currentWordInfo = info.copyFromUserInput(
+                                    word = it
+                                )
+                            }
+                        )
                     }
                 },
                 navigationIcon = { BackButton(onBack) },
                 actions = {
-                    when (uiState) {
-                        is WordEditUiState.Success -> {
-                            TextButton(
-                                onClick = {
-                                    currentWordInfo?.let {
+                    currentWordInfo?.let {
+                        TextButton(
+                            onClick = {
+                                if (editUiState is WordEditUiState.Success) {
+                                    // the word is not changed
+                                    if (editUiState.word.asWordInfo() == it) onBack()
+                                    else {
                                         onSave(
-                                            uiState.word.copy(
+                                            editUiState.word.copy(
+                                                word = it.word,
                                                 dictionaryName = it.dictionaryName,
                                                 pronunciation = it.pronunciation,
                                                 meanings = it.meanings
                                             )
                                         )
-                                    } ?: onBack()
+                                    }
                                 }
-                            ) {
-                                Text(text = stringResource(coreR.string.core_ui_ok))
                             }
+                        ) {
+                            Text(text = stringResource(coreR.string.core_ui_ok))
                         }
-
-                        else -> {}
                     }
                 },
             )
+        },
+        floatingActionButton = {
+            currentWordInfo?.let {
+                FloatingActionButton(onClick = {
+                    if (editUiState is WordEditUiState.Success) {
+                        showWordTranslationBottomSheet = true
+                        onQueryWord(it.word, editUiState.word.language)
+                    }
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.search_24dp_000000_fill0_wght400_grad0_opsz24),
+                        contentDescription = null
+                    )
+                }
+            }
         }
     ) { paddingValues ->
         Column(
@@ -126,47 +163,59 @@ private fun WordEditScreen(
                 .padding(paddingValues)
                 .consumeWindowInsets(paddingValues)
         ) {
-            when (uiState) {
-                is WordEditUiState.Success -> {
-                    ContentBoard(
-                        originalWordInfo = uiState.word.asWordInfo(),
-                        onChange = { currentWordInfo = it }
-                    )
-                }
-
-                else -> {}
+            currentWordInfo?.let { info ->
+                ContentBoard(
+                    wordInfo = info,
+                    onChange = { currentWordInfo = it }
+                )
             }
         }
+    }
+
+    if (showWordTranslationBottomSheet) {
+        WordTranslationBottomSheet(
+            uiState = queryUiState,
+            onSelectWordInfo = {
+                if (it != null && it.isNotEmpty()) {
+                    showWordTranslationBottomSheet = false
+                    currentWordInfo = it
+                }
+            },
+            onDismiss = {
+                showWordTranslationBottomSheet = false
+            }
+        )
     }
 }
 
 @Composable
 private fun ContentBoard(
-    originalWordInfo: WordInfo,
+    wordInfo: WordInfo,
     onChange: (WordInfo) -> Unit
 ) {
-    var wordInfo by remember(originalWordInfo) { mutableStateOf(originalWordInfo) }
-    val pronunciations by remember { derivedStateOf { wordInfo.getPronunciations() } }
+    val pronunciations by remember(wordInfo) { mutableStateOf(wordInfo.getPronunciations()) }
 
     Column {
         PronunciationPanel(
             pronunciations = pronunciations,
             onAdd = {
-                wordInfo =
+                onChange(
                     wordInfo.copyFromUserInput(
                         pronunciations = pronunciations.toMutableList().apply { add(it) })
-                onChange(wordInfo)
+                )
             },
             onChange = { old, new ->
-                wordInfo = wordInfo.copyFromUserInput(
-                    pronunciations = pronunciations.toMutableList()
-                        .apply { set(indexOf(old), new) })
-                onChange(wordInfo)
+                onChange(
+                    wordInfo.copyFromUserInput(
+                        pronunciations = pronunciations.toMutableList()
+                            .apply { set(indexOf(old), new) })
+                )
             },
             onDelete = {
-                wordInfo = wordInfo.copyFromUserInput(
-                    pronunciations = pronunciations.toMutableList().apply { remove(it) })
-                onChange(wordInfo)
+                onChange(
+                    wordInfo.copyFromUserInput(
+                        pronunciations = pronunciations.toMutableList().apply { remove(it) })
+                )
             }
         )
 
@@ -174,19 +223,49 @@ private fun ContentBoard(
         MeaningsPanel(
             meanings = meanings,
             onAdd = {
-                wordInfo = wordInfo.copyFromUserInput(
-                    meanings = meanings.toMutableList().apply { add(it) })
-                onChange(wordInfo)
+                onChange(
+                    wordInfo.copyFromUserInput(
+                        meanings = meanings.toMutableList().apply { add(it) })
+                )
             },
             onChange = { old, new ->
-                wordInfo =
-                    wordInfo.copyFromUserInput(meanings = meanings.map { if (it == old) new else it })
-                onChange(wordInfo)
+                onChange(wordInfo.copyFromUserInput(meanings = meanings.map { if (it == old) new else it }))
             },
             onDelete = { m ->
-                wordInfo =
-                    wordInfo.copyFromUserInput(meanings = meanings.filter { it != m })
-                onChange(wordInfo)
+                onChange(wordInfo.copyFromUserInput(meanings = meanings.filter { it != m }))
+            }
+        )
+    }
+}
+
+@Composable
+private fun WordPanel(
+    word: String,
+    onChange: (String) -> Unit
+) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable { showDialog = true }
+    ) {
+        Text(
+            text = word,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
+    }
+
+    if (showDialog) {
+        NonEmptyTextInputDialog(
+            text = word,
+            alertLabel = stringResource(R.string.word_edit_screen_word),
+            onConfirm = {
+                onChange(it)
+                showDialog = false
+            },
+            onDismiss = {
+                showDialog = false
             }
         )
     }
@@ -324,8 +403,9 @@ private fun PronunciationPanel(
     }
 
     if (showAddDialog) {
-        PronunciationDialog(
-            pronunciation = "",
+        NonEmptyTextInputDialog(
+            text = "",
+            alertLabel = stringResource(R.string.word_edit_screen_pronunciation),
             onConfirm = {
                 if (!pronunciations.contains(it)) onAdd(it)
                 showAddDialog = false
@@ -349,8 +429,9 @@ private fun PronunciationPanel(
     }
 
     editingItem?.let { s ->
-        PronunciationDialog(
-            pronunciation = s,
+        NonEmptyTextInputDialog(
+            text = s,
+            alertLabel = stringResource(R.string.word_edit_screen_pronunciation),
             onConfirm = {
                 if (!pronunciations.contains(it)) {
                     onChange(s, it)
@@ -363,18 +444,19 @@ private fun PronunciationPanel(
 }
 
 @Composable
-private fun PronunciationDialog(
-    pronunciation: String,
+private fun NonEmptyTextInputDialog(
+    text: String,
+    alertLabel: String,
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    var currentPronunciation by rememberSaveable(pronunciation, stateSaver = TextFieldValue.Saver) {
+    var currentText by rememberSaveable(text, stateSaver = TextFieldValue.Saver) {
         mutableStateOf(
             TextFieldValue(
-                text = pronunciation,
-                selection = TextRange(pronunciation.length)
+                text = text,
+                selection = TextRange(text.length)
             )
         )
     }
@@ -386,12 +468,12 @@ private fun PronunciationDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (currentPronunciation.text.isEmpty()) {
+                    if (currentText.text.isEmpty()) {
                         isEmpty = true
                         return@TextButton
                     }
 
-                    onConfirm(currentPronunciation.text)
+                    onConfirm(currentText.text)
                 }
             ) {
                 Text(text = stringResource(coreR.string.core_ui_confirm))
@@ -399,9 +481,9 @@ private fun PronunciationDialog(
         },
         text = {
             OutlinedTextField(
-                value = currentPronunciation,
+                value = currentText,
                 onValueChange = {
-                    currentPronunciation = it
+                    currentText = it
                     if (isEmpty) isEmpty = false
                 },
                 isError = isEmpty,
@@ -410,7 +492,7 @@ private fun PronunciationDialog(
                         Text(
                             text = stringResource(
                                 R.string.word_edit_screen_empty_error,
-                                stringResource(R.string.word_edit_screen_pronunciation)
+                                alertLabel,
                             )
                         )
                     }
@@ -587,6 +669,7 @@ private fun DeleteDialog(
 }
 
 private fun WordInfo.copyFromUserInput(
+    word: String = this.word,
     pronunciations: List<String> = this.getPronunciations(),
     meanings: List<WordMeaning> = this.meanings
 ) = WordInfo.fromWebOrUser(
@@ -600,7 +683,7 @@ private fun WordInfo.copyFromUserInput(
 @Preview(showBackground = true)
 private fun ContentBoardPreview() {
     ContentBoard(
-        originalWordInfo = wordsTestData[0].asWordInfo(),
+        wordInfo = wordsTestData[0].asWordInfo(),
         onChange = {}
     )
 }

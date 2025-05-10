@@ -6,4 +6,5 @@
     <string name="word_edit_screen_pos_tag">Part of speech</string>
     <string name="word_edit_screen_definition">Definition</string>
     <string name="word_edit_screen_pos_tag_duplicate_error">This part of speech tag already exists</string>
+    <string name="word_edit_screen_word">Word</string>
 </resources>

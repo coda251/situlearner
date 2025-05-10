@@ -6,4 +6,5 @@
     <string name="word_edit_screen_pos_tag">词性</string>
     <string name="word_edit_screen_definition">释义</string>
     <string name="word_edit_screen_pos_tag_duplicate_error">该词性已存在</string>
+    <string name="word_edit_screen_word">单词</string>
 </resources>

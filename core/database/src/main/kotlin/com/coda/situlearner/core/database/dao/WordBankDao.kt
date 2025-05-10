@@ -116,6 +116,20 @@ interface WordBankDao {
     @Query("DELETE FROM WordEntity WHERE id = :id")
     suspend fun deleteWordEntity(id: String)
 
+    @Query("UPDATE WordContextEntity SET wordId = :newWordId WHERE wordId = :oldWordId")
+    suspend fun updateWordContextEntity(oldWordId: String, newWordId: String)
+
     @Update
-    suspend fun updateWordEntity(wordEntity: WordEntity)
+    suspend fun updateWordEntityInternal(wordEntity: WordEntity)
+
+    @Transaction
+    suspend fun updateWordEntity(wordEntity: WordEntity) {
+        getWordEntity(wordEntity.word, wordEntity.language)?.let {
+            // find duplicate
+            updateWordContextEntity(it.id, wordEntity.id)
+            deleteWordEntity(it.id)
+        }
+
+        updateWordEntityInternal(wordEntity)
+    }
 }

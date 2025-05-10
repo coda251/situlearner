@@ -73,5 +73,10 @@ interface WordRepository {
 
     suspend fun deleteWord(word: Word)
 
+    /**
+     * If the duplicate word is detected, then
+     *  - word contexts belong to that word will now belong to the current word
+     *  - the duplicate word will be removed
+     */
     suspend fun updateWord(word: Word)
 }
