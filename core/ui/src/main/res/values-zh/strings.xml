@@ -17,5 +17,5 @@
     <string name="core_ui_sunday">周日</string>
     <string name="core_ui_ok">好的</string>
     <string name="core_ui_meanings">含义</string>
-    <string name="core_ui_no_web_meanings">无网络释义</string>
+    <string name="core_ui_no_pronunciation_and_meanings">无发音和释义</string>
 </resources>

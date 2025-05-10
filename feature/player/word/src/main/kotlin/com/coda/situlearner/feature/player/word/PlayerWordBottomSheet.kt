@@ -43,6 +43,7 @@ import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.core.testing.data.wordContextsTestData
 import com.coda.situlearner.core.testing.data.wordsTestData
 import com.coda.situlearner.core.ui.widget.WordInfoDetailItem
+import com.coda.situlearner.core.ui.widget.WordInfoEmptyItem
 import com.coda.situlearner.core.ui.widget.WordTranslationBoard
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
@@ -179,10 +180,14 @@ private fun PlayerWordScreen(
                 )
 
                 is WordQueryUiState.ResultDb -> wordQueryUiState.word.asWordInfo().let {
-                    WordInfoDetailItem(
-                        wordInfo = it,
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    )
+                    if (it.isNotEmpty()) {
+                        WordInfoDetailItem(
+                            wordInfo = it,
+                            modifier = Modifier.padding(horizontal = 12.dp)
+                        )
+                    } else {
+                        WordInfoEmptyItem(modifier = Modifier.align(Alignment.Center))
+                    }
                 }
 
                 is WordQueryUiState.ResultWeb -> {

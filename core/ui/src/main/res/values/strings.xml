@@ -20,5 +20,5 @@
     <string name="core_ui_ok">OK</string>
 
     <string name="core_ui_meanings">Meanings</string>
-    <string name="core_ui_no_web_meanings">No web meanings</string>
+    <string name="core_ui_no_pronunciation_and_meanings">No pronunciation and meanings</string>
 </resources>

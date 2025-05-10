@@ -46,18 +46,20 @@ abstract class Translator internal constructor(
 }
 
 /**
- * Merge WordInfo entities with the same word.
+ * Merge WordInfo entities with the same word and discard the empty ones.
  */
 private fun List<WordInfo>.simplify(): List<WordInfo> {
-    if (this.size <= 1) return this
-    return this
-        .groupBy { it.word }
-        .mapValues { (word, infos) ->
-            WordInfo.fromWebOrUser(
-                word = word,
-                dictionaryName = infos.first().dictionaryName,
-                pronunciations = infos.flatMap { it.getPronunciations() },
-                meanings = infos.flatMap { it.meanings }
-            )
-        }.values.toList()
+    return (
+            if (this.size <= 1) this
+            else this
+                .groupBy { it.word }
+                .mapValues { (word, infos) ->
+                    WordInfo.fromWebOrUser(
+                        word = word,
+                        dictionaryName = infos.first().dictionaryName,
+                        pronunciations = infos.flatMap { it.getPronunciations() },
+                        meanings = infos.flatMap { it.meanings }
+                    )
+                }.values.toList()
+            ).filter { it.isNotEmpty() }
 }

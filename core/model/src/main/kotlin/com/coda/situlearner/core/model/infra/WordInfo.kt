@@ -38,6 +38,8 @@ data class WordInfo private constructor(
     fun getPronunciations(): List<String> {
         return pronunciation?.split(PRONUNCIATION_SEPARATOR) ?: emptyList()
     }
+
+    fun isNotEmpty() = pronunciation != null || meanings.isNotEmpty()
 }
 
 /**

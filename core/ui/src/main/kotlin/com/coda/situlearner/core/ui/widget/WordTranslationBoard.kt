@@ -9,12 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,8 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.coda.situlearner.core.model.data.mapper.asWordInfo
@@ -33,7 +28,6 @@ import com.coda.situlearner.core.model.infra.RemoteWordInfoState
 import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.core.model.infra.WordTranslation
 import com.coda.situlearner.core.testing.data.wordsTestData
-import com.coda.situlearner.core.ui.R
 
 @Composable
 fun WordTranslationBoard(
@@ -74,53 +68,6 @@ fun WordTranslationBoard(
 }
 
 @Composable
-fun WordInfoDetailItem(
-    wordInfo: WordInfo,
-    modifier: Modifier = Modifier,
-    onBack: (() -> Unit)? = null,
-) {
-    if (wordInfo.pronunciation == null && wordInfo.meanings.isEmpty()) {
-        Box(modifier = modifier.fillMaxSize()) {
-            WordInfoEmpty(modifier = Modifier.align(Alignment.Center))
-        }
-    } else {
-        Column(modifier = modifier) {
-            if (onBack != null) {
-                ListItem(
-                    headlineContent = { Text(text = wordInfo.pronunciation ?: "") },
-                    trailingContent = {
-                        BackButton(onBack = onBack, rotated = true)
-                    },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                )
-            } else {
-                wordInfo.pronunciation?.let {
-                    ListItem(
-                        headlineContent = { Text(text = it) },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                    )
-                }
-            }
-
-            wordInfo.meanings.let {
-                LazyColumn {
-                    items(
-                        items = it,
-                        key = { it.partOfSpeechTag }
-                    ) {
-                        ListItem(
-                            headlineContent = { Text(text = it.definition) },
-                            overlineContent = { Text(text = it.partOfSpeechTag) },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun TranslatorChipsPanel(
     translators: List<String>,
     selectedTranslatorIndex: Int,
@@ -156,7 +103,7 @@ private fun TranslationResultPanel(
             }
 
             RemoteWordInfoState.Empty -> {
-                WordInfoEmpty(modifier = Modifier.align(Alignment.Center))
+                WordInfoEmptyItem(modifier = Modifier.align(Alignment.Center))
             }
 
             RemoteWordInfoState.Error -> {}
@@ -177,14 +124,6 @@ private fun TranslationResultPanel(
             }
         }
     }
-}
-
-@Composable
-private fun WordInfoEmpty(modifier: Modifier = Modifier) {
-    Text(
-        modifier = modifier,
-        text = stringResource(R.string.core_ui_no_web_meanings)
-    )
 }
 
 @Composable
