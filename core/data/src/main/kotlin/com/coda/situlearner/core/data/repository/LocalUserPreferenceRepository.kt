@@ -15,7 +15,8 @@ internal class LocalUserPreferenceRepository(
     private val dataSource: UserPreferenceDataSource,
     defaultSourceLanguage: Language = AppConfig.defaultSourceLanguage,
     defaultQuizWordCount: UInt = AppConfig.DEFAULT_QUIZ_WORD_COUNT,
-    defaultRecommendedWordCount: UInt = AppConfig.DEFAULT_RECOMMENDED_WORD_COUNT
+    defaultRecommendedWordCount: UInt = AppConfig.DEFAULT_RECOMMENDED_WORD_COUNT,
+    defaultThemeColor: Long = AppConfig.DEFAULT_THEME_COLOR
 ) : UserPreferenceRepository {
 
     override val userPreference: Flow<UserPreference> =
@@ -23,7 +24,8 @@ internal class LocalUserPreferenceRepository(
             it.asExternalModel(
                 defaultSourceLanguage,
                 defaultQuizWordCount,
-                defaultRecommendedWordCount
+                defaultRecommendedWordCount,
+                defaultThemeColor
             )
         }
 
@@ -45,5 +47,9 @@ internal class LocalUserPreferenceRepository(
 
     override suspend fun setRecommendedWordCount(recommendedWordCount: UInt) {
         dataSource.setRecommendedWordCountProto(recommendedWordCount)
+    }
+
+    override suspend fun setThumbnailThemeColor(color: Long) {
+        dataSource.setThumbnailThemeColorProto(color)
     }
 }

@@ -1,27 +1,42 @@
 package com.coda.situlearner.service
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.data.repository.PlayerStateRepository
+import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.model.data.PlayerStateData
 import com.coda.situlearner.core.model.data.Playlist
 import com.coda.situlearner.core.model.data.PlaylistItem
 import com.coda.situlearner.core.model.data.PlaylistType
 import com.coda.situlearner.core.model.data.RepeatMode
+import com.coda.situlearner.core.model.data.ThemeColorMode
+import com.coda.situlearner.core.ui.theme.themeColorFromImage
 import com.coda.situlearner.infra.player.PlayerEngine
 import com.coda.situlearner.infra.player.PlayerState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,6 +48,7 @@ class PlayerService : LifecycleService(), KoinComponent, PlayerState {
 
     private val playerEngine: PlayerEngine by inject { parametersOf(lifecycleScope) }
     private val playerStateRepository: PlayerStateRepository by inject()
+    private val userPreferenceRepository: UserPreferenceRepository by inject()
 
     private var currentPlaylistType = PlaylistType.Persistent
     private var restorePlayerStateJob: Job? = null
@@ -51,6 +67,7 @@ class PlayerService : LifecycleService(), KoinComponent, PlayerState {
         restorePlayerStateJob?.invokeOnCompletion {
             savePlayerStateJob = startSavePlayerStateJob()
         }
+        updateThumbnailThemeColorJob()
 
         playerSession = PlayerSession(this)
 
@@ -101,6 +118,27 @@ class PlayerService : LifecycleService(), KoinComponent, PlayerState {
         launch {
             playerEngine.positionInMs.sample(2000).collectLatest {
                 playerStateRepository.setPositionInMs(it)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun updateThumbnailThemeColorJob() {
+        val provider = ThumbnailColorFlowProvider(
+            context = this,
+            defaultColor = Color(AppConfig.DEFAULT_THEME_COLOR)
+        )
+        lifecycleScope.launch {
+            userPreferenceRepository.userPreference.filter {
+                it.themeColorMode == ThemeColorMode.DynamicWithThumbnail
+            }.flatMapLatest {
+                provider.provideColorFlow(this@PlayerService)
+                    .distinctUntilChanged()
+                    // drop the initial empty list value
+                    .drop(1)
+            }.collectLatest {
+                // need to convert to argb first
+                userPreferenceRepository.setThumbnailThemeColor(it.toArgb().toLong())
             }
         }
     }
@@ -228,5 +266,37 @@ class PlayerService : LifecycleService(), KoinComponent, PlayerState {
     @Composable
     override fun VideoOutput(modifier: Modifier) {
         playerEngine.VideoOutput(modifier)
+    }
+}
+
+private class ThumbnailColorFlowProvider(
+    private val context: Context,
+    private val defaultColor: Color,
+) {
+    private val cachedUrlToColor: MutableMap<String, Color> = mutableMapOf()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend fun provideColorFlow(state: PlayerState): Flow<Color> =
+        state.playlistType.flatMapLatest {
+            when (it) {
+                PlaylistType.Persistent -> {
+                    state.playlist.map { playlist ->
+                        resolveColorFromPlaylist(playlist)
+                    }
+                }
+
+                // when playlistType goes to temporary, we do not emit value
+                // to avoid color change animation
+                PlaylistType.Temporary -> emptyFlow()
+            }
+        }
+
+    private suspend fun resolveColorFromPlaylist(playlist: Playlist): Color {
+        val url = playlist.currentItem?.thumbnailUrl ?: return defaultColor
+        val thumbnailColor = cachedUrlToColor[url] ?: themeColorFromImage(url, context)
+        if (thumbnailColor != null) {
+            cachedUrlToColor[url] = thumbnailColor
+            return thumbnailColor
+        } else return defaultColor
     }
 }

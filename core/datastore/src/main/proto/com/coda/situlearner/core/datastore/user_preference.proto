@@ -12,6 +12,8 @@ message UserPreferenceProto {
   LanguageProto word_library_language = 1;
   DarkThemeModeProto dark_theme_mode = 3;
   ThemeColorModeProto theme_color_mode = 4;
+  int64 thumbnail_theme_color = 7;
   uint32 quiz_word_count = 5;
   uint32 recommended_word_count = 6;
+  // next id: 8
 }

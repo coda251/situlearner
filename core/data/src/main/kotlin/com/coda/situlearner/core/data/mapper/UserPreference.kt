@@ -8,11 +8,13 @@ internal fun UserPreferenceProto.asExternalModel(
     defaultWordLibraryLanguage: Language,
     defaultQuizWordCount: UInt,
     defaultRecommendedWordCount: UInt,
+    defaultThemeColor: Long
 ) = UserPreference(
     wordLibraryLanguage = wordLibraryLanguage.asExternalModel().takeIf { it != Language.Unknown }
         ?: defaultWordLibraryLanguage,
     darkThemeMode = darkThemeMode.asExternalModel(),
     themeColorMode = themeColorMode.asExternalModel(),
+    thumbnailThemeColor = thumbnailThemeColor.takeIf { it != 0L } ?: defaultThemeColor,
     quizWordCount = quizWordCount.toUInt().takeIf { it != 0u } ?: defaultQuizWordCount,
     recommendedWordCount = recommendedWordCount.toUInt().takeIf { it != 0u }
         ?: defaultRecommendedWordCount

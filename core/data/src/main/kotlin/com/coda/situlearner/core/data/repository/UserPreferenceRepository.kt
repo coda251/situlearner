@@ -19,4 +19,6 @@ interface UserPreferenceRepository {
     suspend fun setQuizWordCount(quizWordCount: UInt)
 
     suspend fun setRecommendedWordCount(recommendedWordCount: UInt)
+
+    suspend fun setThumbnailThemeColor(color: Long)
 }

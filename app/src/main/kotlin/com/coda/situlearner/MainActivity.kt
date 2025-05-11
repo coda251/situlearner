@@ -18,7 +18,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.navigation.ModalBottomSheetLayout
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.navigation.rememberBottomSheetNavigator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -28,6 +27,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.rememberNavController
+import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.ThemeColorMode
 import com.coda.situlearner.core.ui.theme.SituLearnerTheme
@@ -144,11 +144,8 @@ private fun getThemeColorMode(uiState: MainActivityUiState) = when (uiState) {
 
 @Composable
 private fun getThemeColor(uiState: MainActivityUiState) = when (uiState) {
-    MainActivityUiState.Loading -> MaterialTheme.colorScheme.primary
-    is MainActivityUiState.Success -> when (uiState.themeColor) {
-        androidx.compose.ui.graphics.Color.Unspecified -> MaterialTheme.colorScheme.primary
-        else -> uiState.themeColor
-    }
+    MainActivityUiState.Loading -> androidx.compose.ui.graphics.Color(AppConfig.DEFAULT_THEME_COLOR)
+    is MainActivityUiState.Success -> uiState.themeColor
 }
 
 private val DefaultLightScrim = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)

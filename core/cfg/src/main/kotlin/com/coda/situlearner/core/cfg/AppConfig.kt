@@ -3,6 +3,10 @@ package com.coda.situlearner.core.cfg
 import com.coda.situlearner.core.model.data.Language
 
 object AppConfig {
+
+    // ui config
+    const val DEFAULT_THEME_COLOR: Long = 0xFF6750A4
+
     // language config
     val targetLanguage = Language.Chinese
 

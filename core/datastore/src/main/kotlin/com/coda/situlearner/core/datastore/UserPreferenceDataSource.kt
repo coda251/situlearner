@@ -15,4 +15,6 @@ interface UserPreferenceDataSource {
     suspend fun setQuizWordCountProto(quizWordCount: UInt)
 
     suspend fun setRecommendedWordCountProto(recommendedWordCount: UInt)
+
+    suspend fun setThumbnailThemeColorProto(color: Long)
 }

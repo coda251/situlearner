@@ -46,4 +46,12 @@ internal class LocalUserPreferenceDataSource(private val userPreference: DataSto
             }
         }
     }
+
+    override suspend fun setThumbnailThemeColorProto(color: Long) {
+        userPreference.updateData {
+            it.copy {
+                this.thumbnailThemeColor = color
+            }
+        }
+    }
 }
