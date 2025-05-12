@@ -126,8 +126,10 @@ interface WordBankDao {
     suspend fun updateWordEntity(wordEntity: WordEntity) {
         getWordEntity(wordEntity.word, wordEntity.language)?.let {
             // find duplicate
-            updateWordContextEntity(it.id, wordEntity.id)
-            deleteWordEntity(it.id)
+            if (it.id != wordEntity.id) {
+                updateWordContextEntity(it.id, wordEntity.id)
+                deleteWordEntity(it.id)
+            }
         }
 
         updateWordEntityInternal(wordEntity)
