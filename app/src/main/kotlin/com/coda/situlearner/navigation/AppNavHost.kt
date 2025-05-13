@@ -34,9 +34,9 @@ import com.coda.situlearner.feature.word.edit.navigation.wordEditScreen
 import com.coda.situlearner.feature.word.list.navigation.WordListRoute
 import com.coda.situlearner.feature.word.list.navigation.navigateToWordList
 import com.coda.situlearner.feature.word.list.navigation.wordListScreen
-import com.coda.situlearner.feature.word.quiz.navigation.WordQuizRoute
-import com.coda.situlearner.feature.word.quiz.navigation.navigateToWordQuiz
-import com.coda.situlearner.feature.word.quiz.navigation.wordQuizScreen
+import com.coda.situlearner.feature.word.quiz.meaning.navigation.WordQuizRoute
+import com.coda.situlearner.feature.word.quiz.meaning.navigation.navigateToWordQuiz
+import com.coda.situlearner.feature.word.quiz.meaning.navigation.wordQuizScreen
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 

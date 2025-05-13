@@ -1,4 +1,4 @@
-package com.coda.situlearner.feature.word.quiz.model
+package com.coda.situlearner.feature.word.quiz.meaning.model
 
 enum class UserRating(val level: Int) {
     Easy(0),

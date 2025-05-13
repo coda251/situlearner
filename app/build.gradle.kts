@@ -47,7 +47,7 @@ dependencies {
     implementation(projects.feature.word.detail)
     implementation(projects.feature.word.echo)
     implementation(projects.feature.word.edit)
-    implementation(projects.feature.word.quiz)
+    implementation(projects.feature.word.quiz.meaning)
 
     implementation(projects.infra.explorerLocal)
     implementation(projects.infra.player)

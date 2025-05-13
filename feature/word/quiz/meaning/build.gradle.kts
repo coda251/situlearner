@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.coda.situlearner.feature.word.quiz"
+    namespace = "com.coda.situlearner.feature.word.quiz.meaning"
 }
 
 dependencies {

@@ -1,4 +1,4 @@
-package com.coda.situlearner.feature.word.quiz
+package com.coda.situlearner.feature.word.quiz.meaning
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,7 +8,7 @@ import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordQuizInfo
-import com.coda.situlearner.feature.word.quiz.model.UserRating
+import com.coda.situlearner.feature.word.quiz.meaning.model.UserRating
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
