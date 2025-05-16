@@ -1,5 +1,5 @@
 package com.coda.situlearner.core.model.data
 
-enum class ChatbotType {
-    Aliyun,
+enum class ChatbotType(val botName: String) {
+    Aliyun("阿里云百炼"),
 }

@@ -12,6 +12,8 @@ import com.coda.situlearner.feature.home.explore.library.navigation.navigateToEx
 import com.coda.situlearner.feature.home.media.collection.navigation.mediaCollectionSection
 import com.coda.situlearner.feature.home.media.collection.navigation.navigateToMediaCollection
 import com.coda.situlearner.feature.home.media.library.navigation.mediaLibrarySection
+import com.coda.situlearner.feature.home.settings.chatbot.navigation.navigateToSettingsChatbot
+import com.coda.situlearner.feature.home.settings.chatbot.navigation.settingsChatbotSection
 import com.coda.situlearner.feature.home.settings.common.navigation.settingsCommonSection
 import com.coda.situlearner.feature.home.word.book.navigation.navigateToWordBook
 import com.coda.situlearner.feature.home.word.book.navigation.wordBookSection
@@ -61,6 +63,12 @@ internal fun HomeNavHost(
             )
         }
 
-        settingsCommonSection()
+        settingsCommonSection(
+            onNavigateToChatbot = navController::navigateToSettingsChatbot
+        ) {
+            settingsChatbotSection(
+                onBack = navController::popBackStack
+            )
+        }
     }
 }

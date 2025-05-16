@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.cfg.AppConfig
+import com.coda.situlearner.core.model.data.ChatbotConfig
 import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.ThemeColorMode
@@ -45,6 +46,7 @@ import com.coda.situlearner.core.ui.R as coreR
 
 @Composable
 internal fun SettingsCommonScreen(
+    onNavigateToChatBot: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsCommonViewModel = koinViewModel()
 ) {
@@ -59,6 +61,7 @@ internal fun SettingsCommonScreen(
         onSelectWordLibraryLanguage = viewModel::setWordLibraryLanguage,
         onSetQuizWordCount = viewModel::setQuizWordCount,
         onSetRecommendedWordCount = viewModel::setRecommendedWordCount,
+        onClickChatBot = onNavigateToChatBot,
         onCheckUpdate = viewModel::checkAppUpdate,
         modifier = modifier
     )
@@ -74,6 +77,7 @@ private fun SettingsCommonScreen(
     onSelectWordLibraryLanguage: (Language) -> Unit,
     onSetQuizWordCount: (UInt) -> Unit,
     onSetRecommendedWordCount: (UInt) -> Unit,
+    onClickChatBot: () -> Unit,
     onCheckUpdate: (String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -102,12 +106,14 @@ private fun SettingsCommonScreen(
                         wordLibraryLanguage = uiState.wordLibraryLanguage,
                         quizWordCount = uiState.quizWordCount,
                         recommendedWordCount = uiState.recommendedWordCount,
+                        chatbotConfig = uiState.chatbotConfig,
                         versionState = versionState,
                         onSelectDarkThemeMode = onSelectDarkThemeMode,
                         onSelectThemeColorMode = onSelectThemeColorMode,
                         onSelectWordLibraryLanguage = onSelectWordLibraryLanguage,
                         onSetQuizWordCount = onSetQuizWordCount,
                         onSetRecommendedWordCount = onSetRecommendedWordCount,
+                        onClickChatBot = onClickChatBot,
                         onCheckUpdate = onCheckUpdate
                     )
                 }
@@ -123,12 +129,14 @@ private fun SettingsContentBoard(
     wordLibraryLanguage: Language,
     quizWordCount: UInt,
     recommendedWordCount: UInt,
+    chatbotConfig: ChatbotConfig?,
     versionState: VersionState,
     onSelectDarkThemeMode: (DarkThemeMode) -> Unit,
     onSelectThemeColorMode: (ThemeColorMode) -> Unit,
     onSelectWordLibraryLanguage: (Language) -> Unit,
     onSetQuizWordCount: (UInt) -> Unit,
     onSetRecommendedWordCount: (UInt) -> Unit,
+    onClickChatBot: () -> Unit,
     onCheckUpdate: (String?) -> Unit,
 ) {
     Column {
@@ -137,6 +145,7 @@ private fun SettingsContentBoard(
         WordFilterLanguageSelector(wordLibraryLanguage, onSelectWordLibraryLanguage)
         QuizWordCountSelector(quizWordCount, onSetQuizWordCount)
         RecommendedWordCountSelector(recommendedWordCount, onSetRecommendedWordCount)
+        ChatbotConfigItem(chatbotConfig, onClickChatBot)
         AppVersionCheckItem(versionState, onCheckUpdate)
     }
 }
@@ -403,6 +412,25 @@ private fun WordCountSelectorDialog(
                 )
             }
         }
+    )
+}
+
+@Composable
+private fun ChatbotConfigItem(
+    chatbotConfig: ChatbotConfig?,
+    onClickChatBot: () -> Unit,
+) {
+    ListItem(
+        headlineContent = {
+            Text(text = stringResource(R.string.home_settings_common_screen_chatbot))
+        },
+        supportingContent = {
+            Text(
+                text = chatbotConfig?.type?.botName
+                    ?: stringResource(R.string.home_settings_common_screen_chatbot_none)
+            )
+        },
+        modifier = Modifier.clickable(onClick = onClickChatBot)
     )
 }
 

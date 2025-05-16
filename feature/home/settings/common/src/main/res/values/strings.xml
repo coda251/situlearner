@@ -22,4 +22,6 @@
     <string name="home_settings_common_screen_check_failed">Check failed</string>
     <string name="home_settings_common_screen_up_to_date">Up to date</string>
     <string name="home_settings_common_screen_update_available">Update available</string>
+    <string name="home_settings_common_screen_chatbot">Chatbot</string>
+    <string name="home_settings_common_screen_chatbot_none">None</string>
 </resources>

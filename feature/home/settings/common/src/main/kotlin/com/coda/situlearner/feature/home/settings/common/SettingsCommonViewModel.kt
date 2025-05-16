@@ -2,7 +2,9 @@ package com.coda.situlearner.feature.home.settings.common
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.coda.situlearner.core.data.repository.AiStateRepository
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
+import com.coda.situlearner.core.model.data.ChatbotConfig
 import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.ThemeColorMode
@@ -13,21 +15,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-internal class SettingsCommonViewModel(private val userPreferenceRepository: UserPreferenceRepository) :
-    ViewModel() {
+internal class SettingsCommonViewModel(
+    private val userPreferenceRepository: UserPreferenceRepository,
+    aiStateRepository: AiStateRepository,
+) : ViewModel() {
 
-    val uiState = userPreferenceRepository.userPreference.map {
+    val uiState = combine(
+        userPreferenceRepository.userPreference,
+        aiStateRepository.aiState,
+    ) { preference, ai ->
         SettingsCommonUiState.Success(
-            darkThemeMode = it.darkThemeMode,
-            themeColorMode = it.themeColorMode,
-            wordLibraryLanguage = it.wordLibraryLanguage,
-            quizWordCount = it.quizWordCount,
-            recommendedWordCount = it.recommendedWordCount
+            darkThemeMode = preference.darkThemeMode,
+            themeColorMode = preference.themeColorMode,
+            wordLibraryLanguage = preference.wordLibraryLanguage,
+            quizWordCount = preference.quizWordCount,
+            recommendedWordCount = preference.recommendedWordCount,
+            chatbotConfig = ai.configs.getOrNull(ai.currentIndex),
         )
     }.stateIn(
         scope = viewModelScope,
@@ -82,7 +90,6 @@ internal class SettingsCommonViewModel(private val userPreferenceRepository: Use
     }
 }
 
-
 internal sealed interface SettingsCommonUiState {
     data object Loading : SettingsCommonUiState
     data class Success(
@@ -91,5 +98,6 @@ internal sealed interface SettingsCommonUiState {
         val wordLibraryLanguage: Language,
         val quizWordCount: UInt,
         val recommendedWordCount: UInt,
+        val chatbotConfig: ChatbotConfig?,
     ) : SettingsCommonUiState
 }

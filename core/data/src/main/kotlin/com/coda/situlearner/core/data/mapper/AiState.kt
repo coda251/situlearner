@@ -4,10 +4,11 @@ import com.coda.situlearner.core.datastore.AiStateProto
 import com.coda.situlearner.core.datastore.AliyunConfigProto
 import com.coda.situlearner.core.datastore.ChatbotConfigProto
 import com.coda.situlearner.core.model.data.AiState
+import com.coda.situlearner.core.model.data.Aliyun
 import com.coda.situlearner.core.model.data.ChatbotConfig
 
 internal fun ChatbotConfigProto.asExternalModel(): ChatbotConfig? = when (detailsCase) {
-    ChatbotConfigProto.DetailsCase.ALIYUN -> ChatbotConfig.Aliyun(
+    ChatbotConfigProto.DetailsCase.ALIYUN -> Aliyun(
         apiKey = aliyun.apiKey,
         model = aliyun.model,
     )
@@ -17,7 +18,7 @@ internal fun ChatbotConfigProto.asExternalModel(): ChatbotConfig? = when (detail
 
 internal fun ChatbotConfig.asProto() = ChatbotConfigProto.newBuilder().apply {
     when (this@asProto) {
-        is ChatbotConfig.Aliyun -> {
+        is Aliyun -> {
             this.setAliyun(
                 AliyunConfigProto.newBuilder().apply {
                     this.apiKey = this@asProto.apiKey

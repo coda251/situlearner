@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_settings_chatbot_screen_current">Current</string>
+    <string name="home_settings_chatbot_screen_api_key">API key</string>
+    <string name="home_settings_chatbot_screen_model">Model</string>
+</resources>
