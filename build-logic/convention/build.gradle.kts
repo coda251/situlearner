@@ -34,6 +34,12 @@ gradlePlugin {
         }
     }
     plugins {
+        register("ktor") {
+            id = libs.plugins.situlearner.ktor.get().pluginId
+            implementationClass = "KtorConventionPlugin"
+        }
+    }
+    plugins {
         register("room") {
             id = libs.plugins.situlearner.room.get().pluginId
             implementationClass = "RoomConventionPlugin"

@@ -98,4 +98,5 @@ situlearner-compose = { id = "situlearner.compose" }
 situlearner-feature = { id = "situlearner.feature" }
 situlearner-jvm-library = { id = "situlearner.jvm.library" }
 situlearner-koin = { id = "situlearner.koin" }
+situlearner-ktor = { id = "situlearner.ktor" }
 situlearner-room = { id = "situlearner.room" }
