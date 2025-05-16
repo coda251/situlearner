@@ -4,6 +4,10 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
+import com.coda.situlearner.core.datastore.AiStateDataSource
+import com.coda.situlearner.core.datastore.AiStateProto
+import com.coda.situlearner.core.datastore.AiStateSerializer
+import com.coda.situlearner.core.datastore.LocalAiStateDataSource
 import com.coda.situlearner.core.datastore.LocalPlayerStateDataSource
 import com.coda.situlearner.core.datastore.LocalUserPreferenceDataSource
 import com.coda.situlearner.core.datastore.PlayerStateDataSource
@@ -24,6 +28,10 @@ val dataStoreModule = module {
     single<PlayerStateDataSource> {
         LocalPlayerStateDataSource(providePlayerStateDataStore(get(), PlayerStateSerializer()))
     }
+
+    single<AiStateDataSource> {
+        LocalAiStateDataSource(provideAiStateDataStore(get(), AiStateSerializer()))
+    }
 }
 
 private fun providePreferenceDataStore(
@@ -38,4 +46,11 @@ private fun providePlayerStateDataStore(
     serializer: PlayerStateSerializer,
 ): DataStore<PlayerStateProto> = DataStoreFactory.create(serializer = serializer) {
     context.dataStoreFile("player_state.pb")
+}
+
+private fun provideAiStateDataStore(
+    context: Context,
+    serializer: AiStateSerializer,
+): DataStore<AiStateProto> = DataStoreFactory.create(serializer = serializer) {
+    context.dataStoreFile("ai_state.pb")
 }

@@ -1,5 +1,7 @@
 package com.coda.situlearner.core.data.di
 
+import com.coda.situlearner.core.data.repository.AiStateRepository
+import com.coda.situlearner.core.data.repository.LocalAiStateRepository
 import com.coda.situlearner.core.data.repository.LocalMediaRepository
 import com.coda.situlearner.core.data.repository.LocalPlayerStateRepository
 import com.coda.situlearner.core.data.repository.LocalUserPreferenceRepository
@@ -25,5 +27,9 @@ val repositoryModule = module {
 
     single<PlayerStateRepository> {
         LocalPlayerStateRepository(get())
+    }
+
+    single<AiStateRepository> {
+        LocalAiStateRepository(get())
     }
 }
