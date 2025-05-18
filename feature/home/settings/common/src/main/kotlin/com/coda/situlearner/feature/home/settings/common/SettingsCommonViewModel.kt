@@ -11,6 +11,7 @@ import com.coda.situlearner.core.model.data.ThemeColorMode
 import com.coda.situlearner.feature.home.settings.common.model.VersionState
 import com.coda.situlearner.feature.home.settings.common.util.getRelease
 import com.coda.situlearner.feature.home.settings.common.util.toVersionState
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +24,7 @@ import kotlinx.coroutines.withContext
 internal class SettingsCommonViewModel(
     private val userPreferenceRepository: UserPreferenceRepository,
     aiStateRepository: AiStateRepository,
+    private val client: HttpClient,
 ) : ViewModel() {
 
     val uiState = combine(
@@ -81,7 +83,7 @@ internal class SettingsCommonViewModel(
             _versionState.value = VersionState.Loading
             _versionState.value = withContext(Dispatchers.IO) {
                 try {
-                    getRelease().toVersionState(currentVersion)
+                    getRelease(client).toVersionState(currentVersion)
                 } catch (e: Exception) {
                     VersionState.Failed
                 }

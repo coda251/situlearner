@@ -3,13 +3,9 @@ package com.coda.situlearner.feature.home.settings.common.util
 import com.coda.situlearner.feature.home.settings.common.model.VersionState
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 
 @Serializable
 internal data class GitHubRelease(
@@ -24,19 +20,7 @@ internal data class GitHubAsset(
 
 private const val GITHUB_API = "https://api.github.com/repos/coda251/situlearner/releases/latest"
 
-private val client by lazy {
-    HttpClient(CIO) {
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    ignoreUnknownKeys = true
-                }
-            )
-        }
-    }
-}
-
-internal suspend fun getRelease(): GitHubRelease = client.get(GITHUB_API).body()
+internal suspend fun getRelease(client: HttpClient): GitHubRelease = client.get(GITHUB_API).body()
 
 private fun hasUpdate(local: String, remote: String): Boolean {
     // currently, we do not handle x.y.z-alpha (or beta, rc...)

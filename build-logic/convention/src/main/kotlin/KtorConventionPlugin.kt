@@ -12,7 +12,7 @@ class KtorConventionPlugin: Plugin<Project> {
             dependencies {
                 "implementation"(libs.findLibrary("ktor-client-cio").get())
                 "implementation"(libs.findLibrary("ktor-client-content-negotiation").get())
-                "implementation"(libs.findLibrary("ktor-client-core").get())
+                "api"(libs.findLibrary("ktor-client-core").get())
                 "implementation"(libs.findLibrary("ktor-serialization-kotlinx-json").get())
             }
         }

@@ -3,7 +3,3 @@ plugins {
     alias(libs.plugins.situlearner.koin)
     alias(libs.plugins.situlearner.ktor)
 }
-
-dependencies {
-    api(libs.ktor.client.core)
-}
