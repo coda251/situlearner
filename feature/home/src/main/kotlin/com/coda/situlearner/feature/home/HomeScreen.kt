@@ -64,6 +64,7 @@ internal fun HomeScreen(
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
     onNavigateToPlayer: () -> Unit,
+    onNavigateToQuizSentence: () -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
     val playerState by PlayerStateProvider.state.collectAsStateWithLifecycle()
@@ -89,6 +90,7 @@ internal fun HomeScreen(
                 onNavigateToWordList = onNavigateToWordList,
                 onNavigateToWordDetail = onNavigateToWordDetail,
                 onNavigateToWordQuiz = onNavigateToWordQuiz,
+                onNavigateToQuizSentence = onNavigateToQuizSentence,
                 navController = navController,
             )
         }

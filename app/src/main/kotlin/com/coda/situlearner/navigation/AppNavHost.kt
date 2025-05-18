@@ -37,6 +37,9 @@ import com.coda.situlearner.feature.word.list.navigation.wordListScreen
 import com.coda.situlearner.feature.word.quiz.meaning.navigation.WordQuizRoute
 import com.coda.situlearner.feature.word.quiz.meaning.navigation.navigateToWordQuiz
 import com.coda.situlearner.feature.word.quiz.meaning.navigation.wordQuizScreen
+import com.coda.situlearner.feature.word.quiz.sentence.navigation.QuizSentenceRoute
+import com.coda.situlearner.feature.word.quiz.sentence.navigation.navigateToQuizSentence
+import com.coda.situlearner.feature.word.quiz.sentence.navigation.quizSentenceScreen
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 
@@ -59,6 +62,7 @@ fun AppNavHost(
             onNavigateToWordDetail = appNavController::navigateToWordDetail,
             onNavigateToPlayer = appNavController::navigateToPlayerEntry,
             onNavigateToWordQuiz = appNavController::navigateToWordQuiz,
+            onNavigateToQuizSentence = appNavController::navigateToQuizSentence
         )
 
         wordListScreen(
@@ -82,6 +86,10 @@ fun AppNavHost(
         }
 
         wordQuizScreen(
+            onBack = appNavController::popBackStack
+        )
+
+        quizSentenceScreen(
             onBack = appNavController::popBackStack
         )
 
@@ -123,7 +131,8 @@ private fun SwitchPlaylistType(
             if (navBackStack.any {
                     it.destination.hasRoute(WordDetailRoute::class) ||
                             it.destination.hasRoute(WordListRoute::class) ||
-                            it.destination.hasRoute(WordQuizRoute::class)
+                            it.destination.hasRoute(WordQuizRoute::class) ||
+                            it.destination.hasRoute(QuizSentenceRoute::class)
                 }) PlaylistType.Temporary
             else PlaylistType.Persistent
         }

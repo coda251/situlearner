@@ -9,4 +9,6 @@
     <string name="home_word_library_screen_current_language_no_words">当前语言（%s）下没有单词</string>
     <string name="home_word_library_screen_change_language">更换语言？</string>
     <string name="home_word_library_screen_more">更多</string>
+    <string name="home_word_library_quiz_on_meaning">词义测试</string>
+    <string name="home_word_library_quiz_on_translation">翻译测试</string>
 </resources>

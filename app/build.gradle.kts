@@ -37,6 +37,7 @@ dependencies {
     implementation(projects.core.database)
     implementation(projects.core.datastore)
     implementation(projects.core.model)
+    implementation(projects.core.network)
     implementation(projects.core.ui)
 
     implementation(projects.feature.home)
@@ -48,6 +49,7 @@ dependencies {
     implementation(projects.feature.word.echo)
     implementation(projects.feature.word.edit)
     implementation(projects.feature.word.quiz.meaning)
+    implementation(projects.feature.word.quiz.sentence)
 
     implementation(projects.infra.explorerLocal)
     implementation(projects.infra.player)

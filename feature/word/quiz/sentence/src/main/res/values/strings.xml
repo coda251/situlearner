@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="word_quiz_sentence_screen_no_word_error">No proficient word for sentence quiz</string>
+    <string name="word_quiz_sentence_screen_no_chatbot_error">No chatbot is available</string>
+</resources>
