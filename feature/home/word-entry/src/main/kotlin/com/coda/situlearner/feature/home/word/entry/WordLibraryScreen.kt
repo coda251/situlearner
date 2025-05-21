@@ -64,6 +64,7 @@ import com.coda.situlearner.feature.home.word.entry.model.WordBook
 import com.coda.situlearner.feature.home.word.entry.model.WordBookType
 import com.coda.situlearner.feature.home.word.entry.model.toWordBooks
 import org.koin.androidx.compose.koinViewModel
+import com.coda.situlearner.core.ui.R as coreR
 
 @Composable
 internal fun WordLibraryScreen(
@@ -408,7 +409,7 @@ private fun WordsRecommendationContent(
                 }
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.refresh_24dp_000000_fill0_wght400_grad0_opsz24),
+                    painter = painterResource(coreR.drawable.refresh_24dp_000000_fill0_wght400_grad0_opsz24),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
