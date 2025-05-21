@@ -11,13 +11,13 @@ data object QuizSentenceRoute
 
 fun NavController.navigateToQuizSentence() {
     navigate(QuizSentenceRoute)
-
 }
 
 fun NavGraphBuilder.quizSentenceScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToWordDetail: (String) -> Unit,
 ) {
     composable<QuizSentenceRoute> {
-        QuizSentenceScreen(onBack)
+        QuizSentenceScreen(onBack, onNavigateToWordDetail)
     }
 }

@@ -90,7 +90,8 @@ fun AppNavHost(
         )
 
         quizSentenceScreen(
-            onBack = appNavController::popBackStack
+            onBack = appNavController::popBackStack,
+            onNavigateToWordDetail = appNavController::navigateToWordDetail
         )
 
         playerEntryScreen(

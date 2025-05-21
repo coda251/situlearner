@@ -2,4 +2,8 @@
 <resources>
 <string name="word_quiz_sentence_screen_no_word_error">No proficient word for sentence quiz</string>
     <string name="word_quiz_sentence_screen_no_chatbot_error">No chatbot is available</string>
+    <string name="word_quiz_sentence_screen_retry">Retry</string>
+    <string name="word_quiz_sentence_screen_ask_external">Ask %s</string>
+    <string name="word_quiz_sentence_screen_next_question">Next question</string>
+    <string name="word_quiz_sentence_screen_view_word">View word</string>
 </resources>

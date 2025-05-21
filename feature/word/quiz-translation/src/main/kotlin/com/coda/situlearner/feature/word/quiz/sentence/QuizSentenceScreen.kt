@@ -1,5 +1,8 @@
 package com.coda.situlearner.feature.word.quiz.sentence
 
+import android.content.ClipData
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,60 +17,82 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.infra.ChatMessage
 import com.coda.situlearner.core.model.infra.ChatRole
 import com.coda.situlearner.core.ui.widget.BackButton
+import com.coda.situlearner.feature.word.quiz.sentence.util.ExternalChatbot
+import com.coda.situlearner.feature.word.quiz.sentence.util.asExternalPrompt
+import com.coda.situlearner.feature.word.quiz.sentence.util.launchExternalChatbot
 import com.coda.situlearner.feature.word.quiz.translation.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import com.coda.situlearner.core.ui.R as coreR
 
 @Composable
 internal fun QuizSentenceScreen(
     onBack: () -> Unit,
+    onNavigateToWordDetail: (String) -> Unit,
     viewModel: QuizSentenceViewModel = koinViewModel()
 ) {
-    val initUiState by viewModel.initUiState.collectAsStateWithLifecycle()
-    val sessionUiState by viewModel.sessionUiState.collectAsStateWithLifecycle()
+    val initUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     QuizSentenceScreen(
-        initUiState = initUiState,
-        sessionUiState = sessionUiState,
+        uiState = initUiState,
         onBack = onBack,
-        onSubmit = viewModel::submit
+        onSubmit = viewModel::submit,
+        onRetry = viewModel::retry,
+        onNextQuiz = viewModel::nextQuiz,
+        onViewWord = onNavigateToWordDetail
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun QuizSentenceScreen(
-    initUiState: InitUiState,
-    sessionUiState: SessionUiState,
+    uiState: UiState,
     onBack: () -> Unit,
-    onSubmit: (String) -> Unit
+    onSubmit: (UiState.ChatSession, String) -> Unit,
+    onRetry: (UiState.ChatSession) -> Unit,
+    onNextQuiz: () -> Unit,
+    onViewWord: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -78,41 +103,38 @@ private fun QuizSentenceScreen(
                 }
             )
         },
-    ) {
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(paddingValues)
                 .imePadding()
-                .consumeWindowInsets(it)
+                .consumeWindowInsets(paddingValues)
         ) {
-            when (initUiState) {
-                InitUiState.Loading -> CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-
-                InitUiState.NoWordError -> {
+            when (uiState) {
+                UiState.Loading -> {}
+                UiState.NoWordError -> {
                     Text(
                         modifier = Modifier.align(Alignment.Center),
                         text = stringResource(R.string.word_quiz_sentence_screen_no_word_error)
                     )
                 }
 
-                InitUiState.NoChatbotError -> {
+                UiState.NoChatbotError -> {
                     Text(
                         modifier = Modifier.align(Alignment.Center),
                         text = stringResource(R.string.word_quiz_sentence_screen_no_chatbot_error)
                     )
                 }
 
-                is InitUiState.Ready -> {
-                    when (sessionUiState) {
-                        SessionUiState.Loading -> CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-
-                        is SessionUiState.Result -> ChatScreen(sessionUiState, onSubmit)
-                    }
+                is UiState.ChatSession -> {
+                    ChatScreen(
+                        session = uiState,
+                        onSubmit = { onSubmit(uiState, it) },
+                        onRetry = { onRetry(uiState) },
+                        onNextQuiz = onNextQuiz,
+                        onViewWord = onViewWord
+                    )
                 }
             }
         }
@@ -121,53 +143,140 @@ private fun QuizSentenceScreen(
 
 @Composable
 private fun ChatScreen(
-    session: SessionUiState.Result,
-    onSubmit: (String) -> Unit
+    session: UiState.ChatSession,
+    onSubmit: (String) -> Unit,
+    onRetry: () -> Unit,
+    onNextQuiz: () -> Unit,
+    onViewWord: (String) -> Unit
+) {
+    when (session.quizState) {
+        QuizState.LoadingQuestion -> {
+            LoadingQuestionBoard(session, onRetry)
+        }
+
+        else -> {
+            ChatContentBoard(
+                session = session,
+                onSubmit = onSubmit,
+                onRetry = onRetry,
+                onNextQuiz = onNextQuiz,
+                onViewWord = onViewWord
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChatContentBoard(
+    session: UiState.ChatSession,
+    onSubmit: (String) -> Unit,
+    onRetry: () -> Unit,
+    onNextQuiz: () -> Unit,
+    onViewWord: (String) -> Unit,
 ) {
     Column {
         LazyColumn(modifier = Modifier.weight(1f)) {
-            items(
-                items = session.messages.subList(1, session.messages.size),
-            ) {
-                ChatMessageItem(message = it)
+            items(items = session.messages) {
+                MessageItem(message = it)
             }
             item {
                 when (val state = session.state) {
-                    ChatSessionState.Loading -> ChatStateLoading()
-                    is ChatSessionState.Error -> ChatStateError(state.message)
+                    ChatSessionState.Loading -> MessageLoading()
+                    is ChatSessionState.Error -> MessageError(state.message, onRetry)
                     ChatSessionState.WaitingInput -> {}
                 }
             }
         }
 
-        InputBar(ableToSubmit = session.state != ChatSessionState.Loading, onSubmit)
+        if (session.quizState == QuizState.Question) {
+            InputBar(onSubmit)
+        }
+
+        AnimatedVisibility(
+            visible = session.quizState == QuizState.LoadingAnswer ||
+                    session.quizState == QuizState.Answer
+        ) {
+            ExtraOptionsFAB(session, onNextQuiz, onViewWord)
+        }
+    }
+}
+
+@Composable
+private fun LoadingQuestionBoard(
+    session: UiState.ChatSession,
+    onRetry: () -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (val state = session.state) {
+            ChatSessionState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            is ChatSessionState.Error -> {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        text = state.message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                    TextButton(onClick = onRetry) {
+                        Text(
+                            text = stringResource(R.string.word_quiz_sentence_screen_retry),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            }
+
+            ChatSessionState.WaitingInput -> {}
+        }
     }
 }
 
 @Composable
 private fun InputBar(
-    ableToSubmit: Boolean = true,
     onSubmit: (String) -> Unit
 ) {
-    var text by remember {
-        mutableStateOf("")
+    var text by remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        delay(200)
+        focusRequester.requestFocus()
     }
 
     OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 24.dp),
+            .focusRequester(focusRequester)
+            .padding(horizontal = 16.dp, vertical = 16.dp),
         value = text,
-        onValueChange = {
-            text = it
-        },
+        onValueChange = { text = it },
         trailingIcon = {
             IconButton(
                 onClick = {
-                    onSubmit(text)
-                    text = ""
+                    // NOTE: delay 200L to make sure the soft keyboard is first hidden and
+                    //  avoid recompose immediately (the whole input bar is not visible).
+                    //  In this case, the probability of the "soft keyboard flickering bug"
+                    //  (see https://stackoverflow.com/questions/76901241)
+                    //  could decrease to 5 out of 10 (if no delay is deployed, then it is 9 / 10)
+                    //  in debug mode.
+                    focusManager.clearFocus(force = true)
+                    coroutineScope.launch {
+                        delay(200L)
+                        onSubmit(text)
+                        text = ""
+                    }
                 },
-                enabled = ableToSubmit
             ) {
                 Icon(
                     modifier = Modifier.rotate(90f),
@@ -180,7 +289,84 @@ private fun InputBar(
 }
 
 @Composable
-private fun ChatStateLoading() {
+private fun ExtraOptionsFAB(
+    session: UiState.ChatSession,
+    onNextQuiz: () -> Unit,
+    onViewWord: (String) -> Unit
+) {
+    val context = LocalContext.current
+    val clipboard = LocalClipboard.current
+
+    var showExtraOptions by remember { mutableStateOf(false) }
+
+    // NOTE: wait for FloatingActionButtonMenu
+    Box(modifier = Modifier.fillMaxWidth()) {
+        FloatingActionButton(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 16.dp, bottom = 16.dp),
+            onClick = {
+                showExtraOptions = true
+            }
+        ) {
+            Icon(
+                painter = painterResource(coreR.drawable.add_24dp_000000_fill0_wght400_grad0_opsz24),
+                contentDescription = null
+            )
+
+            DropdownMenu(
+                expanded = showExtraOptions,
+                onDismissRequest = { showExtraOptions = false }
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(
+                                R.string.word_quiz_sentence_screen_ask_external,
+                                ExternalChatbot.ChatGPT.displayName
+                            )
+                        )
+                    },
+                    onClick = {
+                        showExtraOptions = false
+                        clipboard.nativeClipboard.setPrimaryClip(
+                            ClipData.newPlainText(
+                                "text",
+                                session.asExternalPrompt()
+                            )
+                        )
+                        launchExternalChatbot(context, ExternalChatbot.ChatGPT)
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = {
+                        Text(text = stringResource(R.string.word_quiz_sentence_screen_next_question))
+                    },
+                    onClick = {
+                        showExtraOptions = false
+                        onNextQuiz()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.word_quiz_sentence_screen_view_word)
+                        )
+                    },
+                    onClick = {
+                        showExtraOptions = false
+                        onViewWord(session.word.id)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MessageLoading() {
     ListItem(
         headlineContent = {},
         leadingContent = {
@@ -194,8 +380,9 @@ private fun ChatStateLoading() {
 }
 
 @Composable
-private fun ChatStateError(
-    message: String
+private fun MessageError(
+    message: String,
+    onRetry: () -> Unit,
 ) {
     ListItem(
         headlineContent = {
@@ -204,19 +391,25 @@ private fun ChatStateError(
                 color = MaterialTheme.colorScheme.error
             )
         },
-        leadingContent = {
-            Icon(
-                painter = painterResource(coreR.drawable.error_24dp_000000_fill0_wght400_grad0_opsz24),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error
-            )
+        trailingContent = {
+            IconButton(
+                onClick = onRetry,
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Icon(
+                    painter = painterResource(coreR.drawable.refresh_24dp_000000_fill0_wght400_grad0_opsz24),
+                    contentDescription = null
+                )
+            }
         },
         colors = ListItemDefaults.colors(Color.Transparent)
     )
 }
 
 @Composable
-private fun ChatMessageItem(message: ChatMessage) {
+private fun MessageItem(message: ChatMessage) {
     ListItem(
         headlineContent = {
             when (message.role) {
@@ -248,38 +441,32 @@ private fun ChatMessageItem(message: ChatMessage) {
 @Preview(showBackground = true)
 private fun ChatMessagePreview() {
     Column {
-        ChatMessageItem(
+        MessageItem(
             message = ChatMessage(
                 role = ChatRole.Bot,
                 content = "Hello, how are you?"
             )
         )
-        ChatMessageItem(
+        MessageItem(
             message = ChatMessage(
                 role = ChatRole.User,
                 content = "Good. How are you?"
             )
         )
-        ChatMessageItem(
+        MessageItem(
             message = ChatMessage(
                 role = ChatRole.Bot,
                 content = "I am pretty pretty pretty pretty pretty pretty good."
             )
         )
-        ChatMessageItem(
+        MessageItem(
             message = ChatMessage(
                 role = ChatRole.User,
                 content = "Well, that is a very mature answer. And I am gonna tell you that..."
             )
         )
 
-        ChatStateLoading()
-        ChatStateError("Network error")
+        MessageLoading()
+        MessageError("Network error", onRetry = {})
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-private fun InputBarPreview() {
-    InputBar(onSubmit = {})
 }

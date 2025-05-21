@@ -2,4 +2,8 @@
 <resources>
     <string name="word_quiz_sentence_screen_no_word_error">无熟练单词用于测试</string>
     <string name="word_quiz_sentence_screen_no_chatbot_error">无聊天机器人</string>
+    <string name="word_quiz_sentence_screen_retry">重试</string>
+    <string name="word_quiz_sentence_screen_ask_external">问%s</string>
+    <string name="word_quiz_sentence_screen_next_question">下一题</string>
+    <string name="word_quiz_sentence_screen_view_word">查看单词</string>
 </resources>
