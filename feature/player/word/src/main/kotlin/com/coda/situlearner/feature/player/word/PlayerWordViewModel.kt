@@ -61,7 +61,7 @@ internal class PlayerWordViewModel(
                 WordContextUiState.OnlyWord(it)
             } ?: WordContextUiState.Empty
         }
-    }.flowOn(Dispatchers.IO).stateIn(
+    }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = WordContextUiState.Loading

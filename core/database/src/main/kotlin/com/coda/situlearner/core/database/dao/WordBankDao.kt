@@ -131,7 +131,7 @@ interface WordBankDao {
     }
 
     @Query("SELECT * FROM WordEntity WHERE id = :id")
-    fun getWordEntity(id: String): WordEntity?
+    suspend fun getWordEntity(id: String): WordEntity?
 
     @Query("DELETE FROM WordEntity WHERE id = :id")
     suspend fun deleteWordEntity(id: String)
