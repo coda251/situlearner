@@ -6,4 +6,9 @@
     <string name="word_quiz_sentence_screen_ask_external">问%s</string>
     <string name="word_quiz_sentence_screen_next_question">下一题</string>
     <string name="word_quiz_sentence_screen_view_word">查看单词</string>
+    <string name="word_quiz_sentence_screen_evaluate_yes">是的</string>
+    <string name="word_quiz_sentence_screen_evaluate_no">不是</string>
+    <string name="word_quiz_sentence_screen_evaluate_is_used">使用了单词：%s？</string>
+    <string name="word_quiz_sentence_screen_evaluate_usage">单词变形和搭配是否正确？</string>
+    <string name="word_quiz_sentence_screen_evaluate_recall">能否回忆起单词的用法？</string>
 </resources>

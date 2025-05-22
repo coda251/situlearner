@@ -6,4 +6,9 @@
     <string name="word_quiz_sentence_screen_ask_external">Ask %s</string>
     <string name="word_quiz_sentence_screen_next_question">Next question</string>
     <string name="word_quiz_sentence_screen_view_word">View word</string>
+    <string name="word_quiz_sentence_screen_evaluate_yes">Yes</string>
+    <string name="word_quiz_sentence_screen_evaluate_no">No</string>
+    <string name="word_quiz_sentence_screen_evaluate_is_used">Use the word: %s?</string>
+    <string name="word_quiz_sentence_screen_evaluate_usage">Are the word forms and collocations correct?</string>
+    <string name="word_quiz_sentence_screen_evaluate_recall">Can recall the usage of the word?</string>
 </resources>
