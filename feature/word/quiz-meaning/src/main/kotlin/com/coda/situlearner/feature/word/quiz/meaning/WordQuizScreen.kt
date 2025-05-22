@@ -56,7 +56,7 @@ import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
 import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.core.ui.widget.WordContextText
-import com.coda.situlearner.feature.word.quiz.meaning.model.UserRating
+import com.coda.situlearner.core.model.feature.UserRating
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 import org.koin.androidx.compose.koinViewModel

@@ -15,7 +15,7 @@ import kotlinx.datetime.Instant
         )
     ]
 )
-data class WordQuizInfoEntity(
+data class MeaningQuizStatsEntity(
     @PrimaryKey val wordId: String,
     val easeFactor: Double,
     val intervalDays: Int,

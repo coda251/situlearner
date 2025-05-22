@@ -100,7 +100,7 @@ internal class WordListViewModel(
                 WordSortBy.LastViewedDate -> (it.word.lastViewedDate?.toEpochMilliseconds()
                     ?: 0L) * sortModeFactor
 
-                WordSortBy.Proficiency -> it.word.proficiency.level.toLong() * sortModeFactor
+                WordSortBy.Proficiency -> it.word.meaningProficiency.level.toLong() * sortModeFactor
             }
         }
     }

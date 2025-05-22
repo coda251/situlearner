@@ -6,9 +6,10 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
+import com.coda.situlearner.core.database.entity.MeaningQuizStatsEntity
+import com.coda.situlearner.core.database.entity.TranslationQuizStatsEntity
 import com.coda.situlearner.core.database.entity.WordContextEntity
 import com.coda.situlearner.core.database.entity.WordEntity
-import com.coda.situlearner.core.database.entity.WordQuizInfoEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.database.model.Language
 import com.coda.situlearner.core.database.model.WordProficiency
@@ -41,7 +42,7 @@ interface WordBankDao {
         }
     }
 
-    @Query("UPDATE WordEntity SET proficiency = :proficiency WHERE id = :id")
+    @Query("UPDATE WordEntity SET meaningProficiency = :proficiency WHERE id = :id")
     suspend fun updateWordEntity(id: String, proficiency: WordProficiency)
 
     @Query(
@@ -81,7 +82,7 @@ interface WordBankDao {
     @Query(
         """
         SELECT w.* FROM WordEntity w
-        LEFT JOIN WordQuizInfoEntity q ON w.id = q.wordId
+        LEFT JOIN MeaningQuizStatsEntity q ON w.id = q.wordId
         WHERE 
             w.language == :language
             AND (q.wordId IS NULL OR (q.nextQuizDate <= :currentDate))
@@ -97,11 +98,30 @@ interface WordBankDao {
         number: Int
     ): List<WordWithContextsEntity>
 
-    @Query("SELECT * FROM WordQuizInfoEntity WHERE wordId IN (:ids)")
-    suspend fun getWordQuizInfoEntities(ids: Set<String>): List<WordQuizInfoEntity>
+    @Query("SELECT * FROM TranslationQuizStatsEntity WHERE wordId = :wordId")
+    suspend fun getTranslationQuizStatsEntity(wordId: String): TranslationQuizStatsEntity?
+
+    @Transaction
+    @Query(
+        """
+        SELECT w.* FROM WordEntity w
+        LEFT JOIN TranslationQuizStatsEntity t ON w.id = t.wordId
+        WHERE 
+            w.language == :language AND w.meaningProficiency = :proficiency
+            AND (t.wordId IS NULL OR t.nextQuizDate <= :currentDate)
+        """
+    )
+    suspend fun getTranslationQuizCandidates(
+        language: Language,
+        currentDate: Instant,
+        proficiency: WordProficiency
+    ): List<WordEntity>
+
+    @Query("SELECT * FROM MeaningQuizStatsEntity WHERE wordId IN (:ids)")
+    suspend fun getMeaningQuizStatsEntities(ids: Set<String>): List<MeaningQuizStatsEntity>
 
     @Upsert
-    suspend fun upsertWordQuizInfoEntities(infoList: List<WordQuizInfoEntity>)
+    suspend fun upsertMeaningQuizStatsEntity(entities: List<MeaningQuizStatsEntity>)
 
     @Transaction
     suspend fun updateWordEntities(idToProficiency: Map<String, WordProficiency>) {
@@ -134,4 +154,7 @@ interface WordBankDao {
 
         updateWordEntityInternal(wordEntity)
     }
+
+    @Upsert
+    suspend fun upsertTranslationQuizStatsEntity(entity: TranslationQuizStatsEntity)
 }

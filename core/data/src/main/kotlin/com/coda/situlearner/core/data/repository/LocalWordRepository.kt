@@ -7,13 +7,14 @@ import com.coda.situlearner.core.data.mapper.asExternalModel
 import com.coda.situlearner.core.data.mapper.asValue
 import com.coda.situlearner.core.data.util.selectRecommendedWords
 import com.coda.situlearner.core.database.dao.WordBankDao
-import com.coda.situlearner.core.database.entity.WordQuizInfoEntity
+import com.coda.situlearner.core.database.entity.MeaningQuizStatsEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.model.data.Language
+import com.coda.situlearner.core.model.data.MeaningQuizStats
+import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordProficiency
-import com.coda.situlearner.core.model.data.WordQuizInfo
 import com.coda.situlearner.core.model.data.WordWithContexts
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -69,6 +70,26 @@ internal class LocalWordRepository(
         return wordBankDao.getWordEntity(wordId)?.asExternalModel()
     }
 
+    override suspend fun getTranslationQuizWord(language: Language, currentDate: Instant): Word? {
+        val candidates = wordBankDao.getTranslationQuizCandidates(
+            language.asValue(),
+            currentDate,
+            proficiency = WordProficiency.Proficient.asValue()
+        )
+        if (candidates.isEmpty()) return null
+
+        val statsEntityList =
+            wordBankDao.getMeaningQuizStatsEntities(candidates.map { it.id }.toSet())
+        val statsEntityMap = statsEntityList.associateBy { it.wordId }
+
+        return candidates
+            .mapNotNull { word ->
+                statsEntityMap[word.id]?.let { stats -> word to stats.nextQuizDate }
+            }
+            .maxByOrNull { it.second }
+            ?.first?.asExternalModel()
+    }
+
     override fun getWordWithContexts(wordId: String): Flow<WordWithContexts?> {
         return wordBankDao.getWordWithContextEntity(wordId).map { wordWithContextsEntity ->
             wordWithContextsEntity?.asExternalModel()?.resolveMediaUrl(
@@ -103,12 +124,13 @@ internal class LocalWordRepository(
         return wordBankDao.updateWordEntity(word.id, date)
     }
 
-    override suspend fun getWordQuizInfo(ids: Set<String>): List<WordQuizInfo> {
-        return wordBankDao.getWordQuizInfoEntities(ids).map(WordQuizInfoEntity::asExternalModel)
+    override suspend fun getMeaningQuizStats(ids: Set<String>): List<MeaningQuizStats> {
+        return wordBankDao.getMeaningQuizStatsEntities(ids)
+            .map(MeaningQuizStatsEntity::asExternalModel)
     }
 
-    override suspend fun upsertWordQuizInfo(infoList: List<WordQuizInfo>) {
-        return wordBankDao.upsertWordQuizInfoEntities(infoList.map(WordQuizInfo::asEntity))
+    override suspend fun upsertMeaningQuizStats(statsList: List<MeaningQuizStats>) {
+        return wordBankDao.upsertMeaningQuizStatsEntity(statsList.map(MeaningQuizStats::asEntity))
     }
 
     override suspend fun updateWords(idToProficiency: Map<String, WordProficiency>) {
@@ -127,6 +149,14 @@ internal class LocalWordRepository(
 
     override suspend fun updateWord(word: Word) {
         return wordBankDao.updateWordEntity(word.asEntity())
+    }
+
+    override suspend fun getTranslationQuizStats(wordId: String): TranslationQuizStats? {
+        return wordBankDao.getTranslationQuizStatsEntity(wordId)?.asExternalModel()
+    }
+
+    override suspend fun upsertTranslationQuizStats(stats: TranslationQuizStats) {
+        return wordBankDao.upsertTranslationQuizStatsEntity(stats.asEntity())
     }
 
     private fun WordWithContexts.resolveMediaUrl(

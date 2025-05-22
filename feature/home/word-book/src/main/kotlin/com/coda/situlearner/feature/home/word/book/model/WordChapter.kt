@@ -45,7 +45,7 @@ internal fun List<WordWithContexts>.toChapters(id: String): List<WordChapter> {
 }
 
 private val Collection<Word>.progress: Int
-    get() = this.map { it.proficiency.progress }.average().toInt().coerceIn(0, 100)
+    get() = this.map { it.meaningProficiency.progress }.average().toInt().coerceIn(0, 100)
 
 private val WordProficiency.progress: Int
     get() = when (this) {

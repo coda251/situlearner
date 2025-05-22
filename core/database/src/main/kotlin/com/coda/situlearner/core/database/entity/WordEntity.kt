@@ -16,5 +16,6 @@ data class WordEntity(
     val pronunciation: String?,
     val meanings: Meanings?,
     val lastViewedDate: Instant?,
-    val proficiency: WordProficiency,
+    val meaningProficiency: WordProficiency,
+    val translationProficiency: WordProficiency?,
 )

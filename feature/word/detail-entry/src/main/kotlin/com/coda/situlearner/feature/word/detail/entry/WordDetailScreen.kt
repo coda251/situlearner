@@ -291,7 +291,7 @@ private fun WordWithContextsCard(
                     Spacer(modifier = Modifier.weight(1f))
                     ProficiencyIconSet(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        proficiency = word.proficiency,
+                        proficiency = word.meaningProficiency,
                     )
                 }
             },

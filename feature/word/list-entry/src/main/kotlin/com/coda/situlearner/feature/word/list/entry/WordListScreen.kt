@@ -249,7 +249,7 @@ private fun WordBottomSheet(
 private fun WordListScreenPreview() {
     val uiState = WordListUiState.Success(
         wordSortBy = WordSortBy.Proficiency,
-        data = wordWithContextsListTestData.sortedBy { it.word.proficiency }
+        data = wordWithContextsListTestData.sortedBy { it.word.meaningProficiency }
     )
 
     val route = WordListRoute(

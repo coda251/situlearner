@@ -27,7 +27,7 @@ val wordsTestData = listOf(
             )
         ),
         lastViewedDate = Instant.parse("2021-10-31T00:00:00.000Z"),
-        proficiency = WordProficiency.Beginner
+        meaningProficiency = WordProficiency.Beginner
     ),
     Word(
         id = "1",
@@ -37,7 +37,7 @@ val wordsTestData = listOf(
         pronunciation = null,
         meanings = emptyList(),
         lastViewedDate = null,
-        proficiency = WordProficiency.Unset,
+        meaningProficiency = WordProficiency.Unset,
     ),
     Word(
         id = "2",
@@ -56,7 +56,7 @@ val wordsTestData = listOf(
             )
         ),
         lastViewedDate = Instant.parse("2021-10-29T00:00:00.000Z"),
-        proficiency = WordProficiency.Intermediate
+        meaningProficiency = WordProficiency.Intermediate
     ),
     Word(
         id = "3",
@@ -66,7 +66,7 @@ val wordsTestData = listOf(
         pronunciation = null,
         meanings = emptyList(),
         lastViewedDate = Instant.parse("2021-10-20T00:00:00.000Z"),
-        proficiency = WordProficiency.Intermediate
+        meaningProficiency = WordProficiency.Intermediate
     ),
     Word(
         id = "4",
@@ -76,7 +76,7 @@ val wordsTestData = listOf(
         pronunciation = null,
         meanings = emptyList(),
         lastViewedDate = Instant.parse("2021-10-01T00:00:00.000Z"),
-        proficiency = WordProficiency.Proficient
+        meaningProficiency = WordProficiency.Proficient,
     ),
     Word(
         id = "5",
@@ -97,7 +97,7 @@ val wordsTestData = listOf(
             )
         ),
         lastViewedDate = Instant.parse("2021-10-10T00:00:00.000Z"),
-        proficiency = WordProficiency.Intermediate
+        meaningProficiency = WordProficiency.Intermediate
     ),
     Word(
         id = "6",
@@ -107,7 +107,7 @@ val wordsTestData = listOf(
         pronunciation = null,
         meanings = emptyList(),
         lastViewedDate = Instant.parse("2021-10-31T12:00:00.000Z"),
-        proficiency = WordProficiency.Unset,
+        meaningProficiency = WordProficiency.Unset,
     )
 )
 

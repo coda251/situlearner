@@ -46,7 +46,8 @@ internal val words = listOf(
             "v." to "this is a verb"
         ),
         lastViewedDate = Clock.System.now(),
-        proficiency = Unset
+        meaningProficiency = Unset,
+        translationProficiency = Unset
     )
 )
 

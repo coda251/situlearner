@@ -10,5 +10,6 @@ data class Word(
     val pronunciation: String? = null,
     val meanings: List<WordMeaning> = emptyList(),
     val lastViewedDate: Instant? = null,
-    val proficiency: WordProficiency = WordProficiency.Unset,
+    val meaningProficiency: WordProficiency = WordProficiency.Unset,
+    val translationProficiency: WordProficiency = WordProficiency.Unset
 )

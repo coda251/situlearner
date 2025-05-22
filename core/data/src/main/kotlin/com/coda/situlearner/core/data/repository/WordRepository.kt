@@ -4,7 +4,8 @@ import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordProficiency
-import com.coda.situlearner.core.model.data.WordQuizInfo
+import com.coda.situlearner.core.model.data.MeaningQuizStats
+import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.WordWithContexts
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
@@ -63,9 +64,9 @@ interface WordRepository {
         count: UInt
     ): List<WordWithContexts>
 
-    suspend fun getWordQuizInfo(ids: Set<String>): List<WordQuizInfo>
+    suspend fun getMeaningQuizStats(ids: Set<String>): List<MeaningQuizStats>
 
-    suspend fun upsertWordQuizInfo(infoList: List<WordQuizInfo>)
+    suspend fun upsertMeaningQuizStats(statsList: List<MeaningQuizStats>)
 
     suspend fun updateWords(idToProficiency: Map<String, WordProficiency>)
 
@@ -79,4 +80,13 @@ interface WordRepository {
      *  - the duplicate word will be removed
      */
     suspend fun updateWord(word: Word)
+
+    suspend fun getTranslationQuizWord(
+        language: Language,
+        currentDate: Instant
+    ): Word?
+
+    suspend fun getTranslationQuizStats(wordId: String): TranslationQuizStats?
+
+    suspend fun upsertTranslationQuizStats(stats: TranslationQuizStats)
 }

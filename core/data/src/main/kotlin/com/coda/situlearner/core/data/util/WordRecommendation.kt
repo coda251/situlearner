@@ -8,7 +8,7 @@ internal fun selectRecommendedWords(
     count: Int,
 ): List<WordWithContexts> {
     val proficiencyToWords =
-        words.filter { it.contexts.isNotEmpty() }.groupBy { it.word.proficiency }
+        words.filter { it.contexts.isNotEmpty() }.groupBy { it.word.meaningProficiency }
     val proficiencyToCount = computeQuotasByProficiency(count)
 
     val layers = mutableListOf<List<WordWithContexts>>()

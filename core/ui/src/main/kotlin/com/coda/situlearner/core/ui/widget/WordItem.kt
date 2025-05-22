@@ -29,7 +29,7 @@ fun WordItem(
         word = word.word,
         pronunciation = word.pronunciation,
         definition = word.meanings.firstOrNull()?.definition,
-        proficiency = if (showProficiency) word.proficiency else null,
+        proficiency = if (showProficiency) word.meaningProficiency else null,
         lastViewedDate = word.lastViewedDate,
         modifier = modifier
     )

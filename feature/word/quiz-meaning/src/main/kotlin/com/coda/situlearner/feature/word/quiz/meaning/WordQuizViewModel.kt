@@ -4,18 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.data.repository.WordRepository
+import com.coda.situlearner.core.model.data.MeaningQuizStats
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContextView
-import com.coda.situlearner.core.model.data.WordProficiency
-import com.coda.situlearner.core.model.data.WordQuizInfo
-import com.coda.situlearner.feature.word.quiz.meaning.model.UserRating
+import com.coda.situlearner.core.model.feature.UserRating
+import com.coda.situlearner.core.model.feature.mapper.toWordProficiency
+import com.coda.situlearner.core.model.feature.mapper.updateWith
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 internal class WordQuizViewModel(
     private val wordRepository: WordRepository,
@@ -76,13 +75,13 @@ internal class WordQuizViewModel(
         _uiState.value = WordQuizUiState.Summarizing
         viewModelScope.launch {
             val quizInfoList = buildList {
-                val infoInDb = wordRepository.getWordQuizInfo(quizResult.keys)
+                val infoInDb = wordRepository.getMeaningQuizStats(quizResult.keys)
                 addAll(infoInDb)
                 val keysInDb = infoInDb.map { it.wordId }.toSet()
                 quizResult.keys.forEach {
                     if (it !in keysInDb) {
                         add(
-                            WordQuizInfo(
+                            MeaningQuizStats(
                                 wordId = it,
                                 easeFactor = 2.5,
                                 intervalDays = 1,
@@ -95,70 +94,21 @@ internal class WordQuizViewModel(
 
             // update word quiz info
             val newQuizInfoList = quizInfoList.map {
-                updateQuizInfo(it, quizResult[it.wordId] ?: UserRating.Again)
+                it.updateWith(quizResult[it.wordId] ?: UserRating.Again)
             }
-            wordRepository.upsertWordQuizInfo(newQuizInfoList)
+            wordRepository.upsertMeaningQuizStats(newQuizInfoList)
 
             // update proficiency
             wordRepository.updateWords(
                 newQuizInfoList.associateBy(
                     keySelector = { it.wordId },
-                    valueTransform = { calcProficiency(it.intervalDays) }
+                    valueTransform = { it.toWordProficiency() }
                 )
             )
 
             _uiState.value =
                 WordQuizUiState.Complete(quizResult.values.groupingBy { it }.eachCount())
         }
-    }
-
-    private fun updateQuizInfo(
-        old: WordQuizInfo,
-        rating: UserRating
-    ): WordQuizInfo {
-        // refer to sm-2
-        val oldEaseFactor = old.easeFactor
-        val oldInterval = old.intervalDays
-
-        val newEaseFactor: Double
-        val newInterval: Int
-
-        when (rating) {
-            UserRating.Again -> {
-                newInterval = 1
-                newEaseFactor = (oldEaseFactor - 0.2).coerceAtLeast(1.3)
-            }
-
-            UserRating.Hard -> {
-                newInterval = (oldInterval * 1.2).toInt().coerceAtLeast(1)
-                newEaseFactor = (oldEaseFactor - 0.15).coerceAtLeast(1.3)
-            }
-
-            UserRating.Good -> {
-                newInterval = (oldInterval * oldEaseFactor).toInt().coerceAtLeast(1)
-                newEaseFactor = oldEaseFactor
-            }
-
-            UserRating.Easy -> {
-                newInterval = (oldInterval * oldEaseFactor * 1.3).toInt().coerceAtLeast(1)
-                newEaseFactor = oldEaseFactor + 0.15
-            }
-        }
-
-        return WordQuizInfo(
-            wordId = old.wordId,
-            easeFactor = newEaseFactor,
-            intervalDays = newInterval,
-            nextQuizDate = Clock.System.now()
-                .plus(newInterval.toLong().toDuration(DurationUnit.DAYS))
-        )
-    }
-
-    private fun calcProficiency(intervalDays: Int) = when {
-        intervalDays == 0 -> WordProficiency.Unset
-        intervalDays <= 2 -> WordProficiency.Beginner
-        intervalDays <= 7 -> WordProficiency.Intermediate
-        else -> WordProficiency.Proficient
     }
 }
 

@@ -3,13 +3,16 @@ package com.coda.situlearner.core.data.mapper
 import com.coda.situlearner.core.database.entity.WordContextEntity
 import com.coda.situlearner.core.database.entity.WordContextEntityView
 import com.coda.situlearner.core.database.entity.WordEntity
-import com.coda.situlearner.core.database.entity.WordQuizInfoEntity
+import com.coda.situlearner.core.database.entity.MeaningQuizStatsEntity
+import com.coda.situlearner.core.database.entity.TranslationQuizStatsEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.WordMeaning
-import com.coda.situlearner.core.model.data.WordQuizInfo
+import com.coda.situlearner.core.model.data.WordProficiency
+import com.coda.situlearner.core.model.data.MeaningQuizStats
+import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.WordWithContexts
 
 internal fun WordEntity.asExternalModel() = Word(
@@ -24,7 +27,8 @@ internal fun WordEntity.asExternalModel() = Word(
         }
     } ?: emptyList(),
     lastViewedDate = lastViewedDate,
-    proficiency = proficiency.asExternalModel()
+    meaningProficiency = meaningProficiency.asExternalModel(),
+    translationProficiency = translationProficiency?.asExternalModel() ?: WordProficiency.Unset
 )
 
 internal fun WordContextEntity.asExternalModel() = WordContext(
@@ -65,7 +69,8 @@ internal fun Word.asEntity() = WordEntity(
         }
     },
     lastViewedDate = lastViewedDate,
-    proficiency = proficiency.asValue(),
+    meaningProficiency = meaningProficiency.asValue(),
+    translationProficiency = translationProficiency.asValue()
 )
 
 internal fun WordContext.asEntity() = WordContextEntity(
@@ -81,16 +86,34 @@ internal fun WordContext.asEntity() = WordContextEntity(
     wordEndIndex = wordEndIndex,
 )
 
-internal fun WordQuizInfo.asEntity() = WordQuizInfoEntity(
+internal fun MeaningQuizStats.asEntity() = MeaningQuizStatsEntity(
     wordId = wordId,
     easeFactor = easeFactor,
     intervalDays = intervalDays,
     nextQuizDate = nextQuizDate
 )
 
-internal fun WordQuizInfoEntity.asExternalModel() = WordQuizInfo(
+internal fun MeaningQuizStatsEntity.asExternalModel() = MeaningQuizStats(
     wordId = wordId,
     easeFactor = easeFactor,
     intervalDays = intervalDays,
     nextQuizDate = nextQuizDate
+)
+
+internal fun TranslationQuizStatsEntity.asExternalModel() = TranslationQuizStats(
+    wordId = wordId,
+    easeFactor = easeFactor,
+    intervalDays = intervalDays,
+    nextQuizDate = nextQuizDate,
+    lastQuestion = lastQuestion,
+    userAnswer = userAnswer
+)
+
+internal fun TranslationQuizStats.asEntity() = TranslationQuizStatsEntity(
+    wordId = wordId,
+    easeFactor = easeFactor,
+    intervalDays = intervalDays,
+    nextQuizDate = nextQuizDate,
+    lastQuestion = lastQuestion,
+    userAnswer = userAnswer
 )
