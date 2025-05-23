@@ -4,6 +4,6 @@ import com.coda.situlearner.feature.word.edit.WordEditViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val wordEditModule = module {
+val wordDetailEditModule = module {
     viewModel { WordEditViewModel(get(), get()) }
 }

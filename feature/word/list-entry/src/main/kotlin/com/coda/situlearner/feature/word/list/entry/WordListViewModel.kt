@@ -10,7 +10,7 @@ import com.coda.situlearner.core.model.data.WordWithContexts
 import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.feature.word.list.entry.model.SortMode
 import com.coda.situlearner.feature.word.list.entry.model.WordSortBy
-import com.coda.situlearner.feature.word.list.entry.navigation.WordListRoute
+import com.coda.situlearner.feature.word.list.entry.navigation.WordListEntryRoute
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +23,7 @@ internal class WordListViewModel(
     private val wordRepository: WordRepository
 ) : ViewModel() {
 
-    val route = savedStateHandle.toRoute<WordListRoute>()
+    val route = savedStateHandle.toRoute<WordListEntryRoute>()
 
     private val _wordOptionUiState = MutableStateFlow(
         WordOptionUiState.Success(

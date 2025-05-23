@@ -9,7 +9,7 @@ import com.coda.situlearner.core.data.repository.MediaRepository
 import com.coda.situlearner.core.model.infra.SourceCollection
 import com.coda.situlearner.core.model.infra.SourceCollectionWithFiles
 import com.coda.situlearner.core.model.infra.mapper.resolveId
-import com.coda.situlearner.feature.home.explore.collection.navigation.ExploreCollectionRoute
+import com.coda.situlearner.feature.home.explore.collection.navigation.HomeExploreCollectionRoute
 import com.coda.situlearner.infra.explorer.local.LocalExplorer
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -25,7 +25,7 @@ internal class ExploreCollectionViewModel(
     private val mediaRepository: MediaRepository
 ) : ViewModel() {
 
-    private val route = savedStateHandle.toRoute<ExploreCollectionRoute>()
+    private val route = savedStateHandle.toRoute<HomeExploreCollectionRoute>()
 
     val uiState = flowOf(route.url).transform { url ->
         val path = url.toUri().path

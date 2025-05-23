@@ -7,14 +7,14 @@ import com.coda.situlearner.feature.home.explore.collection.ExploreCollectionScr
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ExploreCollectionRoute(val url: String)
+data class HomeExploreCollectionRoute(val url: String)
 
-fun NavController.navigateToExploreCollection(url: String) {
-    navigate(ExploreCollectionRoute(url))
+fun NavController.navigateToHomeExploreCollection(url: String) {
+    navigate(HomeExploreCollectionRoute(url))
 }
 
-fun NavGraphBuilder.exploreCollectionSection(onBack: () -> Unit) {
-    composable<ExploreCollectionRoute> {
+fun NavGraphBuilder.homeExploreCollectionScreen(onBack: () -> Unit) {
+    composable<HomeExploreCollectionRoute> {
         ExploreCollectionScreen(onBack = onBack)
     }
 }

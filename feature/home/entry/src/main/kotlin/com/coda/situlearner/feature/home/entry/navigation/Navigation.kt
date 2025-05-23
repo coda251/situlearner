@@ -7,15 +7,15 @@ import com.coda.situlearner.feature.home.entry.HomeScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object HomeRoute
+data object HomeEntryRoute
 
-fun NavGraphBuilder.homeScreen(
+fun NavGraphBuilder.homeEntryScreen(
     onNavigateToWordList: (WordListType, String?) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToPlayer: () -> Unit,
     onNavigateToWordQuiz: () -> Unit,
 ) {
-    composable<HomeRoute> {
+    composable<HomeEntryRoute> {
         HomeScreen(
             onNavigateToWordList = onNavigateToWordList,
             onNavigateToWordDetail = onNavigateToWordDetail,

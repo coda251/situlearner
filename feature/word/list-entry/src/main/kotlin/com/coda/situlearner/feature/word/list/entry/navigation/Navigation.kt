@@ -12,31 +12,31 @@ import kotlinx.serialization.Serializable
 data object WordListBaseRoute
 
 @Serializable
-data class WordListRoute(
+data class WordListEntryRoute(
     val wordListType: WordListType,
     val id: String?,
 )
 
-fun NavController.navigateToWordList(
+fun NavController.navigateToWordListEntry(
     wordListType: WordListType,
     id: String?
 ) {
     navigate(
-        WordListRoute(
+        WordListEntryRoute(
             wordListType = wordListType,
             id = id
         )
     )
 }
 
-fun NavGraphBuilder.wordListScreen(
+fun NavGraphBuilder.wordListEntryScreen(
     onBack: () -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToWordEcho: () -> Unit,
     destination: NavGraphBuilder.() -> Unit,
 ) {
-    navigation<WordListBaseRoute>(startDestination = WordListRoute::class) {
-        composable<WordListRoute> {
+    navigation<WordListBaseRoute>(startDestination = WordListEntryRoute::class) {
+        composable<WordListEntryRoute> {
             WordListScreen(
                 onBack = onBack,
                 onNavigateToWordDetail = onNavigateToWordDetail,

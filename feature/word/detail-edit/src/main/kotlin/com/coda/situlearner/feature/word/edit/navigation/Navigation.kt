@@ -7,16 +7,16 @@ import com.coda.situlearner.feature.word.edit.WordEditScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class WordEditRoute(val wordId: String)
+data class WordDetailEditRoute(val wordId: String)
 
-fun NavController.navigateToWordEdit(fromWordId: String) {
-    navigate(WordEditRoute(wordId = fromWordId))
+fun NavController.navigateToWordDetailEdit(fromWordId: String) {
+    navigate(WordDetailEditRoute(wordId = fromWordId))
 }
 
-fun NavGraphBuilder.wordEditScreen(
+fun NavGraphBuilder.wordDetailEditScreen(
     onBack: () -> Unit,
 ) {
-    composable<WordEditRoute> {
+    composable<WordDetailEditRoute> {
         WordEditScreen(
             onBack = onBack,
         )

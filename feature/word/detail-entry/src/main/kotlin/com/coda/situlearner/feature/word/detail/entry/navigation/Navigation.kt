@@ -11,20 +11,20 @@ import kotlinx.serialization.Serializable
 data object WordDetailBaseRoute
 
 @Serializable
-data class WordDetailRoute(val wordId: String)
+data class WordDetailEntryRoute(val wordId: String)
 
-fun NavController.navigateToWordDetail(fromWordId: String) {
-    navigate(WordDetailRoute(wordId = fromWordId))
+fun NavController.navigateToWordDetailEntry(fromWordId: String) {
+    navigate(WordDetailEntryRoute(wordId = fromWordId))
 }
 
-fun NavGraphBuilder.wordDetailScreen(
+fun NavGraphBuilder.wordDetailEntryScreen(
     onBack: () -> Unit,
     onNavigateToPlayer: () -> Unit,
     onNavigateToWordEdit: (String) -> Unit,
     destination: NavGraphBuilder.() -> Unit,
 ) {
-    navigation<WordDetailBaseRoute>(startDestination = WordDetailRoute::class) {
-        composable<WordDetailRoute> {
+    navigation<WordDetailBaseRoute>(startDestination = WordDetailEntryRoute::class) {
+        composable<WordDetailEntryRoute> {
             WordDetailScreen(
                 onBack = onBack,
                 onNavigateToPlayer = onNavigateToPlayer,

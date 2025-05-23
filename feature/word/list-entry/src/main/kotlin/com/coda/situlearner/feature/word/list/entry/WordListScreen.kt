@@ -41,7 +41,7 @@ import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.core.ui.widget.WordItem
 import com.coda.situlearner.feature.word.list.entry.model.WordSortBy
 import com.coda.situlearner.feature.word.list.entry.model.toPlaylistItems
-import com.coda.situlearner.feature.word.list.entry.navigation.WordListRoute
+import com.coda.situlearner.feature.word.list.entry.navigation.WordListEntryRoute
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 import org.koin.androidx.compose.koinViewModel
@@ -75,7 +75,7 @@ internal fun WordListScreen(
 @Composable
 private fun WordListScreen(
     uiState: WordListUiState,
-    route: WordListRoute,
+    route: WordListEntryRoute,
     playerState: PlayerState,
     onBack: () -> Unit,
     onClickWord: (Word) -> Unit,
@@ -252,7 +252,7 @@ private fun WordListScreenPreview() {
         data = wordWithContextsListTestData.sortedBy { it.word.meaningProficiency }
     )
 
-    val route = WordListRoute(
+    val route = WordListEntryRoute(
         wordListType = WordListType.MediaCollection,
         id = "0"
     )

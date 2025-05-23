@@ -7,7 +7,7 @@ import androidx.navigation.toRoute
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.feature.home.word.book.model.WordChapter
 import com.coda.situlearner.feature.home.word.book.model.toChapters
-import com.coda.situlearner.feature.home.word.book.navigation.WordBookRoute
+import com.coda.situlearner.feature.home.word.book.navigation.HomeWordBookRoute
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -17,7 +17,7 @@ internal class WordBookViewModel(
     repository: WordRepository,
 ) : ViewModel() {
 
-    private val route = savedStateHandle.toRoute<WordBookRoute>()
+    private val route = savedStateHandle.toRoute<HomeWordBookRoute>()
 
     val uiState = repository.words.map {
         val data = it.toChapters(route.id)

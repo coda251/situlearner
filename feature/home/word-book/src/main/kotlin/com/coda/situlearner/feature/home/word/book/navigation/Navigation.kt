@@ -8,17 +8,17 @@ import com.coda.situlearner.feature.home.word.book.WordBookScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class WordBookRoute(val id: String)
+data class HomeWordBookRoute(val id: String)
 
-fun NavController.navigateToWordBook(id: String) {
-    navigate(route = WordBookRoute(id))
+fun NavController.navigateToHomeWordBook(id: String) {
+    navigate(route = HomeWordBookRoute(id))
 }
 
-fun NavGraphBuilder.wordBookSection(
+fun NavGraphBuilder.homeWordBookScreen(
     onBack: () -> Unit,
     onNavigateToWordList: (WordListType, String) -> Unit,
 ) {
-    composable<WordBookRoute> {
+    composable<HomeWordBookRoute> {
         WordBookScreen(
             onBack = onBack,
             onNavigateToWordList = onNavigateToWordList

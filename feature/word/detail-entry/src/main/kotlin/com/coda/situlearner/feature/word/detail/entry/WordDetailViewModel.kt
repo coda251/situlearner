@@ -7,7 +7,7 @@ import androidx.navigation.toRoute
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordWithContexts
-import com.coda.situlearner.feature.word.detail.entry.navigation.WordDetailRoute
+import com.coda.situlearner.feature.word.detail.entry.navigation.WordDetailEntryRoute
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -20,7 +20,7 @@ internal class WordDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val wordRepository: WordRepository,
 ) : ViewModel() {
-    private val route = savedStateHandle.toRoute<WordDetailRoute>()
+    private val route = savedStateHandle.toRoute<WordDetailEntryRoute>()
 
     val uiState: StateFlow<WordDetailUiState> =
         wordRepository.getWordWithContexts(route.wordId).map {

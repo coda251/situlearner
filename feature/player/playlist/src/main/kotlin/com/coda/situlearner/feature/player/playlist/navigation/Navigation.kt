@@ -7,17 +7,17 @@ import com.coda.situlearner.feature.player.playlist.PlaylistScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object PlaylistRoute
+data object PlayerPlaylistRoute
 
-fun NavController.navigateToPlaylist() {
-    navigate(PlaylistRoute)
+fun NavController.navigateToPlayerPlaylist() {
+    navigate(PlayerPlaylistRoute)
 }
 
-fun NavGraphBuilder.playlistScreen(
+fun NavGraphBuilder.playerPlaylistScreen(
     onBackToPlayer: () -> Unit,
     onBackToParentOfPlayer: () -> Unit
 ) {
-    composable<PlaylistRoute> {
+    composable<PlayerPlaylistRoute> {
         PlaylistScreen(
             onBackToPlayer = onBackToPlayer,
             onBackToParentOfPlayer = onBackToParentOfPlayer

@@ -8,14 +8,14 @@ import com.coda.situlearner.feature.home.media.collection.MediaCollectionScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MediaCollectionRoute(val collectionId: String)
+data class HomeMediaCollectionRoute(val collectionId: String)
 
-fun NavController.navigateToMediaCollection(collection: MediaCollection) {
-    navigate(route = MediaCollectionRoute(collection.id))
+fun NavController.navigateToHomeMediaCollection(collection: MediaCollection) {
+    navigate(route = HomeMediaCollectionRoute(collection.id))
 }
 
-fun NavGraphBuilder.mediaCollectionSection(onBack: () -> Unit) {
-    composable<MediaCollectionRoute> {
+fun NavGraphBuilder.homeMediaCollectionScreen(onBack: () -> Unit) {
+    composable<HomeMediaCollectionRoute> {
         MediaCollectionScreen(
             onBack = onBack
         )

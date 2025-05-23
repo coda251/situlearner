@@ -9,21 +9,21 @@ import com.coda.situlearner.feature.home.settings.entry.SettingsCommonScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object SettingsCommonBaseRoute
+data object HomeSettingsBaseRoute
 
 @Serializable
-data object SettingsCommonRoute
+data object HomeSettingsEntryRoute
 
-fun NavController.navigateToSettingsCommon(navOptions: NavOptions) {
-    navigate(SettingsCommonRoute, navOptions = navOptions)
+fun NavController.navigateToHomeSettingsEntry(navOptions: NavOptions) {
+    navigate(HomeSettingsEntryRoute, navOptions = navOptions)
 }
 
-fun NavGraphBuilder.settingsCommonSection(
+fun NavGraphBuilder.homeSettingsEntryScreen(
     onNavigateToChatbot: () -> Unit,
     destination: NavGraphBuilder.() -> Unit
 ) {
-    navigation<SettingsCommonBaseRoute>(startDestination = SettingsCommonRoute) {
-        composable<SettingsCommonRoute> {
+    navigation<HomeSettingsBaseRoute>(startDestination = HomeSettingsEntryRoute) {
+        composable<HomeSettingsEntryRoute> {
             SettingsCommonScreen(onNavigateToChatbot)
         }
 

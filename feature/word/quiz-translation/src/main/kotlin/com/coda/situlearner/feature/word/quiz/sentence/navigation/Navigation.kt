@@ -7,17 +7,17 @@ import com.coda.situlearner.feature.word.quiz.sentence.QuizSentenceScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object QuizSentenceRoute
+data object WordQuizTranslationRoute
 
-fun NavController.navigateToQuizSentence() {
-    navigate(QuizSentenceRoute)
+fun NavController.navigateToWordQuizTranslation() {
+    navigate(WordQuizTranslationRoute)
 }
 
-fun NavGraphBuilder.quizSentenceScreen(
+fun NavGraphBuilder.wordQuizTranslationScreen(
     onBack: () -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
 ) {
-    composable<QuizSentenceRoute> {
+    composable<WordQuizTranslationRoute> {
         QuizSentenceScreen(onBack, onNavigateToWordDetail)
     }
 }

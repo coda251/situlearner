@@ -5,20 +5,20 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.coda.situlearner.core.model.feature.WordListType
-import com.coda.situlearner.feature.home.explore.collection.navigation.exploreCollectionSection
-import com.coda.situlearner.feature.home.explore.collection.navigation.navigateToExploreCollection
-import com.coda.situlearner.feature.home.explore.entry.navigation.exploreLibrarySection
-import com.coda.situlearner.feature.home.explore.entry.navigation.navigateToExploreLibrary
-import com.coda.situlearner.feature.home.media.collection.navigation.mediaCollectionSection
-import com.coda.situlearner.feature.home.media.collection.navigation.navigateToMediaCollection
-import com.coda.situlearner.feature.home.media.entry.navigation.mediaLibrarySection
-import com.coda.situlearner.feature.home.settings.chatbot.navigation.navigateToSettingsChatbot
-import com.coda.situlearner.feature.home.settings.chatbot.navigation.settingsChatbotSection
-import com.coda.situlearner.feature.home.settings.entry.navigation.settingsCommonSection
-import com.coda.situlearner.feature.home.word.book.navigation.navigateToWordBook
-import com.coda.situlearner.feature.home.word.book.navigation.wordBookSection
-import com.coda.situlearner.feature.home.word.entry.navigation.WordLibraryBaseRoute
-import com.coda.situlearner.feature.home.word.entry.navigation.wordLibrarySection
+import com.coda.situlearner.feature.home.explore.collection.navigation.homeExploreCollectionScreen
+import com.coda.situlearner.feature.home.explore.collection.navigation.navigateToHomeExploreCollection
+import com.coda.situlearner.feature.home.explore.entry.navigation.homeExploreEntryScreen
+import com.coda.situlearner.feature.home.explore.entry.navigation.navigateToHomeExploreEntry
+import com.coda.situlearner.feature.home.media.collection.navigation.homeMediaCollectionScreen
+import com.coda.situlearner.feature.home.media.collection.navigation.navigateToHomeMediaCollection
+import com.coda.situlearner.feature.home.media.entry.navigation.homeMediaEntryScreen
+import com.coda.situlearner.feature.home.settings.chatbot.navigation.homeSettingsChatbotScreen
+import com.coda.situlearner.feature.home.settings.chatbot.navigation.navigateToHomeSettingsChatbot
+import com.coda.situlearner.feature.home.settings.entry.navigation.homeSettingsEntryScreen
+import com.coda.situlearner.feature.home.word.book.navigation.homeWordBookScreen
+import com.coda.situlearner.feature.home.word.book.navigation.navigateToHomeWordBook
+import com.coda.situlearner.feature.home.word.entry.navigation.HomeWordBaseRoute
+import com.coda.situlearner.feature.home.word.entry.navigation.homeWordEntryScreen
 
 @Composable
 internal fun HomeNavHost(
@@ -31,42 +31,42 @@ internal fun HomeNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = WordLibraryBaseRoute
+        startDestination = HomeWordBaseRoute
     ) {
-        mediaLibrarySection(
-            onNavigateToCollection = navController::navigateToMediaCollection,
-            onNavigateToExplore = navController::navigateToExploreLibrary
+        homeMediaEntryScreen(
+            onNavigateToCollection = navController::navigateToHomeMediaCollection,
+            onNavigateToExplore = navController::navigateToHomeExploreEntry
         ) {
-            mediaCollectionSection(
+            homeMediaCollectionScreen(
                 onBack = navController::popBackStack
             )
 
-            exploreLibrarySection(
-                onNavigateToCollection = navController::navigateToExploreCollection,
+            homeExploreEntryScreen(
+                onNavigateToCollection = navController::navigateToHomeExploreCollection,
                 onBack = navController::popBackStack
             ) {
-                exploreCollectionSection(
+                homeExploreCollectionScreen(
                     onBack = navController::popBackStack
                 )
             }
         }
 
-        wordLibrarySection(
+        homeWordEntryScreen(
             onNavigateToWordDetail = onNavigateToWordDetail,
-            onNavigateToWordBook = navController::navigateToWordBook,
+            onNavigateToWordBook = navController::navigateToHomeWordBook,
             onNavigateToWordQuiz = onNavigateToWordQuiz,
             onNavigateToWordList = onNavigateToWordList,
         ) {
-            wordBookSection(
+            homeWordBookScreen(
                 onBack = navController::popBackStack,
                 onNavigateToWordList = onNavigateToWordList
             )
         }
 
-        settingsCommonSection(
-            onNavigateToChatbot = navController::navigateToSettingsChatbot
+        homeSettingsEntryScreen(
+            onNavigateToChatbot = navController::navigateToHomeSettingsChatbot
         ) {
-            settingsChatbotSection(
+            homeSettingsChatbotScreen(
                 onBack = navController::popBackStack
             )
         }

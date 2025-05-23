@@ -7,16 +7,16 @@ import com.coda.situlearner.feature.word.quiz.meaning.WordQuizScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object WordQuizRoute
+data object WordQuizMeaningRoute
 
-fun NavController.navigateToWordQuiz() {
-    navigate(WordQuizRoute)
+fun NavController.navigateToWordQuizMeaning() {
+    navigate(WordQuizMeaningRoute)
 }
 
-fun NavGraphBuilder.wordQuizScreen(
+fun NavGraphBuilder.wordQuizMeaningScreen(
     onBack: () -> Unit,
 ) {
-    composable<WordQuizRoute> {
+    composable<WordQuizMeaningRoute> {
         WordQuizScreen(
             onBack = onBack
         )

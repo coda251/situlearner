@@ -48,12 +48,12 @@ import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
 import com.coda.situlearner.core.ui.widget.PlayNextButton
 import com.coda.situlearner.core.ui.widget.PlayOrPauseButton
-import com.coda.situlearner.feature.home.media.entry.navigation.MediaLibraryBaseRoute
-import com.coda.situlearner.feature.home.media.entry.navigation.navigateToMediaLibrary
-import com.coda.situlearner.feature.home.settings.entry.navigation.SettingsCommonRoute
-import com.coda.situlearner.feature.home.settings.entry.navigation.navigateToSettingsCommon
-import com.coda.situlearner.feature.home.word.entry.navigation.WordLibraryBaseRoute
-import com.coda.situlearner.feature.home.word.entry.navigation.navigateToWordLibrary
+import com.coda.situlearner.feature.home.media.entry.navigation.HomeMediaBaseRoute
+import com.coda.situlearner.feature.home.media.entry.navigation.navigateToHomeMediaEntry
+import com.coda.situlearner.feature.home.settings.entry.navigation.HomeSettingsEntryRoute
+import com.coda.situlearner.feature.home.settings.entry.navigation.navigateToHomeSettingsEntry
+import com.coda.situlearner.feature.home.word.entry.navigation.HomeWordBaseRoute
+import com.coda.situlearner.feature.home.word.entry.navigation.navigateToHomeWordEntry
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 import kotlin.reflect.KClass
@@ -195,9 +195,9 @@ private fun NavBottomBar(navController: NavController) {
                         restoreState = true
                     }
                     when (item) {
-                        BottomNavRoute.Media -> navController.navigateToMediaLibrary(options)
-                        BottomNavRoute.Word -> navController.navigateToWordLibrary(options)
-                        BottomNavRoute.Settings -> navController.navigateToSettingsCommon(options)
+                        BottomNavRoute.Media -> navController.navigateToHomeMediaEntry(options)
+                        BottomNavRoute.Word -> navController.navigateToHomeWordEntry(options)
+                        BottomNavRoute.Settings -> navController.navigateToHomeSettingsEntry(options)
                     }
                 }
             )
@@ -215,20 +215,20 @@ private enum class BottomNavRoute(
         R.string.home_screen_media,
         R.drawable.video_library_24dp_000000_fill1_wght400_grad0_opsz24,
         R.drawable.video_library_24dp_000000_fill0_wght400_grad0_opsz24,
-        MediaLibraryBaseRoute::class
+        HomeMediaBaseRoute::class
     ),
 
     Word(
         R.string.home_screen_word,
         R.drawable.event_note_24dp_000000_fill1_wght400_grad0_opsz24,
         R.drawable.event_note_24dp_000000_fill0_wght400_grad0_opsz24,
-        WordLibraryBaseRoute::class
+        HomeWordBaseRoute::class
     ),
 
     Settings(
         R.string.home_screen_settings,
         R.drawable.settings_24dp_000000_fill1_wght400_grad0_opsz24,
         R.drawable.settings_24dp_000000_fill0_wght400_grad0_opsz24,
-        SettingsCommonRoute::class
+        HomeSettingsEntryRoute::class
     )
 }

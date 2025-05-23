@@ -15,32 +15,32 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.coda.situlearner.core.model.data.PlaylistType
-import com.coda.situlearner.feature.home.entry.navigation.HomeRoute
-import com.coda.situlearner.feature.home.entry.navigation.homeScreen
+import com.coda.situlearner.feature.home.entry.navigation.HomeEntryRoute
+import com.coda.situlearner.feature.home.entry.navigation.homeEntryScreen
 import com.coda.situlearner.feature.player.entry.navigation.PlayerEntryRoute
 import com.coda.situlearner.feature.player.entry.navigation.navigateToPlayerEntry
 import com.coda.situlearner.feature.player.entry.navigation.playerEntryScreen
-import com.coda.situlearner.feature.player.playlist.navigation.navigateToPlaylist
-import com.coda.situlearner.feature.player.playlist.navigation.playlistScreen
+import com.coda.situlearner.feature.player.playlist.navigation.navigateToPlayerPlaylist
+import com.coda.situlearner.feature.player.playlist.navigation.playerPlaylistScreen
 import com.coda.situlearner.feature.player.word.navigation.navigateToPlayerWord
 import com.coda.situlearner.feature.player.word.navigation.playerWordBottomSheet
 import com.coda.situlearner.feature.word.detail.entry.navigation.WordDetailBaseRoute
-import com.coda.situlearner.feature.word.detail.entry.navigation.navigateToWordDetail
-import com.coda.situlearner.feature.word.detail.entry.navigation.wordDetailScreen
-import com.coda.situlearner.feature.word.edit.navigation.navigateToWordEdit
-import com.coda.situlearner.feature.word.edit.navigation.wordEditScreen
-import com.coda.situlearner.feature.word.list.echo.navigation.navigateToWordEcho
-import com.coda.situlearner.feature.word.list.echo.navigation.wordEchoScreen
+import com.coda.situlearner.feature.word.detail.entry.navigation.navigateToWordDetailEntry
+import com.coda.situlearner.feature.word.detail.entry.navigation.wordDetailEntryScreen
+import com.coda.situlearner.feature.word.edit.navigation.navigateToWordDetailEdit
+import com.coda.situlearner.feature.word.edit.navigation.wordDetailEditScreen
+import com.coda.situlearner.feature.word.list.echo.navigation.navigateToWordListEcho
+import com.coda.situlearner.feature.word.list.echo.navigation.wordListEchoScreen
 import com.coda.situlearner.feature.word.list.entry.navigation.WordListBaseRoute
-import com.coda.situlearner.feature.word.list.entry.navigation.navigateToWordList
-import com.coda.situlearner.feature.word.list.entry.navigation.wordListScreen
-import com.coda.situlearner.feature.word.quiz.entry.navigation.WordQuizEntryBaseRoute
+import com.coda.situlearner.feature.word.list.entry.navigation.navigateToWordListEntry
+import com.coda.situlearner.feature.word.list.entry.navigation.wordListEntryScreen
+import com.coda.situlearner.feature.word.quiz.entry.navigation.WordQuizBaseRoute
 import com.coda.situlearner.feature.word.quiz.entry.navigation.navigateToWordQuizEntry
 import com.coda.situlearner.feature.word.quiz.entry.navigation.wordQuizEntryScreen
-import com.coda.situlearner.feature.word.quiz.meaning.navigation.navigateToWordQuiz
-import com.coda.situlearner.feature.word.quiz.meaning.navigation.wordQuizScreen
-import com.coda.situlearner.feature.word.quiz.sentence.navigation.navigateToQuizSentence
-import com.coda.situlearner.feature.word.quiz.sentence.navigation.quizSentenceScreen
+import com.coda.situlearner.feature.word.quiz.meaning.navigation.navigateToWordQuizMeaning
+import com.coda.situlearner.feature.word.quiz.meaning.navigation.wordQuizMeaningScreen
+import com.coda.situlearner.feature.word.quiz.sentence.navigation.navigateToWordQuizTranslation
+import com.coda.situlearner.feature.word.quiz.sentence.navigation.wordQuizTranslationScreen
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 
@@ -56,57 +56,57 @@ fun AppNavHost(
 
     NavHost(
         navController = appNavController,
-        startDestination = HomeRoute,
+        startDestination = HomeEntryRoute,
     ) {
-        homeScreen(
-            onNavigateToWordList = appNavController::navigateToWordList,
-            onNavigateToWordDetail = appNavController::navigateToWordDetail,
+        homeEntryScreen(
+            onNavigateToWordList = appNavController::navigateToWordListEntry,
+            onNavigateToWordDetail = appNavController::navigateToWordDetailEntry,
             onNavigateToPlayer = appNavController::navigateToPlayerEntry,
             onNavigateToWordQuiz = appNavController::navigateToWordQuizEntry,
         )
 
-        wordListScreen(
+        wordListEntryScreen(
             onBack = appNavController::popBackStack,
-            onNavigateToWordDetail = appNavController::navigateToWordDetail,
-            onNavigateToWordEcho = appNavController::navigateToWordEcho,
+            onNavigateToWordDetail = appNavController::navigateToWordDetailEntry,
+            onNavigateToWordEcho = appNavController::navigateToWordListEcho,
         ) {
-            wordEchoScreen(
+            wordListEchoScreen(
                 onBack = appNavController::popBackStack
             )
         }
 
-        wordDetailScreen(
+        wordDetailEntryScreen(
             onBack = appNavController::popBackStack,
             onNavigateToPlayer = appNavController::navigateToPlayerEntry,
-            onNavigateToWordEdit = appNavController::navigateToWordEdit
+            onNavigateToWordEdit = appNavController::navigateToWordDetailEdit
         ) {
-            wordEditScreen(
+            wordDetailEditScreen(
                 onBack = appNavController::popBackStack
             )
         }
 
         wordQuizEntryScreen(
             onBack = appNavController::popBackStack,
-            onNavigateToMeaning = appNavController::navigateToWordQuiz,
-            onNavigateToTranslation = appNavController::navigateToQuizSentence
+            onNavigateToMeaning = appNavController::navigateToWordQuizMeaning,
+            onNavigateToTranslation = appNavController::navigateToWordQuizTranslation
         ) {
-            wordQuizScreen(
+            wordQuizMeaningScreen(
                 onBack = appNavController::popBackStack
             )
 
-            quizSentenceScreen(
+            wordQuizTranslationScreen(
                 onBack = appNavController::popBackStack,
-                onNavigateToWordDetail = appNavController::navigateToWordDetail
+                onNavigateToWordDetail = appNavController::navigateToWordDetailEntry
             )
         }
 
         playerEntryScreen(
             resetTokenFlagProvider = { resetTokenFlag },
             onBack = appNavController::popBackStack,
-            onNavigateToPlaylist = appNavController::navigateToPlaylist,
+            onNavigateToPlaylist = appNavController::navigateToPlayerPlaylist,
             onNavigateToPlayerWord = appNavController::navigateToPlayerWord
         ) {
-            playlistScreen(
+            playerPlaylistScreen(
                 onBackToPlayer = appNavController::popBackStack,
                 onBackToParentOfPlayer = {
                     appNavController.popBackStack(
@@ -138,7 +138,7 @@ private fun SwitchPlaylistType(
             if (navBackStack.any {
                     it.destination.hasRoute(WordDetailBaseRoute::class) ||
                             it.destination.hasRoute(WordListBaseRoute::class) ||
-                            it.destination.hasRoute(WordQuizEntryBaseRoute::class)
+                            it.destination.hasRoute(WordQuizBaseRoute::class)
                 }) PlaylistType.Temporary
             else PlaylistType.Persistent
         }

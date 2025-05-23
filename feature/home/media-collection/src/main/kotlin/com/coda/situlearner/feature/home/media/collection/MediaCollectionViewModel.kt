@@ -7,7 +7,7 @@ import androidx.navigation.toRoute
 import com.coda.situlearner.core.data.repository.MediaRepository
 import com.coda.situlearner.core.model.data.MediaCollection
 import com.coda.situlearner.core.model.data.MediaCollectionWithFiles
-import com.coda.situlearner.feature.home.media.collection.navigation.MediaCollectionRoute
+import com.coda.situlearner.feature.home.media.collection.navigation.HomeMediaCollectionRoute
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -18,7 +18,7 @@ internal class MediaCollectionViewModel(
     mediaRepository: MediaRepository
 ) : ViewModel() {
 
-    private val route = savedStateHandle.toRoute<MediaCollectionRoute>()
+    private val route = savedStateHandle.toRoute<HomeMediaCollectionRoute>()
 
     val uiState: StateFlow<MediaCollectionUiState> =
         mediaRepository.getMediaCollectionWithFilesById(

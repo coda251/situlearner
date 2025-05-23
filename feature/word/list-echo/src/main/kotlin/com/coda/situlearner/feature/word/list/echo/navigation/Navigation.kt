@@ -7,16 +7,16 @@ import com.coda.situlearner.feature.word.list.echo.WordEchoScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object WordEchoRoute
+data object WordListEchoRoute
 
-fun NavController.navigateToWordEcho() {
-    navigate(WordEchoRoute)
+fun NavController.navigateToWordListEcho() {
+    navigate(WordListEchoRoute)
 }
 
-fun NavGraphBuilder.wordEchoScreen(
+fun NavGraphBuilder.wordListEchoScreen(
     onBack: () -> Unit,
 ) {
-    composable<WordEchoRoute> {
+    composable<WordListEchoRoute> {
         WordEchoScreen(
             onBack = onBack,
         )

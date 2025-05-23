@@ -8,13 +8,13 @@ import com.coda.situlearner.feature.word.quiz.entry.EntryScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object WordQuizEntryBaseRoute
+data object WordQuizBaseRoute
 
 @Serializable
 data object WordQuizEntryRoute
 
 fun NavController.navigateToWordQuizEntry() {
-    navigate(WordQuizEntryBaseRoute)
+    navigate(WordQuizBaseRoute)
 }
 
 fun NavGraphBuilder.wordQuizEntryScreen(
@@ -23,7 +23,7 @@ fun NavGraphBuilder.wordQuizEntryScreen(
     onNavigateToTranslation: () -> Unit,
     destination: NavGraphBuilder.() -> Unit,
 ) {
-    navigation<WordQuizEntryBaseRoute>(startDestination = WordQuizEntryRoute) {
+    navigation<WordQuizBaseRoute>(startDestination = WordQuizEntryRoute) {
         composable<WordQuizEntryRoute> {
             EntryScreen(
                 onBack = onBack,

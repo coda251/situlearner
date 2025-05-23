@@ -10,24 +10,24 @@ import com.coda.situlearner.feature.home.word.entry.WordLibraryScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object WordLibraryBaseRoute
+data object HomeWordBaseRoute
 
 @Serializable
-data object WordLibraryRoute
+data object HomeWordEntryRoute
 
-fun NavController.navigateToWordLibrary(navOptions: NavOptions) {
-    navigate(route = WordLibraryBaseRoute, navOptions = navOptions)
+fun NavController.navigateToHomeWordEntry(navOptions: NavOptions) {
+    navigate(route = HomeWordBaseRoute, navOptions = navOptions)
 }
 
-fun NavGraphBuilder.wordLibrarySection(
+fun NavGraphBuilder.homeWordEntryScreen(
     onNavigateToWordBook: (String) -> Unit,
     onNavigateToWordList: (WordListType, String?) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
     destination: NavGraphBuilder.() -> Unit,
 ) {
-    navigation<WordLibraryBaseRoute>(startDestination = WordLibraryRoute) {
-        composable<WordLibraryRoute> {
+    navigation<HomeWordBaseRoute>(startDestination = HomeWordEntryRoute) {
+        composable<HomeWordEntryRoute> {
             WordLibraryScreen(
                 onNavigateToWordBook = onNavigateToWordBook,
                 onNavigateToWordDetail = onNavigateToWordDetail,

@@ -10,22 +10,22 @@ import com.coda.situlearner.feature.home.media.entry.MediaLibraryScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object MediaLibraryBaseRoute
+data object HomeMediaBaseRoute
 
 @Serializable
-data object MediaLibraryRoute
+data object HomeMediaEntryRoute
 
-fun NavController.navigateToMediaLibrary(navOptions: NavOptions) {
-    navigate(route = MediaLibraryBaseRoute, navOptions = navOptions)
+fun NavController.navigateToHomeMediaEntry(navOptions: NavOptions) {
+    navigate(route = HomeMediaBaseRoute, navOptions = navOptions)
 }
 
-fun NavGraphBuilder.mediaLibrarySection(
+fun NavGraphBuilder.homeMediaEntryScreen(
     onNavigateToCollection: (MediaCollection) -> Unit,
     onNavigateToExplore: () -> Unit,
     destination: NavGraphBuilder.() -> Unit
 ) {
-    navigation<MediaLibraryBaseRoute>(startDestination = MediaLibraryRoute) {
-        composable<MediaLibraryRoute> {
+    navigation<HomeMediaBaseRoute>(startDestination = HomeMediaEntryRoute) {
+        composable<HomeMediaEntryRoute> {
             MediaLibraryScreen(
                 onNavigateToCollection = onNavigateToCollection,
                 onNavigateToExplore = onNavigateToExplore,

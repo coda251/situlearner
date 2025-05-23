@@ -7,16 +7,16 @@ import com.coda.situlearner.feature.home.settings.chatbot.SettingsChatbotScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object SettingsChatbotRoute
+data object HomeSettingsChatbotRoute
 
-fun NavController.navigateToSettingsChatbot() {
-    navigate(SettingsChatbotRoute)
+fun NavController.navigateToHomeSettingsChatbot() {
+    navigate(HomeSettingsChatbotRoute)
 }
 
-fun NavGraphBuilder.settingsChatbotSection(
+fun NavGraphBuilder.homeSettingsChatbotScreen(
     onBack: () -> Unit
 ) {
-    composable<SettingsChatbotRoute> {
+    composable<HomeSettingsChatbotRoute> {
         SettingsChatbotScreen(onBack = onBack)
     }
 }

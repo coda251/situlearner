@@ -9,7 +9,7 @@ import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.infra.WordTranslation
-import com.coda.situlearner.feature.word.edit.navigation.WordEditRoute
+import com.coda.situlearner.feature.word.edit.navigation.WordDetailEditRoute
 import com.coda.situlearner.infra.subkit.translator.Translator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +29,7 @@ internal class WordEditViewModel(
     private val defaultTargetLanguage: Language = AppConfig.targetLanguage
 ) : ViewModel() {
 
-    private val route = savedStateHandle.toRoute<WordEditRoute>()
+    private val route = savedStateHandle.toRoute<WordDetailEditRoute>()
 
     private val _editUiState = MutableStateFlow<WordEditUiState>(WordEditUiState.Loading)
     val editUiState = _editUiState.asStateFlow()

@@ -8,22 +8,22 @@ import com.coda.situlearner.feature.home.explore.entry.ExploreLibraryScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object ExploreLibraryBaseRoute
+data object HomeExploreBaseRoute
 
 @Serializable
-data object ExploreLibraryRoute
+data object HomeExploreEntryRoute
 
-fun NavController.navigateToExploreLibrary() {
-    navigate(route = ExploreLibraryBaseRoute)
+fun NavController.navigateToHomeExploreEntry() {
+    navigate(route = HomeExploreBaseRoute)
 }
 
-fun NavGraphBuilder.exploreLibrarySection(
+fun NavGraphBuilder.homeExploreEntryScreen(
     onNavigateToCollection: (String) -> Unit,
     onBack: () -> Unit,
     destination: NavGraphBuilder.() -> Unit
 ) {
-    navigation<ExploreLibraryBaseRoute>(startDestination = ExploreLibraryRoute) {
-        composable<ExploreLibraryRoute> {
+    navigation<HomeExploreBaseRoute>(startDestination = HomeExploreEntryRoute) {
+        composable<HomeExploreEntryRoute> {
             ExploreLibraryScreen(
                 onNavigateToCollection = {
                     onNavigateToCollection(it.url)
