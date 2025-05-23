@@ -14,7 +14,6 @@ fun NavGraphBuilder.homeScreen(
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToPlayer: () -> Unit,
     onNavigateToWordQuiz: () -> Unit,
-    onNavigateToQuizSentence: () -> Unit,
 ) {
     composable<HomeRoute> {
         HomeScreen(
@@ -22,7 +21,6 @@ fun NavGraphBuilder.homeScreen(
             onNavigateToWordDetail = onNavigateToWordDetail,
             onNavigateToPlayer = onNavigateToPlayer,
             onNavigateToWordQuiz = onNavigateToWordQuiz,
-            onNavigateToQuizSentence = onNavigateToQuizSentence
         )
     }
 }

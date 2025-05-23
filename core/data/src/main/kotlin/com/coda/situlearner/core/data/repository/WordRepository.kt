@@ -1,11 +1,11 @@
 package com.coda.situlearner.core.data.repository
 
 import com.coda.situlearner.core.model.data.Language
+import com.coda.situlearner.core.model.data.MeaningQuizStats
+import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordProficiency
-import com.coda.situlearner.core.model.data.MeaningQuizStats
-import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.WordWithContexts
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
@@ -89,4 +89,9 @@ interface WordRepository {
     suspend fun getTranslationQuizStats(wordId: String): TranslationQuizStats?
 
     suspend fun upsertTranslationQuizStats(stats: TranslationQuizStats)
+
+    suspend fun getMeaningQuizWordWithStats(
+        language: Language,
+        currentDate: Instant
+    ): Pair<Word?, MeaningQuizStats?>
 }

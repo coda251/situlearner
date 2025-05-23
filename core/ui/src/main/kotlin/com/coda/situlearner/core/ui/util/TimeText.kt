@@ -1,8 +1,8 @@
 package com.coda.situlearner.core.ui.util
 
-import kotlin.time.Duration.Companion.milliseconds
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import com.coda.situlearner.core.ui.R
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.Instant
@@ -12,9 +12,18 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import java.time.DayOfWeek
-import com.coda.situlearner.core.ui.R
+import kotlin.time.Duration.Companion.milliseconds
 
 const val UndefinedTimeText = "--:--"
+
+fun Instant.asTimeText(): String {
+    val timeZone = TimeZone.currentSystemDefault()
+    val inputDate = toLocalDateTime(timeZone)
+
+    val dayString = "${inputDate.year}-${inputDate.monthNumber}-${inputDate.dayOfMonth}"
+    val minuteString = "${inputDate.hour}:${inputDate.minute.toString().padStart(2, '0')}"
+    return "$dayString $minuteString"
+}
 
 fun Long.asTimeText() = milliseconds.toComponents { hours, minutes, seconds, _ ->
     if (hours > 0) "%02d:%02d:%02d".format(hours, minutes, seconds)

@@ -24,7 +24,6 @@ fun NavGraphBuilder.wordLibrarySection(
     onNavigateToWordList: (WordListType, String?) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
-    onNavigateToQuizSentence: () -> Unit,
     destination: NavGraphBuilder.() -> Unit,
 ) {
     navigation<WordLibraryBaseRoute>(startDestination = WordLibraryRoute) {
@@ -34,7 +33,6 @@ fun NavGraphBuilder.wordLibrarySection(
                 onNavigateToWordDetail = onNavigateToWordDetail,
                 onNavigateToWordQuiz = onNavigateToWordQuiz,
                 onNavigateToWordList = onNavigateToWordList,
-                onNavigateToQuizSentence = onNavigateToQuizSentence
             )
         }
 

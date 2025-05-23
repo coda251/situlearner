@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="word_quiz_entry_meaning">词义测试</string>
+    <string name="word_quiz_entry_translation">翻译测试</string>
+    <string name="word_quiz_entry_meaning_no_word">单词库中没有单词</string>
+    <string name="word_quiz_entry_meaning_next_quiz_time">下次测试时间：%s</string>
+    <string name="word_quiz_entry_translation_no_proficient_word">当前无熟练单词用于测试</string>
+    <string name="word_quiz_entry_translation_no_chatbot">无聊天机器人</string>
+</resources>

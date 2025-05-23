@@ -27,13 +27,15 @@ import com.coda.situlearner.feature.player.word.navigation.playerWordBottomSheet
 import com.coda.situlearner.feature.word.detail.entry.navigation.WordDetailRoute
 import com.coda.situlearner.feature.word.detail.entry.navigation.navigateToWordDetail
 import com.coda.situlearner.feature.word.detail.entry.navigation.wordDetailScreen
-import com.coda.situlearner.feature.word.list.echo.navigation.navigateToWordEcho
-import com.coda.situlearner.feature.word.list.echo.navigation.wordEchoScreen
 import com.coda.situlearner.feature.word.edit.navigation.navigateToWordEdit
 import com.coda.situlearner.feature.word.edit.navigation.wordEditScreen
+import com.coda.situlearner.feature.word.list.echo.navigation.navigateToWordEcho
+import com.coda.situlearner.feature.word.list.echo.navigation.wordEchoScreen
 import com.coda.situlearner.feature.word.list.entry.navigation.WordListRoute
 import com.coda.situlearner.feature.word.list.entry.navigation.navigateToWordList
 import com.coda.situlearner.feature.word.list.entry.navigation.wordListScreen
+import com.coda.situlearner.feature.word.quiz.entry.navigation.navigateToWordQuizEntry
+import com.coda.situlearner.feature.word.quiz.entry.navigation.wordQuizEntryScreen
 import com.coda.situlearner.feature.word.quiz.meaning.navigation.WordQuizRoute
 import com.coda.situlearner.feature.word.quiz.meaning.navigation.navigateToWordQuiz
 import com.coda.situlearner.feature.word.quiz.meaning.navigation.wordQuizScreen
@@ -61,8 +63,7 @@ fun AppNavHost(
             onNavigateToWordList = appNavController::navigateToWordList,
             onNavigateToWordDetail = appNavController::navigateToWordDetail,
             onNavigateToPlayer = appNavController::navigateToPlayerEntry,
-            onNavigateToWordQuiz = appNavController::navigateToWordQuiz,
-            onNavigateToQuizSentence = appNavController::navigateToQuizSentence
+            onNavigateToWordQuiz = appNavController::navigateToWordQuizEntry,
         )
 
         wordListScreen(
@@ -85,14 +86,20 @@ fun AppNavHost(
             )
         }
 
-        wordQuizScreen(
-            onBack = appNavController::popBackStack
-        )
-
-        quizSentenceScreen(
+        wordQuizEntryScreen(
             onBack = appNavController::popBackStack,
-            onNavigateToWordDetail = appNavController::navigateToWordDetail
-        )
+            onNavigateToMeaning = appNavController::navigateToWordQuiz,
+            onNavigateToTranslation = appNavController::navigateToQuizSentence
+        ) {
+            wordQuizScreen(
+                onBack = appNavController::popBackStack
+            )
+
+            quizSentenceScreen(
+                onBack = appNavController::popBackStack,
+                onNavigateToWordDetail = appNavController::navigateToWordDetail
+            )
+        }
 
         playerEntryScreen(
             resetTokenFlagProvider = { resetTokenFlag },

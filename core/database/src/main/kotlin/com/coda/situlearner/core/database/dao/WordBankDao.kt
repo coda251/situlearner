@@ -157,4 +157,7 @@ interface WordBankDao {
 
     @Upsert
     suspend fun upsertTranslationQuizStatsEntity(entity: TranslationQuizStatsEntity)
+
+    @Query("SELECT * FROM MeaningQuizStatsEntity ORDER BY nextQuizDate ASC LIMIT 1")
+    suspend fun getLatestMeaningQuizStatsEntity(): MeaningQuizStatsEntity?
 }

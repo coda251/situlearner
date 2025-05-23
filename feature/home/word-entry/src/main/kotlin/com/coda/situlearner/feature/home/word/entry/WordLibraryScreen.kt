@@ -22,8 +22,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,7 +70,6 @@ internal fun WordLibraryScreen(
     onNavigateToWordList: (WordListType, String?) -> Unit,
     onNavigateToWordDetail: (String) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
-    onNavigateToQuizSentence: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WordLibraryViewModel = koinViewModel()
 ) {
@@ -91,8 +88,7 @@ internal fun WordLibraryScreen(
         },
         onClickContextView = { onNavigateToWordDetail(it.wordContext.wordId) },
         onClickRecommendations = { onNavigateToWordList(WordListType.Recommendation, null) },
-        onQuizWordMeaning = onNavigateToWordQuiz,
-        onQuizWordSentence = onNavigateToQuizSentence,
+        onQuiz = onNavigateToWordQuiz,
         onSetOffset = viewModel::setWordsOffset,
         onChangeLanguage = viewModel::setWordLibraryLanguage,
         modifier = modifier,
@@ -107,13 +103,12 @@ private fun WordLibraryScreen(
     onClickBook: (WordBook) -> Unit,
     onClickContextView: (WordContextView) -> Unit,
     onClickRecommendations: () -> Unit,
-    onQuizWordMeaning: () -> Unit,
-    onQuizWordSentence: () -> Unit,
+    onQuiz: () -> Unit,
     onSetOffset: (Int) -> Unit,
     onChangeLanguage: (Language) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showQuizOptions by remember { mutableStateOf(false) }
+
 
     Scaffold(
         modifier = modifier,
@@ -125,34 +120,10 @@ private fun WordLibraryScreen(
                 actions = {
                     when (booksUiState) {
                         is WordBooksUiState.Success -> {
-                            IconButton(
-                                onClick = {
-                                    showQuizOptions = true
-                                }
-                            ) {
+                            IconButton(onClick = onQuiz) {
                                 Icon(
                                     painter = painterResource(R.drawable.quiz_24dp_000000_fill0_wght400_grad0_opsz24),
                                     contentDescription = null
-                                )
-                            }
-
-                            DropdownMenu(
-                                expanded = showQuizOptions,
-                                onDismissRequest = { showQuizOptions = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text(text = stringResource(R.string.home_word_library_quiz_on_meaning)) },
-                                    onClick = {
-                                        showQuizOptions = false
-                                        onQuizWordMeaning()
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(text = stringResource(R.string.home_word_library_quiz_on_translation)) },
-                                    onClick = {
-                                        showQuizOptions = false
-                                        onQuizWordSentence()
-                                    }
                                 )
                             }
                         }
@@ -457,8 +428,7 @@ private fun WordLibraryScreenContentPreview() {
             )
         },
         onChangeLanguage = {},
-        onQuizWordMeaning = {},
-        onQuizWordSentence = {}
+        onQuiz = {}
     )
 }
 
@@ -492,7 +462,6 @@ private fun WordLibraryScreenEmptyPreview() {
                 }
             }
         },
-        onQuizWordMeaning = {},
-        onQuizWordSentence = {}
+        onQuiz = {}
     )
 }

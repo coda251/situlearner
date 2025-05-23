@@ -159,6 +159,22 @@ internal class LocalWordRepository(
         return wordBankDao.upsertTranslationQuizStatsEntity(stats.asEntity())
     }
 
+    override suspend fun getMeaningQuizWordWithStats(
+        language: Language,
+        currentDate: Instant
+    ): Pair<Word?, MeaningQuizStats?> {
+        val word = wordBankDao.getWordWithContextEntities(
+            language = language.asValue(),
+            currentDate = currentDate,
+            number = 1
+        ).firstOrNull()?.word?.asExternalModel()
+
+        val meaningQuizStats =
+            word?.let { null } ?: wordBankDao.getLatestMeaningQuizStatsEntity()?.asExternalModel()
+
+        return word to meaningQuizStats
+    }
+
     private fun WordWithContexts.resolveMediaUrl(
         subtitleCacheManager: SubtitleCacheManager,
         imageCacheManager: CoverImageCacheManager
