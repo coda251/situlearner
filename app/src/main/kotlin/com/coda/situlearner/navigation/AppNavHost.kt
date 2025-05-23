@@ -24,22 +24,21 @@ import com.coda.situlearner.feature.player.playlist.navigation.navigateToPlaylis
 import com.coda.situlearner.feature.player.playlist.navigation.playlistScreen
 import com.coda.situlearner.feature.player.word.navigation.navigateToPlayerWord
 import com.coda.situlearner.feature.player.word.navigation.playerWordBottomSheet
-import com.coda.situlearner.feature.word.detail.entry.navigation.WordDetailRoute
+import com.coda.situlearner.feature.word.detail.entry.navigation.WordDetailBaseRoute
 import com.coda.situlearner.feature.word.detail.entry.navigation.navigateToWordDetail
 import com.coda.situlearner.feature.word.detail.entry.navigation.wordDetailScreen
 import com.coda.situlearner.feature.word.edit.navigation.navigateToWordEdit
 import com.coda.situlearner.feature.word.edit.navigation.wordEditScreen
 import com.coda.situlearner.feature.word.list.echo.navigation.navigateToWordEcho
 import com.coda.situlearner.feature.word.list.echo.navigation.wordEchoScreen
-import com.coda.situlearner.feature.word.list.entry.navigation.WordListRoute
+import com.coda.situlearner.feature.word.list.entry.navigation.WordListBaseRoute
 import com.coda.situlearner.feature.word.list.entry.navigation.navigateToWordList
 import com.coda.situlearner.feature.word.list.entry.navigation.wordListScreen
+import com.coda.situlearner.feature.word.quiz.entry.navigation.WordQuizEntryBaseRoute
 import com.coda.situlearner.feature.word.quiz.entry.navigation.navigateToWordQuizEntry
 import com.coda.situlearner.feature.word.quiz.entry.navigation.wordQuizEntryScreen
-import com.coda.situlearner.feature.word.quiz.meaning.navigation.WordQuizRoute
 import com.coda.situlearner.feature.word.quiz.meaning.navigation.navigateToWordQuiz
 import com.coda.situlearner.feature.word.quiz.meaning.navigation.wordQuizScreen
-import com.coda.situlearner.feature.word.quiz.sentence.navigation.QuizSentenceRoute
 import com.coda.situlearner.feature.word.quiz.sentence.navigation.navigateToQuizSentence
 import com.coda.situlearner.feature.word.quiz.sentence.navigation.quizSentenceScreen
 import com.coda.situlearner.infra.player.PlayerState
@@ -137,10 +136,9 @@ private fun SwitchPlaylistType(
     val currentPlaylistType by remember {
         derivedStateOf {
             if (navBackStack.any {
-                    it.destination.hasRoute(WordDetailRoute::class) ||
-                            it.destination.hasRoute(WordListRoute::class) ||
-                            it.destination.hasRoute(WordQuizRoute::class) ||
-                            it.destination.hasRoute(QuizSentenceRoute::class)
+                    it.destination.hasRoute(WordDetailBaseRoute::class) ||
+                            it.destination.hasRoute(WordListBaseRoute::class) ||
+                            it.destination.hasRoute(WordQuizEntryBaseRoute::class)
                 }) PlaylistType.Temporary
             else PlaylistType.Persistent
         }

@@ -17,7 +17,6 @@ import com.coda.situlearner.core.model.infra.ChatRole
 import com.coda.situlearner.feature.word.quiz.sentence.util.getPrompt
 import com.coda.situlearner.infra.chatbot.Chatbot
 import io.ktor.client.HttpClient
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -34,7 +33,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 
 internal class QuizSentenceViewModel(
@@ -147,12 +145,10 @@ internal class QuizSentenceViewModel(
         val language = userPreferenceRepository.userPreference.firstOrNull()?.wordLibraryLanguage
             ?: return null
 
-        return withContext(Dispatchers.IO) {
-            wordRepository.getTranslationQuizWord(
-                language,
-                Clock.System.now()
-            )
-        }
+        return wordRepository.getTranslationQuizWord(
+            language,
+            Clock.System.now()
+        )
     }
 
     private fun getConfigFlow() =

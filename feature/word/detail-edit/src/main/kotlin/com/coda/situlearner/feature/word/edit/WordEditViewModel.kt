@@ -11,7 +11,6 @@ import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.infra.WordTranslation
 import com.coda.situlearner.feature.word.edit.navigation.WordEditRoute
 import com.coda.situlearner.infra.subkit.translator.Translator
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,7 +22,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 internal class WordEditViewModel(
     savedStateHandle: SavedStateHandle,
@@ -68,11 +66,9 @@ internal class WordEditViewModel(
     private fun getWord() {
         viewModelScope.launch {
             _editUiState.value = WordEditUiState.Loading
-            _editUiState.value = withContext(Dispatchers.IO) {
-                wordRepository.getWord(route.wordId)?.let {
-                    WordEditUiState.Success(it)
-                } ?: WordEditUiState.Empty
-            }
+            _editUiState.value = wordRepository.getWord(route.wordId)?.let {
+                WordEditUiState.Success(it)
+            } ?: WordEditUiState.Empty
         }
     }
 
