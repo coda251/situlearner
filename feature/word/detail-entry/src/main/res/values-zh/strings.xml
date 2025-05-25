@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="word_detail_screen_example_sentences">例子</string>
+    <string name="word_detail_screen_meaning_quiz">词义测试</string>
+    <string name="word_detail_screen_next_quiz">下次测试</string>
+    <string name="word_detail_screen_proficiency">熟练程度</string>
+    <string name="word_detail_screen_translation_quiz">翻译测试</string>
+    <string name="word_detail_screen_quiz_question">测试题目</string>
+    <string name="word_detail_screen_your_answer">你的回答</string>
+    <string name="word_detail_screen_no_data">暂无数据</string>
 </resources>

@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="word_detail_screen_example_sentences">Examples</string>
+    <string name="word_detail_screen_meaning_quiz">Meaning Quiz</string>
+    <string name="word_detail_screen_next_quiz">Next quiz at</string>
+    <string name="word_detail_screen_proficiency">Proficiency</string>
+    <string name="word_detail_screen_translation_quiz">Translation quiz</string>
+    <string name="word_detail_screen_quiz_question">Question</string>
+    <string name="word_detail_screen_your_answer">Answer</string>
+    <string name="word_detail_screen_no_data">No data</string>
 </resources>

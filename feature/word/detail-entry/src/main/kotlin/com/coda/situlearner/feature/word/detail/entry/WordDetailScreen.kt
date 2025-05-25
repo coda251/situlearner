@@ -276,6 +276,8 @@ private fun WordWithContextsCard(
     onClickWordContext: (WordContextView) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showQuizStats by remember { mutableStateOf(false) }
+
     Card(modifier = modifier) {
         ListItem(
             headlineContent = {
@@ -290,7 +292,9 @@ private fun WordWithContextsCard(
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     ProficiencyIconSet(
-                        modifier = Modifier.padding(vertical = 12.dp),
+                        modifier = Modifier
+                            .clickable { showQuizStats = true }
+                            .padding(vertical = 12.dp),
                         proficiency = word.meaningProficiency,
                     )
                 }
@@ -366,6 +370,10 @@ private fun WordWithContextsCard(
                 )
             }
         }
+    }
+
+    if (showQuizStats) {
+        QuizStatsBottomSheet(onDismiss = { showQuizStats = false })
     }
 }
 
