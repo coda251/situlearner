@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="word_quiz_entry_meaning">Meaning quiz</string>
-    <string name="word_quiz_entry_translation">Translation quiz</string>
     <string name="word_quiz_entry_meaning_no_word">Empty in word library</string>
     <string name="word_quiz_entry_meaning_next_quiz_time">Next quiz time: %s</string>
     <string name="word_quiz_entry_translation_no_proficient_word">No proficient word for quiz currently</string>

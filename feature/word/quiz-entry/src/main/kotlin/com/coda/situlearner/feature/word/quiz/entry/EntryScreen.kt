@@ -23,6 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.ui.util.asTimeText
 import com.coda.situlearner.core.ui.widget.BackButton
 import org.koin.androidx.compose.koinViewModel
+import com.coda.situlearner.core.ui.R as coreR
 
 @Composable
 internal fun EntryScreen(
@@ -98,7 +99,7 @@ private fun ContentBoard(
     ) {
         QuizButtonWithReason(
             enabled = meaningQuizState is MeaningQuizState.Success,
-            textRes = R.string.word_quiz_entry_meaning,
+            textRes = coreR.string.core_ui_meaning_quiz,
             disabledReason = when (meaningQuizState) {
                 MeaningQuizState.NoWord -> stringResource(R.string.word_quiz_entry_meaning_no_word)
                 MeaningQuizState.Success -> ""
@@ -112,7 +113,7 @@ private fun ContentBoard(
 
         QuizButtonWithReason(
             enabled = translationQuizState == TranslationQuizState.Success,
-            textRes = R.string.word_quiz_entry_translation,
+            textRes = coreR.string.core_ui_translation_quiz,
             disabledReason = when (translationQuizState) {
                 TranslationQuizState.NoWord -> stringResource(R.string.word_quiz_entry_translation_no_proficient_word)
                 TranslationQuizState.NoChatbot -> stringResource(R.string.word_quiz_entry_translation_no_chatbot)

@@ -33,6 +33,7 @@ import com.coda.situlearner.core.model.feature.mapper.toWordProficiency
 import com.coda.situlearner.core.ui.util.asTimeText
 import com.coda.situlearner.core.ui.widget.ProficiencyIconSet
 import org.koin.compose.viewmodel.koinViewModel
+import com.coda.situlearner.core.ui.R as coreR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,10 +98,10 @@ private fun MeaningQuizStatsBoard(
     stats: MeaningQuizStats?
 ) {
     Column {
-        QuizStatsTitleItem(R.string.word_detail_screen_meaning_quiz)
+        QuizStatsTitleItem(coreR.string.core_ui_meaning_quiz)
         QuizStatsProficiencyItem(stats?.toWordProficiency())
         QuizStatsItem(
-            titleRes = R.string.word_detail_screen_next_quiz,
+            titleRes = R.string.word_detail_screen_next_quiz_at,
             value = stats?.nextQuizDate?.asTimeText()
         )
     }
@@ -111,10 +112,10 @@ private fun TranslationQuizStatsBoard(
     stats: TranslationQuizStats?
 ) {
     Column {
-        QuizStatsTitleItem(R.string.word_detail_screen_translation_quiz)
+        QuizStatsTitleItem(coreR.string.core_ui_translation_quiz)
         QuizStatsProficiencyItem(stats?.toWordProficiency())
         QuizStatsItem(
-            titleRes = R.string.word_detail_screen_next_quiz,
+            titleRes = R.string.word_detail_screen_next_quiz_at,
             value = stats?.nextQuizDate?.asTimeText()
         )
         QuizStatsItem(

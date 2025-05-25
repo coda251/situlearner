@@ -22,4 +22,6 @@
     <string name="core_ui_meanings">Meanings</string>
     <string name="core_ui_no_pronunciation_and_meanings">No pronunciation and meanings</string>
     <string name="core_ui_empty_error">Input should not be empty</string>
+    <string name="core_ui_meaning_quiz">Meaning quiz</string>
+    <string name="core_ui_translation_quiz">Translation quiz</string>
 </resources>
