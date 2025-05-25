@@ -42,11 +42,13 @@ SituLearner是综合影视字幕或音乐歌词的android单词学习软件，
    - `单词详情`界面，点击某一个例句即可循环播放该例句的界面。
    - `单词测验`界面，依据anki SM-2算法的简化版本，从单词库中挑选部分单词进行测验。
    - `单词回声`界面，单词对应字幕的列表播放。
+   - `单词翻译`界面，将中文句子翻译成目标语言。目前需要引入聊天机器人的API-key才可以使用此功能。
    <div style="display: flex; justify-content: center; gap: 10px;">
       <img width="250" src=".readme/image/word.jpg" alt="word">
       <img width="250" src=".readme/image/word_detail.jpg" alt="word_detail">
-      <img width="250" src=".readme/image/word_quiz.jpg" alt="word_quiz">
+      <img width="250" src=".readme/image/word_meaning_quiz.jpg" alt="word_meaning_quiz">
       <img width="250" src=".readme/image/word_echo.jpg" alt="word_echo">
+      <img width="250" src=".readme/image/word_translation_quiz.jpg" alt="word_translation_quiz">
    </div>
 
 
@@ -56,7 +58,7 @@ SituLearner是综合影视字幕或音乐歌词的android单词学习软件，
 
 ## 致谢
 
-- 有道词典、Tio辞书提供的网络词典服务。
+- app中使用的网络词典服务。
 - [now in android](https://github.com/android/nowinandroid)：提供了应用开发的框架示例。SituLearner的代码架构很大程度上依赖于此。
 - [ViMusic](https://github.com/vfsfitvnm/ViMusic)：SituLearner中SeekBar参考了此开源程序。
 - [google fonts](https://fonts.google.com/icons)：SituLearner的所有矢量图标均源自于此。

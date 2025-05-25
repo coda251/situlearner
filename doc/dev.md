@@ -18,7 +18,7 @@ app中使用kuromoji作为日语分词工具，opennlp作为英语分词工具�
 
 #### 单语言
 
-kuromoji分词。
+kuromoji分词。词性还原过程中，无法将可能态等变形还原至原形。
 
 #### 多语言
 
@@ -41,7 +41,7 @@ kuromoji分词。
 
 ### 词典
 
-使用jsoup解析返回的html文件，app中的中英词典包含有道词典，中日词典包含有道词典和Tio辞书。
+使用jsoup解析返回的html文件，app中的中英词典包含有道词典，中日词典包含有道词典、DA在线词典和Tio辞书。
 
 #### 中英词典
 
@@ -51,7 +51,7 @@ kuromoji分词。
 
 - [有道词典](https://www.youdao.com/)：有声调，响应快，词库全
 - [Tio辞书](https://tio.freemdict.com/)：能提供对应同一平假名读音的多个单词，可作为有道词典的补充
-- [DA在线词典](https://dict.asia/)：证书不可信，暂未引入
+- [DA在线词典](https://dict.asia/)：词义详尽，中日双语释义，但需要手动引入证书
 - [沪江小D](https://dict.hjenglish.com/)：需要cookie，暂未引入
 
 ### 复习算法
