@@ -11,4 +11,6 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.network)
     implementation(projects.infra.chatbot)
+
+    implementation(libs.compose.markdown)
 }

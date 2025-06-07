@@ -65,6 +65,7 @@ import com.coda.situlearner.feature.word.quiz.sentence.util.ExternalChatbot
 import com.coda.situlearner.feature.word.quiz.sentence.util.getReviewPrompt
 import com.coda.situlearner.feature.word.quiz.sentence.util.launchExternalChatbot
 import com.coda.situlearner.feature.word.quiz.translation.R
+import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -534,9 +535,9 @@ private fun MessageItem(message: ChatMessage) {
         headlineContent = {
             when (message.role) {
                 ChatRole.Bot -> {
-                    Text(
+                    MarkdownText(
                         modifier = Modifier.fillMaxWidth(),
-                        text = message.content
+                        markdown = message.content
                     )
                 }
 
@@ -544,9 +545,9 @@ private fun MessageItem(message: ChatMessage) {
                     Row(modifier = Modifier.fillMaxWidth()) {
                         Spacer(modifier = Modifier.weight(1f))
                         Card {
-                            Text(
+                            MarkdownText(
                                 modifier = Modifier.padding(12.dp),
-                                text = message.content
+                                markdown = message.content
                             )
                         }
                     }
@@ -576,7 +577,7 @@ private fun ChatMessagePreview() {
         MessageItem(
             message = ChatMessage(
                 role = ChatRole.Bot,
-                content = "I am pretty pretty pretty pretty pretty pretty good."
+                content = "I am pretty **pretty** pretty pretty pretty pretty good."
             )
         )
         MessageItem(

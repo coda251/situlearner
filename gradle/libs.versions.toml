@@ -12,6 +12,7 @@ androidxRoom = "2.7.1"
 androidxTestCoreKtx = "1.6.1"
 androidxTestRunner = "1.6.2"
 coil = "3.2.0"
+composeMarkdown = "0.5.7"
 jsoup = "1.20.1"
 junit = "4.13.2"
 koin-bom = "4.0.4"
@@ -53,6 +54,7 @@ androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.r
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
 coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { group = "io.insert-koin", name = "koin-android" }
