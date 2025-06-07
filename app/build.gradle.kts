@@ -1,7 +1,5 @@
 plugins {
     alias(libs.plugins.situlearner.android.application)
-    alias(libs.plugins.situlearner.koin)
-    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -10,7 +8,7 @@ android {
     defaultConfig {
         applicationId = "com.coda.situlearner"
         versionCode = 6
-        versionName = "0.5.0"
+        versionName = "0.6.0-alpha01"
     }
 
     buildTypes {

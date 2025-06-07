@@ -16,51 +16,37 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        register("compose") {
-            id = libs.plugins.situlearner.compose.get().pluginId
-            implementationClass = "ComposeConventionPlugin"
-        }
-    }
-    plugins {
-        register("feature") {
-            id = libs.plugins.situlearner.feature.get().pluginId
-            implementationClass = "FeatureConventionPlugin"
-        }
-    }
-    plugins {
-        register("koin") {
-            id = libs.plugins.situlearner.koin.get().pluginId
-            implementationClass = "KoinConventionPlugin"
-        }
-    }
-    plugins {
-        register("ktor") {
-            id = libs.plugins.situlearner.ktor.get().pluginId
-            implementationClass = "KtorConventionPlugin"
-        }
-    }
-    plugins {
-        register("room") {
-            id = libs.plugins.situlearner.room.get().pluginId
-            implementationClass = "RoomConventionPlugin"
-        }
-    }
-    plugins {
         register("androidApplication") {
             id = libs.plugins.situlearner.android.application.get().pluginId
             implementationClass = "AndroidApplicationConventionPlugin"
         }
-    }
-    plugins {
+        register("androidFeature") {
+            id = libs.plugins.situlearner.android.feature.get().pluginId
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
         register("androidLibrary") {
             id = libs.plugins.situlearner.android.library.get().pluginId
             implementationClass = "AndroidLibraryConventionPlugin"
         }
-    }
-    plugins {
+        register("compose") {
+            id = libs.plugins.situlearner.compose.get().pluginId
+            implementationClass = "ComposeConventionPlugin"
+        }
         register("jvmLibrary") {
             id = libs.plugins.situlearner.jvm.library.get().pluginId
             implementationClass = "JvmLibraryConventionPlugin"
+        }
+        register("koin") {
+            id = libs.plugins.situlearner.koin.get().pluginId
+            implementationClass = "KoinConventionPlugin"
+        }
+        register("ktor") {
+            id = libs.plugins.situlearner.ktor.get().pluginId
+            implementationClass = "KtorConventionPlugin"
+        }
+        register("room") {
+            id = libs.plugins.situlearner.room.get().pluginId
+            implementationClass = "RoomConventionPlugin"
         }
     }
 }

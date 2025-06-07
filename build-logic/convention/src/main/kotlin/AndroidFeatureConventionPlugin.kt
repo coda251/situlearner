@@ -4,11 +4,12 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 
-class FeatureConventionPlugin : Plugin<Project> {
+class AndroidFeatureConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             apply(plugin = "situlearner.android.library")
             apply(plugin = "situlearner.koin")
+            apply(plugin = "situlearner.compose")
             apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
             dependencies {

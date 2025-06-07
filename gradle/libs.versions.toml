@@ -1,32 +1,32 @@
 [versions]
-androidGradlePlugin = "8.10.0"
+androidGradlePlugin = "8.10.1"
 androidxActivity = "1.10.1"
 androidxAnnotation = "1.9.1"
-androidxComposeBom = "2025.05.00"
+androidxComposeBom = "2025.06.00"
 androidxCore = "1.16.0"
-androidxDatastore = "1.1.6"
+androidxDatastore = "1.1.7"
 androidxLifecycle = "2.9.0"
-androidxMedia3 = "1.6.1"
+androidxMedia3 = "1.7.1"
 androidxNavigation = "2.9.0"
 androidxRoom = "2.7.1"
 androidxTestCoreKtx = "1.6.1"
 androidxTestRunner = "1.6.2"
-coil = "3.1.0"
+coil = "3.2.0"
 jsoup = "1.20.1"
 junit = "4.13.2"
 koin-bom = "4.0.4"
-kotlin = "2.1.20"
+kotlin = "2.1.21"
 kotlinxCoroutinesCore = "1.10.2"
 kotlinxDatetime = "0.6.2"
 kotlinxSerialization = "1.8.1"
-ksp = "2.1.20-2.0.1"
+ksp = "2.1.21-2.0.1"
 ktor = "3.1.3"
 kuromojiIpadic = "0.9.0"
 linguaVersion = "1.2.2"
 materialKolor = "2.1.1"
-okio = "3.11.0"
-protobuf = "4.30.2"
-protobufJavalite = "4.30.2"
+okio = "3.12.0"
+protobuf = "4.31.1"
+protobufJavalite = "4.31.1"
 protobufPlugin = "0.9.5"
 reorderable = "2.4.3"
 slf4jApi = "2.0.17"
@@ -93,9 +93,9 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "androidxRoom" }
 
 situlearner-android-application = { id = "situlearner.android.application" }
+situlearner-android-feature = { id = "situlearner.android.feature" }
 situlearner-android-library = { id = "situlearner.android.library" }
 situlearner-compose = { id = "situlearner.compose" }
-situlearner-feature = { id = "situlearner.feature" }
 situlearner-jvm-library = { id = "situlearner.jvm.library" }
 situlearner-koin = { id = "situlearner.koin" }
 situlearner-ktor = { id = "situlearner.ktor" }

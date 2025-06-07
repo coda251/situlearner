@@ -1,6 +1,5 @@
 plugins {
-    alias(libs.plugins.situlearner.feature)
-    alias(libs.plugins.situlearner.compose)
+    alias(libs.plugins.situlearner.android.feature)
 }
 
 android {
