@@ -62,7 +62,7 @@ import com.coda.situlearner.core.model.infra.ChatMessage
 import com.coda.situlearner.core.model.infra.ChatRole
 import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.feature.word.quiz.sentence.util.ExternalChatbot
-import com.coda.situlearner.feature.word.quiz.sentence.util.asExternalPrompt
+import com.coda.situlearner.feature.word.quiz.sentence.util.getReviewPrompt
 import com.coda.situlearner.feature.word.quiz.sentence.util.launchExternalChatbot
 import com.coda.situlearner.feature.word.quiz.translation.R
 import kotlinx.coroutines.delay
@@ -193,11 +193,11 @@ private fun ChatContentBoard(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.weight(1f)) {
-            items(items = session.messages) {
+            items(items = session.displayedMessages) {
                 MessageItem(message = it)
             }
             item {
-                when (val state = session.state) {
+                when (val state = session.sessionState) {
                     ChatSessionState.Loading -> MessageLoading()
                     is ChatSessionState.Error -> MessageError(state.message, onRetry)
                     ChatSessionState.WaitingInput -> {}
@@ -205,7 +205,7 @@ private fun ChatContentBoard(
             }
         }
 
-        if (session.quizState == QuizState.Question) {
+        if (session.quizState is QuizState.Question) {
             InputBar(onSubmit)
         }
 
@@ -236,7 +236,7 @@ private fun LoadingQuestionBoard(
     onRetry: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        when (val state = session.state) {
+        when (val state = session.sessionState) {
             ChatSessionState.Loading -> {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
@@ -358,13 +358,19 @@ private fun ExtraOptionsFAB(
                     },
                     onClick = {
                         showExtraOptions = false
-                        clipboard.nativeClipboard.setPrimaryClip(
-                            ClipData.newPlainText(
-                                "text",
-                                session.asExternalPrompt()
+                        session.questionAndUserAnswer?.let {
+                            clipboard.nativeClipboard.setPrimaryClip(
+                                ClipData.newPlainText(
+                                    "text",
+                                    getReviewPrompt(
+                                        word = session.word,
+                                        question = it.first,
+                                        userAnswer = it.second
+                                    )
+                                )
                             )
-                        )
-                        launchExternalChatbot(context, ExternalChatbot.ChatGPT)
+                            launchExternalChatbot(context, ExternalChatbot.ChatGPT)
+                        }
                     }
                 )
 

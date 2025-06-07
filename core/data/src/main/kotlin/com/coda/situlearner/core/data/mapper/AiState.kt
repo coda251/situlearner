@@ -6,6 +6,8 @@ import com.coda.situlearner.core.datastore.ChatbotConfigProto
 import com.coda.situlearner.core.model.data.AiState
 import com.coda.situlearner.core.model.data.Aliyun
 import com.coda.situlearner.core.model.data.ChatbotConfig
+import com.coda.situlearner.core.model.data.ChatbotConfigList
+import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
 
 internal fun ChatbotConfigProto.asExternalModel(): ChatbotConfig? = when (detailsCase) {
     ChatbotConfigProto.DetailsCase.ALIYUN -> Aliyun(
@@ -30,6 +32,11 @@ internal fun ChatbotConfig.asProto() = ChatbotConfigProto.newBuilder().apply {
 }.build()
 
 internal fun AiStateProto.asExternalModel() = AiState(
-    configs = configsList.mapNotNull(ChatbotConfigProto::asExternalModel),
-    currentIndex = currentIndex
+    configs = ChatbotConfigList(
+        configs = configsList.mapNotNull(ChatbotConfigProto::asExternalModel),
+        currentIndex = currentIndex
+    ),
+    promptTemplate = if (translationQuizPromptTemplate.isNotEmpty()) TranslationQuizPromptTemplate(
+        translationQuizPromptTemplate
+    ) else TranslationQuizPromptTemplate.DEFAULT
 )

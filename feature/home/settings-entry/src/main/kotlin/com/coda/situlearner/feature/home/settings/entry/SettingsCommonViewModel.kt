@@ -37,7 +37,7 @@ internal class SettingsCommonViewModel(
             wordLibraryLanguage = preference.wordLibraryLanguage,
             quizWordCount = preference.quizWordCount,
             recommendedWordCount = preference.recommendedWordCount,
-            chatbotConfig = ai.configs.getOrNull(ai.currentIndex),
+            chatbotConfig = ai.configs.currentItem,
         )
     }.stateIn(
         scope = viewModelScope,

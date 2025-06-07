@@ -8,4 +8,5 @@ import "com/coda/situlearner/core/datastore/chatbot_config.proto";
 message AiStateProto {
   repeated ChatbotConfigProto configs = 1;
   int32 current_index = 2;
+  string translation_quiz_prompt_template = 3;
 }

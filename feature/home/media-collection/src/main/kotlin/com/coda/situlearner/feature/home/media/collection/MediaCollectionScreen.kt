@@ -151,7 +151,7 @@ private fun MoreActionMenu(onSetPlaylist: () -> Unit) {
 
     IconButton(onClick = { showFileListMenu = true }) {
         Icon(
-            painter = painterResource(R.drawable.more_vert_24dp_000000_fill0_wght400_grad0_opsz24),
+            painter = painterResource(coreR.drawable.more_vert_24dp_000000_fill0_wght400_grad0_opsz24),
             contentDescription = null
         )
     }

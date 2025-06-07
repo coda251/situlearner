@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.AiStateRepository
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.data.repository.WordRepository
-import com.coda.situlearner.core.model.data.ChatbotConfig
+import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.feature.UserRating
@@ -14,7 +14,7 @@ import com.coda.situlearner.core.model.feature.mapper.updateWith
 import com.coda.situlearner.core.model.infra.ChatMessage
 import com.coda.situlearner.core.model.infra.ChatResponse
 import com.coda.situlearner.core.model.infra.ChatRole
-import com.coda.situlearner.feature.word.quiz.sentence.util.getPrompt
+import com.coda.situlearner.feature.word.quiz.sentence.util.getReviewPrompt
 import com.coda.situlearner.infra.chatbot.Chatbot
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,7 +38,7 @@ import kotlinx.datetime.Clock
 internal class QuizSentenceViewModel(
     private val wordRepository: WordRepository,
     private val userPreferenceRepository: UserPreferenceRepository,
-    private val aiStateRepository: AiStateRepository,
+    aiStateRepository: AiStateRepository,
     private val client: HttpClient,
 ) : ViewModel() {
 
@@ -47,10 +47,15 @@ internal class QuizSentenceViewModel(
     private val _evaluateEvent = MutableSharedFlow<EvaluateEvent>()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState = getConfigFlow().flatMapLatest {
+    val uiState = aiStateRepository.aiState.flatMapLatest {
+        val chatbotConfig = it.configs.currentItem
+        val quizPromptTemplate = it.promptTemplate
         when {
-            it == null -> flowOf(UiState.NoChatbotError)
-            else -> processEvents(it)
+            chatbotConfig == null -> flowOf(UiState.NoChatbotError)
+            else -> {
+                val chatbot = Chatbot.getInstance(chatbotConfig, client)
+                processEvents(chatbot, quizPromptTemplate)
+            }
         }
     }.stateIn(
         scope = viewModelScope,
@@ -84,19 +89,24 @@ internal class QuizSentenceViewModel(
             }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun processEvents(config: ChatbotConfig): Flow<UiState> =
+    private fun processEvents(
+        bot: Chatbot,
+        template: TranslationQuizPromptTemplate,
+    ): Flow<UiState> =
         _userEvent
             .onStart { emit(UserEvent.None) }
             .flatMapLatest {
-                val bot = Chatbot.getInstance(config, client)
                 when (it) {
-                    UserEvent.None, UserEvent.NextQuiz -> startQuiz(bot)
+                    UserEvent.None, UserEvent.NextQuiz -> startQuiz(bot, template)
                     is UserEvent.Submit -> submitAnswer(it, bot)
                     is UserEvent.Retry -> retry(it, bot)
                 }
             }
 
-    private fun startQuiz(bot: Chatbot) = flow {
+    private fun startQuiz(
+        bot: Chatbot,
+        template: TranslationQuizPromptTemplate
+    ) = flow {
         emit(UiState.Loading)
         val word = getWord() ?: kotlin.run {
             emit(UiState.NoWordError)
@@ -105,9 +115,9 @@ internal class QuizSentenceViewModel(
 
         val initialSession = UiState.ChatSession(
             word = word,
-            prompt = ChatMessage(ChatRole.User, getPrompt(word)),
-            messages = emptyList(),
-            state = ChatSessionState.Loading
+            prompt = template.buildPrompt(word),
+            quizState = QuizState.LoadingQuestion,
+            sessionState = ChatSessionState.Loading
         )
         queryBot(initialSession, bot)
     }
@@ -116,29 +126,45 @@ internal class QuizSentenceViewModel(
         intent: UserEvent.Submit,
         bot: Chatbot
     ) = flow {
-        val text = intent.text
-        val session = intent.session
+        when (val quizState = intent.session.quizState) {
+            is QuizState.Question -> {
+                val newSession =
+                    intent.session.copy(
+                        quizState = QuizState.Answer(
+                            question = quizState.question,
+                            userAnswer = intent.text
+                        )
+                    )
+                queryBot(newSession, bot)
+            }
 
-        val newSession = session.copy(
-            messages = session.messages + ChatMessage(ChatRole.User, text),
-        )
-        queryBot(newSession, bot)
+            else -> return@flow
+        }
     }
 
     private fun retry(
         intent: UserEvent.Retry,
         bot: Chatbot
     ) = flow {
-        queryBot(intent.session, bot)
+        val quizState = intent.session.quizState
+        when (quizState) {
+            QuizState.LoadingQuestion, is QuizState.Answer -> {
+                queryBot(intent.session, bot)
+            }
+
+            else -> return@flow
+        }
     }
 
     private suspend fun FlowCollector<UiState.ChatSession>.queryBot(
         session: UiState.ChatSession,
         bot: Chatbot
     ) {
-        emit(session.copy(state = ChatSessionState.Loading))
-        val response = bot.sendMessage(session.allMessages)
-        emit(session.copyFrom(response))
+        session.chatbotMessages?.let {
+            emit(session.copy(sessionState = ChatSessionState.Loading))
+            val response = bot.sendMessage(it)
+            emit(session.copyFrom(response))
+        }
     }
 
     private suspend fun getWord(): Word? {
@@ -150,9 +176,6 @@ internal class QuizSentenceViewModel(
             Clock.System.now()
         )
     }
-
-    private fun getConfigFlow() =
-        aiStateRepository.aiState.map { it.configs.getOrNull(it.currentIndex) }
 
     fun submit(
         session: UiState.ChatSession,
@@ -183,8 +206,9 @@ internal class QuizSentenceViewModel(
     ) {
         viewModelScope.launch {
             _evaluateEvent.emit(EvaluateEvent.Submit(state))
-            if (state is EvaluateState.Result) {
-                val (question, answer) = session.questionAndUserAnswer
+            val questionAndUserAnswer = session.questionAndUserAnswer
+            if (state is EvaluateState.Result && questionAndUserAnswer != null) {
+                val (question, answer) = questionAndUserAnswer
 
                 val quizInfo = (wordRepository.getTranslationQuizStats(state.wordId)?.copy(
                     lastQuestion = question,
@@ -231,44 +255,96 @@ internal sealed interface UiState {
     data object NoChatbotError : UiState
     data class ChatSession(
         val word: Word,
-        val prompt: ChatMessage,
-        val messages: List<ChatMessage>,
-        val state: ChatSessionState,
+        val prompt: String,
+        val quizState: QuizState,
+        val sessionState: ChatSessionState,
     ) : UiState {
-        val allMessages: List<ChatMessage>
-            get() = listOf(prompt) + messages
 
-        val quizState: QuizState
-            get() = when (messages.size) {
-                0 -> QuizState.LoadingQuestion
-                1 -> QuizState.Question
-                2 -> QuizState.LoadingAnswer
-                3 -> QuizState.Answer
-                else -> QuizState.Other
+        val displayedMessages: List<ChatMessage>
+            get() = when (quizState) {
+                QuizState.LoadingQuestion -> emptyList()
+                is QuizState.Question -> listOf(
+                    ChatMessage(
+                        role = ChatRole.Bot,
+                        content = quizState.question
+                    )
+                )
+
+                is QuizState.Answer -> listOf(
+                    ChatMessage(role = ChatRole.Bot, content = quizState.question),
+                    ChatMessage(role = ChatRole.User, content = quizState.userAnswer),
+                )
+
+                is QuizState.Review -> listOf(
+                    ChatMessage(role = ChatRole.Bot, content = quizState.question),
+                    ChatMessage(role = ChatRole.User, content = quizState.userAnswer),
+                    ChatMessage(role = ChatRole.Bot, content = quizState.botReview),
+                )
+            }
+
+        val chatbotMessages: List<ChatMessage>?
+            get() = when (quizState) {
+                QuizState.LoadingQuestion -> listOf(
+                    ChatMessage(ChatRole.Bot, prompt)
+                )
+
+                is QuizState.Answer -> listOf(
+                    ChatMessage(
+                        ChatRole.User, getReviewPrompt(
+                            word = word,
+                            question = quizState.question,
+                            userAnswer = quizState.userAnswer,
+                        )
+                    ),
+                )
+
+                else -> null
             }
 
         val hasUserAnswer: Boolean
-            get() = quizState != QuizState.LoadingQuestion && quizState != QuizState.Question
+            get() = quizState is QuizState.Answer || quizState is QuizState.Review
 
-        val questionAndUserAnswer: Pair<String, String>
-            get() = if (hasUserAnswer) messages[0].content to messages[1].content else "" to ""
+        val questionAndUserAnswer: Pair<String, String>?
+            get() = when (quizState) {
+                QuizState.LoadingQuestion -> null
+                is QuizState.Question -> null
+                is QuizState.Answer -> quizState.question to quizState.userAnswer
+                is QuizState.Review -> quizState.question to quizState.userAnswer
+            }
+
 
         fun copyFrom(response: ChatResponse) = when (response) {
-            is ChatResponse.Error -> copy(state = ChatSessionState.Error(response.message))
+            is ChatResponse.Error -> copy(sessionState = ChatSessionState.Error(response.message))
             is ChatResponse.Success -> copy(
-                messages = messages + ChatMessage(ChatRole.Bot, response.content),
-                state = ChatSessionState.WaitingInput
+                quizState = when (quizState) {
+                    QuizState.LoadingQuestion -> QuizState.Question(response.content)
+                    is QuizState.Answer -> QuizState.Review(
+                        question = quizState.question,
+                        userAnswer = quizState.userAnswer,
+                        botReview = response.content
+                    )
+
+                    else -> quizState
+                },
+                sessionState = ChatSessionState.WaitingInput
             )
         }
     }
 }
 
-internal enum class QuizState {
-    LoadingQuestion,
-    Question,
-    LoadingAnswer,
-    Answer,
-    Other
+internal sealed interface QuizState {
+    data object LoadingQuestion : QuizState
+    data class Question(val question: String) : QuizState
+    data class Answer(
+        val question: String,
+        val userAnswer: String
+    ) : QuizState
+
+    data class Review(
+        val question: String,
+        val userAnswer: String,
+        val botReview: String
+    ) : QuizState
 }
 
 internal sealed interface EvaluateState {

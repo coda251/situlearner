@@ -3,8 +3,9 @@ package com.coda.situlearner.feature.home.settings.chatbot
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.AiStateRepository
-import com.coda.situlearner.core.model.data.AiState
+import com.coda.situlearner.core.model.data.ChatbotConfigList
 import com.coda.situlearner.core.model.data.ChatbotType
+import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
 import com.coda.situlearner.feature.home.settings.chatbot.model.ChatbotItem
 import com.coda.situlearner.feature.home.settings.chatbot.model.asChatbotItem
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,7 +19,7 @@ internal class SettingsChatbotViewModel(
 
     val uiState = aiStateRepository.aiState.map { state ->
         val typeToConfig = state.configs.associateBy { it.type }
-        val selectedType = state.configs.getOrNull(state.currentIndex)?.type
+        val selectedType = state.configs.currentItem?.type
 
         val items = ChatbotType.entries.map { type ->
             typeToConfig[type]?.asChatbotItem(isSelect = type == selectedType)
@@ -27,21 +28,35 @@ internal class SettingsChatbotViewModel(
             it.status.level
         }
 
-        ChatbotUiState.Success(items)
+        ChatbotUiState.Success(
+            chatbots = items,
+            quizPromptTemplate = state.promptTemplate.data
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = ChatbotUiState.Loading
     )
 
-    fun setAiState(aiState: AiState) {
+    fun setChatbotConfigList(chatbotConfigList: ChatbotConfigList) {
         viewModelScope.launch {
-            aiStateRepository.setAiState(aiState)
+            aiStateRepository.setChatbotConfigList(chatbotConfigList)
+        }
+    }
+
+    fun setTranslationQuizPromptTemplate(template: String) {
+        viewModelScope.launch {
+            aiStateRepository.setTranslationQuizPromptTemplate(
+                TranslationQuizPromptTemplate(template)
+            )
         }
     }
 }
 
 internal sealed interface ChatbotUiState {
     data object Loading : ChatbotUiState
-    data class Success(val chatbots: List<ChatbotItem>) : ChatbotUiState
+    data class Success(
+        val chatbots: List<ChatbotItem>,
+        val quizPromptTemplate: String,
+    ) : ChatbotUiState
 }

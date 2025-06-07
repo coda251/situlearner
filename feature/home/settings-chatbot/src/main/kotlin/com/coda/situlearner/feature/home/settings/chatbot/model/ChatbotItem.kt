@@ -1,9 +1,9 @@
 package com.coda.situlearner.feature.home.settings.chatbot.model
 
 import androidx.annotation.DrawableRes
-import com.coda.situlearner.core.model.data.AiState
 import com.coda.situlearner.core.model.data.Aliyun
 import com.coda.situlearner.core.model.data.ChatbotConfig
+import com.coda.situlearner.core.model.data.ChatbotConfigList
 import com.coda.situlearner.core.model.data.ChatbotType
 import com.coda.situlearner.feature.home.settings.chatbot.R
 
@@ -44,7 +44,7 @@ internal fun ChatbotConfig.asChatbotItem(isSelect: Boolean): ChatbotItem {
     }
 }
 
-internal fun List<ChatbotItem>.asAiState(updatedConfig: ChatbotConfig): AiState {
+internal fun List<ChatbotItem>.asAiState(updatedConfig: ChatbotConfig): ChatbotConfigList {
     // update configs
     val configs = mapNotNull { it.cfg }.toMutableList().apply {
         val index = this.indexOfFirst { updatedConfig.type == it.type }
@@ -55,16 +55,16 @@ internal fun List<ChatbotItem>.asAiState(updatedConfig: ChatbotConfig): AiState 
     // since the configs is mutated only by addition, so the currentIndex can be directly used
     val currentIndex = this.indexOfFirst { it.status == ChatbotItem.Status.Active }
 
-    return AiState(
+    return ChatbotConfigList(
         configs = configs,
         currentIndex = currentIndex.coerceAtLeast(0)
     )
 }
 
-internal fun List<ChatbotItem>.asAiState(currentType: ChatbotType): AiState {
+internal fun List<ChatbotItem>.asAiState(currentType: ChatbotType): ChatbotConfigList {
     val configs = mapNotNull { it.cfg }.toMutableList()
     val currentIndex = configs.indexOfFirst { it.type == currentType }
-    return AiState(
+    return ChatbotConfigList(
         configs = configs,
         currentIndex = currentIndex
     )
