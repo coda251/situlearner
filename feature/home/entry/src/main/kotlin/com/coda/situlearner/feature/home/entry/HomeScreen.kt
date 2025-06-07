@@ -50,7 +50,7 @@ import com.coda.situlearner.core.ui.widget.PlayNextButton
 import com.coda.situlearner.core.ui.widget.PlayOrPauseButton
 import com.coda.situlearner.feature.home.media.entry.navigation.HomeMediaBaseRoute
 import com.coda.situlearner.feature.home.media.entry.navigation.navigateToHomeMediaEntry
-import com.coda.situlearner.feature.home.settings.entry.navigation.HomeSettingsEntryRoute
+import com.coda.situlearner.feature.home.settings.entry.navigation.HomeSettingsBaseRoute
 import com.coda.situlearner.feature.home.settings.entry.navigation.navigateToHomeSettingsEntry
 import com.coda.situlearner.feature.home.word.entry.navigation.HomeWordBaseRoute
 import com.coda.situlearner.feature.home.word.entry.navigation.navigateToHomeWordEntry
@@ -229,6 +229,6 @@ private enum class BottomNavRoute(
         R.string.home_screen_settings,
         R.drawable.settings_24dp_000000_fill1_wght400_grad0_opsz24,
         R.drawable.settings_24dp_000000_fill0_wght400_grad0_opsz24,
-        HomeSettingsEntryRoute::class
+        HomeSettingsBaseRoute::class
     )
 }
