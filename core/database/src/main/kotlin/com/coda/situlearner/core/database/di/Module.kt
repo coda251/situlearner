@@ -18,4 +18,4 @@ private fun provideDatabase(context: Context) = Room.databaseBuilder(
     context,
     SituDatabase::class.java,
     "SituLearner.db"
-).build()
+).addMigrations(SituDatabase.From4to5Migration()).build()

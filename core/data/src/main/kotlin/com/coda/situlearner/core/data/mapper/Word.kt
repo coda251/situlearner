@@ -1,18 +1,18 @@
 package com.coda.situlearner.core.data.mapper
 
+import com.coda.situlearner.core.database.entity.MeaningQuizStatsEntity
+import com.coda.situlearner.core.database.entity.TranslationQuizStatsEntity
 import com.coda.situlearner.core.database.entity.WordContextEntity
 import com.coda.situlearner.core.database.entity.WordContextEntityView
 import com.coda.situlearner.core.database.entity.WordEntity
-import com.coda.situlearner.core.database.entity.MeaningQuizStatsEntity
-import com.coda.situlearner.core.database.entity.TranslationQuizStatsEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
+import com.coda.situlearner.core.model.data.MeaningQuizStats
+import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.WordMeaning
 import com.coda.situlearner.core.model.data.WordProficiency
-import com.coda.situlearner.core.model.data.MeaningQuizStats
-import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.WordWithContexts
 
 internal fun WordEntity.asExternalModel() = Word(
@@ -27,6 +27,7 @@ internal fun WordEntity.asExternalModel() = Word(
         }
     } ?: emptyList(),
     lastViewedDate = lastViewedDate,
+    createdDate = createdDate,
     meaningProficiency = meaningProficiency.asExternalModel(),
     translationProficiency = translationProficiency?.asExternalModel() ?: WordProficiency.Unset
 )
@@ -69,6 +70,7 @@ internal fun Word.asEntity() = WordEntity(
         }
     },
     lastViewedDate = lastViewedDate,
+    createdDate = createdDate,
     meaningProficiency = meaningProficiency.asValue(),
     translationProficiency = translationProficiency.asValue()
 )

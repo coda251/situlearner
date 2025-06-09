@@ -8,20 +8,22 @@ import androidx.room.RenameTable
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.AutoMigrationSpec
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.coda.situlearner.core.database.dao.MediaLibraryDao
 import com.coda.situlearner.core.database.dao.WordBankDao
+import com.coda.situlearner.core.database.entity.MeaningQuizStatsEntity
 import com.coda.situlearner.core.database.entity.MediaCollectionEntity
 import com.coda.situlearner.core.database.entity.MediaFileEntity
+import com.coda.situlearner.core.database.entity.TranslationQuizStatsEntity
 import com.coda.situlearner.core.database.entity.WordContextEntity
 import com.coda.situlearner.core.database.entity.WordContextEntityView
 import com.coda.situlearner.core.database.entity.WordEntity
-import com.coda.situlearner.core.database.entity.MeaningQuizStatsEntity
-import com.coda.situlearner.core.database.entity.TranslationQuizStatsEntity
 import com.coda.situlearner.core.database.util.InstantConverter
 import com.coda.situlearner.core.database.util.MeaningsConverter
 
 @Database(
-    version = 4,
+    version = 5,
     exportSchema = true,
     entities = [
         MediaFileEntity::class,
@@ -64,4 +66,36 @@ abstract class SituDatabase : RoomDatabase() {
         toColumnName = "meaningProficiency"
     )
     class From3to4Migration : AutoMigrationSpec
+
+    class From4to5Migration : Migration(4, 5) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE WordEntity ADD COLUMN createdDate INTEGER NOT NULL DEFAULT 0")
+            db.execSQL(
+                """
+            UPDATE WordEntity
+            SET createdDate = COALESCE(lastViewedDate,
+                                       CAST(strftime('%s','now') AS INTEGER) * 1000)
+            WHERE createdDate = 0
+              AND NOT EXISTS (
+                  SELECT 1 FROM WordContextEntity
+                  WHERE WordContextEntity.wordId = WordEntity.id
+              )
+            """.trimIndent()
+            )
+            db.execSQL(
+                """
+            UPDATE WordEntity
+            SET createdDate = (
+                SELECT MIN(createdDate)
+                FROM WordContextEntity
+                WHERE WordContextEntity.wordId = WordEntity.id
+            )
+            WHERE EXISTS (
+                SELECT 1 FROM WordContextEntity
+                WHERE WordContextEntity.wordId = WordEntity.id
+            )
+            """.trimIndent()
+            )
+        }
+    }
 }

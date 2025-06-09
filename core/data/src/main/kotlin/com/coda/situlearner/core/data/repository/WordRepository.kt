@@ -58,7 +58,12 @@ interface WordRepository {
         date: Instant
     )
 
-    suspend fun getWordWithContexts(
+    /**
+     * The selection order is that if a word:
+     *  1. has not been selected for meaning quiz before
+     *  2. has the lowest intervalDays if it has been selected
+     */
+    suspend fun getMeaningQuizWordWithContextsList(
         language: Language,
         currentDate: Instant,
         count: UInt
@@ -81,6 +86,13 @@ interface WordRepository {
      */
     suspend fun updateWord(word: Word)
 
+    /**
+     * Only words with proficient meaning proficiency will be selected. The
+     * selection order is that if a word:
+     *  1. has not been selected for translation quiz before
+     *  2. has the earliest nextQuizDate if it has been selected
+     *  3. has the earliest createdDate
+     */
     suspend fun getTranslationQuizWord(
         language: Language,
         currentDate: Instant

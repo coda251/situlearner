@@ -33,7 +33,7 @@ internal class WordQuizViewModel(
     private fun getWords() {
         viewModelScope.launch {
             val preference = userPreferenceRepository.userPreference.first()
-            val words = wordRepository.getWordWithContexts(
+            val words = wordRepository.getMeaningQuizWordWithContextsList(
                 language = preference.wordLibraryLanguage,
                 currentDate = Clock.System.now(),
                 count = preference.quizWordCount,

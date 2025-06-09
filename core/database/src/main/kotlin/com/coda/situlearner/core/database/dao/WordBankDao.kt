@@ -109,13 +109,18 @@ interface WordBankDao {
         WHERE 
             w.language == :language AND w.meaningProficiency = :proficiency
             AND (t.wordId IS NULL OR t.nextQuizDate <= :currentDate)
+        ORDER BY
+            CASE WHEN t.wordId IS NULL THEN 0 ELSE 1 END,
+            t.nextQuizDate ASC,
+            w.createdDate ASC
+        LIMIT 1
         """
     )
-    suspend fun getTranslationQuizCandidates(
+    suspend fun getWordEntity(
         language: Language,
         currentDate: Instant,
         proficiency: WordProficiency
-    ): List<WordEntity>
+    ): WordEntity?
 
     @Query("SELECT * FROM MeaningQuizStatsEntity WHERE wordId IN (:ids)")
     suspend fun getMeaningQuizStatsEntities(ids: Set<String>): List<MeaningQuizStatsEntity>

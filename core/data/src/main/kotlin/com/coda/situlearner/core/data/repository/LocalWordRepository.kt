@@ -71,23 +71,11 @@ internal class LocalWordRepository(
     }
 
     override suspend fun getTranslationQuizWord(language: Language, currentDate: Instant): Word? {
-        val candidates = wordBankDao.getTranslationQuizCandidates(
+        return wordBankDao.getWordEntity(
             language.asValue(),
             currentDate,
             proficiency = WordProficiency.Proficient.asValue()
-        )
-        if (candidates.isEmpty()) return null
-
-        val statsEntityList =
-            wordBankDao.getMeaningQuizStatsEntities(candidates.map { it.id }.toSet())
-        val statsEntityMap = statsEntityList.associateBy { it.wordId }
-
-        return candidates
-            .mapNotNull { word ->
-                statsEntityMap[word.id]?.let { stats -> word to stats.nextQuizDate }
-            }
-            .maxByOrNull { it.second }
-            ?.first?.asExternalModel()
+        )?.asExternalModel()
     }
 
     override fun getWordWithContexts(wordId: String): Flow<WordWithContexts?> {
@@ -98,7 +86,7 @@ internal class LocalWordRepository(
         }
     }
 
-    override suspend fun getWordWithContexts(
+    override suspend fun getMeaningQuizWordWithContextsList(
         language: Language,
         currentDate: Instant,
         count: UInt
