@@ -2,13 +2,14 @@ package com.coda.situlearner.infra.chatbot
 
 import com.coda.situlearner.core.model.data.Aliyun
 import com.coda.situlearner.core.model.data.ChatbotConfig
+import com.coda.situlearner.core.model.infra.ChatDelta
 import com.coda.situlearner.core.model.infra.ChatMessage
-import com.coda.situlearner.core.model.infra.ChatResponse
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.Flow
 
 interface Chatbot {
 
-    suspend fun sendMessage(messages: List<ChatMessage>): ChatResponse
+    fun sendMessage(messages: List<ChatMessage>): Flow<ChatDelta>
 
     companion object {
         fun getInstance(config: ChatbotConfig, client: HttpClient): Chatbot = when (config) {

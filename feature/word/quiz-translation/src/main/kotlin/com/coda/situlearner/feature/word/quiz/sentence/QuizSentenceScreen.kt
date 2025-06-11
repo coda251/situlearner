@@ -61,6 +61,7 @@ import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.infra.ChatMessage
 import com.coda.situlearner.core.model.infra.ChatRole
 import com.coda.situlearner.core.ui.widget.BackButton
+import com.coda.situlearner.feature.word.quiz.sentence.domain.ChatStatus
 import com.coda.situlearner.feature.word.quiz.sentence.util.ExternalChatbot
 import com.coda.situlearner.feature.word.quiz.sentence.util.getReviewPrompt
 import com.coda.situlearner.feature.word.quiz.sentence.util.launchExternalChatbot
@@ -77,11 +78,11 @@ internal fun QuizSentenceScreen(
     onNavigateToWordDetail: (String) -> Unit,
     viewModel: QuizSentenceViewModel = koinViewModel()
 ) {
-    val initUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val quizState by viewModel.quizState.collectAsStateWithLifecycle()
     val evaluateState by viewModel.evaluateState.collectAsStateWithLifecycle()
 
     QuizSentenceScreen(
-        uiState = initUiState,
+        quizState = quizState,
         evaluateState = evaluateState,
         onBack = onBack,
         onSubmit = viewModel::submit,
@@ -95,14 +96,14 @@ internal fun QuizSentenceScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun QuizSentenceScreen(
-    uiState: UiState,
+    quizState: QuizUiState,
     evaluateState: EvaluateState,
     onBack: () -> Unit,
-    onSubmit: (UiState.ChatSession, String) -> Unit,
-    onRetry: (UiState.ChatSession) -> Unit,
+    onSubmit: (QuizUiState.Data, String) -> Unit,
+    onRetry: (QuizUiState.Data) -> Unit,
     onNextQuiz: () -> Unit,
     onViewWord: (String) -> Unit,
-    onEvaluate: (UiState.ChatSession, EvaluateState) -> Unit,
+    onEvaluate: (EvaluateState.Data, Boolean) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -121,151 +122,125 @@ private fun QuizSentenceScreen(
                 .imePadding()
                 .consumeWindowInsets(paddingValues)
         ) {
-            when (uiState) {
-                UiState.Loading -> {}
-                UiState.NoWordError -> {
+            when (quizState) {
+                QuizUiState.Loading -> {}
+                QuizUiState.NoWordError -> {
                     Text(
                         modifier = Modifier.align(Alignment.Center),
                         text = stringResource(R.string.word_quiz_sentence_screen_no_word_error)
                     )
                 }
 
-                UiState.NoChatbotError -> {
+                QuizUiState.NoChatbotError -> {
                     Text(
                         modifier = Modifier.align(Alignment.Center),
                         text = stringResource(R.string.word_quiz_sentence_screen_no_chatbot_error)
                     )
                 }
 
-                is UiState.ChatSession -> {
-                    ChatScreen(
-                        session = uiState,
+                is QuizUiState.Data -> {
+                    ChatContentBoard(
+                        quizState = quizState,
                         evaluateState = evaluateState,
-                        onSubmit = { onSubmit(uiState, it) },
-                        onRetry = { onRetry(uiState) },
+                        onSubmit = { onSubmit(quizState, it) },
+                        onRetry = { onRetry(quizState) },
                         onNextQuiz = onNextQuiz,
                         onViewWord = onViewWord,
-                        onEvaluate = { onEvaluate(uiState, it) }
+                        onEvaluate = onEvaluate
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun ChatScreen(
-    session: UiState.ChatSession,
-    evaluateState: EvaluateState,
-    onSubmit: (String) -> Unit,
-    onRetry: () -> Unit,
-    onNextQuiz: () -> Unit,
-    onViewWord: (String) -> Unit,
-    onEvaluate: (EvaluateState) -> Unit,
-) {
-    when (session.quizState) {
-        QuizState.LoadingQuestion -> {
-            LoadingQuestionBoard(session, onRetry)
-        }
-
-        else -> {
-            ChatContentBoard(
-                session = session,
-                evaluateState = evaluateState,
-                onSubmit = onSubmit,
-                onRetry = onRetry,
-                onNextQuiz = onNextQuiz,
-                onViewWord = onViewWord,
-                onEvaluate = onEvaluate
-            )
         }
     }
 }
 
 @Composable
 private fun ChatContentBoard(
-    session: UiState.ChatSession,
+    quizState: QuizUiState.Data,
     evaluateState: EvaluateState,
     onSubmit: (String) -> Unit,
     onRetry: () -> Unit,
     onNextQuiz: () -> Unit,
     onViewWord: (String) -> Unit,
-    onEvaluate: (EvaluateState) -> Unit,
+    onEvaluate: (EvaluateState.Data, Boolean) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.weight(1f)) {
-            items(items = session.displayedMessages) {
+            items(items = quizState.displayedMessages) {
                 MessageItem(message = it)
             }
+
             item {
-                when (val state = session.sessionState) {
-                    ChatSessionState.Loading -> MessageLoading()
-                    is ChatSessionState.Error -> MessageError(state.message, onRetry)
-                    ChatSessionState.WaitingInput -> {}
+                when (quizState.chatStatus) {
+                    ChatStatus.Streaming, ChatStatus.Error -> MessageItem(
+                        message = ChatMessage(
+                            role = ChatRole.Bot,
+                            content = quizState.partial
+                        )
+                    )
+
+                    else -> {}
+                }
+            }
+            item {
+                when (quizState.chatStatus) {
+                    ChatStatus.Connecting -> MessageLoading()
+                    ChatStatus.Error -> MessageError(
+                        quizState.error
+                            ?: stringResource(R.string.word_quiz_translation_screen_chat_service_error),
+                        onRetry
+                    )
+
+                    else -> {}
                 }
             }
         }
 
-        if (session.quizState is QuizState.Question) {
+        if (quizState.phase == QuizPhase.Question) {
             InputBar(onSubmit)
         }
 
-        AnimatedVisibility(session.hasUserAnswer) {
+        AnimatedVisibility(quizState.hasUserAnswer) {
             Column {
                 AnimatedVisibility(
-                    visible = evaluateState is EvaluateState.Prepared
-                            || evaluateState is EvaluateState.UsageEvaluated
+                    visible = evaluateState is EvaluateState.Data &&
+                            evaluateState.phase != EvaluatePhase.Done
                 ) {
-                    EvaluateBoard(
-                        evaluateState,
-                        onEvaluate = onEvaluate,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+                    if (evaluateState is EvaluateState.Data) {
+                        Column {
+                            Spacer(modifier = Modifier.height(32.dp))
+
+                            EvaluateBoard(
+                                evaluateState,
+                                onEvaluate = onEvaluate,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                ExtraOptionsFAB(session, onNextQuiz, onViewWord)
-            }
-        }
-    }
-}
-
-@Composable
-private fun LoadingQuestionBoard(
-    session: UiState.ChatSession,
-    onRetry: () -> Unit
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        when (val state = session.sessionState) {
-            ChatSessionState.Loading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-
-            is ChatSessionState.Error -> {
-                Column(
-                    modifier = Modifier.align(Alignment.Center),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        text = state.message,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                    TextButton(onClick = onRetry) {
-                        Text(
-                            text = stringResource(R.string.word_quiz_sentence_screen_retry),
-                            color = MaterialTheme.colorScheme.error
+                    quizState.totalTokens?.let {
+                        TokenCostInfo(
+                            totalTokens = it,
+                            modifier = Modifier.padding(start = 16.dp)
                         )
                     }
+
+                    ExtraOptionsFAB(
+                        state = quizState,
+                        onNextQuiz = onNextQuiz,
+                        onViewWord = onViewWord,
+                        modifier = Modifier.padding(end = 16.dp, bottom = 16.dp)
+                    )
                 }
             }
-
-            ChatSessionState.WaitingInput -> {}
         }
     }
 }
@@ -319,10 +294,23 @@ private fun InputBar(
 }
 
 @Composable
+private fun TokenCostInfo(
+    totalTokens: Int,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        modifier = modifier,
+        text = stringResource(R.string.word_quiz_translation_screen_token_cost, totalTokens),
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+}
+
+@Composable
 private fun ExtraOptionsFAB(
-    session: UiState.ChatSession,
+    state: QuizUiState.Data,
     onNextQuiz: () -> Unit,
-    onViewWord: (String) -> Unit
+    onViewWord: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
@@ -330,98 +318,93 @@ private fun ExtraOptionsFAB(
     var showExtraOptions by remember { mutableStateOf(false) }
 
     // NOTE: wait for FloatingActionButtonMenu
-    Box(modifier = Modifier.fillMaxWidth()) {
-        FloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 16.dp),
-            onClick = {
-                showExtraOptions = true
-            }
-        ) {
-            Icon(
-                painter = painterResource(coreR.drawable.add_24dp_000000_fill0_wght400_grad0_opsz24),
-                contentDescription = null
-            )
 
-            DropdownMenu(
-                expanded = showExtraOptions,
-                onDismissRequest = { showExtraOptions = false }
-            ) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(
-                                R.string.word_quiz_sentence_screen_ask_external,
-                                ExternalChatbot.ChatGPT.displayName
-                            )
+    FloatingActionButton(
+        modifier = modifier,
+        onClick = { showExtraOptions = true }
+    ) {
+        Icon(
+            painter = painterResource(coreR.drawable.add_24dp_000000_fill0_wght400_grad0_opsz24),
+            contentDescription = null
+        )
+
+        DropdownMenu(
+            expanded = showExtraOptions,
+            onDismissRequest = { showExtraOptions = false }
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(
+                            R.string.word_quiz_sentence_screen_ask_external,
+                            ExternalChatbot.ChatGPT.displayName
                         )
-                    },
-                    onClick = {
-                        showExtraOptions = false
-                        session.questionAndUserAnswer?.let {
-                            clipboard.nativeClipboard.setPrimaryClip(
-                                ClipData.newPlainText(
-                                    "text",
-                                    getReviewPrompt(
-                                        word = session.word,
-                                        question = it.first,
-                                        userAnswer = it.second
-                                    )
+                    )
+                },
+                onClick = {
+                    showExtraOptions = false
+                    if (state.hasUserAnswer) {
+                        clipboard.nativeClipboard.setPrimaryClip(
+                            ClipData.newPlainText(
+                                "text",
+                                getReviewPrompt(
+                                    word = state.word,
+                                    question = state.question,
+                                    userAnswer = state.userAnswer
                                 )
                             )
-                            launchExternalChatbot(context, ExternalChatbot.ChatGPT)
-                        }
-                    }
-                )
-
-                DropdownMenuItem(
-                    text = {
-                        Text(text = stringResource(R.string.word_quiz_sentence_screen_next_question))
-                    },
-                    onClick = {
-                        showExtraOptions = false
-                        onNextQuiz()
-                    }
-                )
-
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.word_quiz_sentence_screen_view_word)
                         )
-                    },
-                    onClick = {
-                        showExtraOptions = false
-                        onViewWord(session.word.id)
+                        launchExternalChatbot(context, ExternalChatbot.ChatGPT)
                     }
-                )
-            }
+                }
+            )
+
+            DropdownMenuItem(
+                text = {
+                    Text(text = stringResource(R.string.word_quiz_sentence_screen_next_question))
+                },
+                onClick = {
+                    showExtraOptions = false
+                    onNextQuiz()
+                }
+            )
+
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(R.string.word_quiz_sentence_screen_view_word)
+                    )
+                },
+                onClick = {
+                    showExtraOptions = false
+                    onViewWord(state.word.id)
+                }
+            )
         }
     }
 }
 
 @Composable
 private fun EvaluateBoard(
-    state: EvaluateState,
-    onEvaluate: (EvaluateState) -> Unit,
+    state: EvaluateState.Data,
+    onEvaluate: (EvaluateState.Data, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val text = when (state) {
-        is EvaluateState.Prepared -> stringResource(
+    val text = when (state.phase) {
+        EvaluatePhase.Existence -> stringResource(
             R.string.word_quiz_sentence_screen_evaluate_is_used,
             state.word.word
         )
 
-        is EvaluateState.UsageEvaluated -> {
-            if (state.isWordUsed) {
-                stringResource(R.string.word_quiz_sentence_screen_evaluate_usage)
-            } else {
-                stringResource(R.string.word_quiz_sentence_screen_evaluate_recall)
-            }
+        EvaluatePhase.Usage -> {
+            stringResource(R.string.word_quiz_sentence_screen_evaluate_usage)
         }
 
-        else -> ""
+        EvaluatePhase.Recall -> {
+            stringResource(R.string.word_quiz_sentence_screen_evaluate_recall)
+        }
+
+        EvaluatePhase.Done -> ""
     }
 
     Card(modifier) {
@@ -439,21 +422,7 @@ private fun EvaluateBoard(
         ListItem(
             headlineContent = {
                 YesNoButtonGroup(
-                    onChoose = {
-                        when (state) {
-                            is EvaluateState.Prepared -> onEvaluate(
-                                EvaluateState.UsageEvaluated(
-                                    state.word.id,
-                                    it
-                                )
-                            )
-
-                            is EvaluateState.UsageEvaluated ->
-                                onEvaluate(EvaluateState.Result(state.wordId, state.isWordUsed, it))
-
-                            else -> {}
-                        }
-                    },
+                    onChoose = { onEvaluate(state, it) },
                 )
             },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
@@ -531,31 +500,30 @@ private fun MessageError(
 
 @Composable
 private fun MessageItem(message: ChatMessage) {
-    ListItem(
-        headlineContent = {
-            when (message.role) {
-                ChatRole.Bot -> {
-                    MarkdownText(
-                        modifier = Modifier.fillMaxWidth(),
-                        markdown = message.content
-                    )
-                }
+    if (message.content.isBlank()) return
 
-                ChatRole.User -> {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Spacer(modifier = Modifier.weight(1f))
-                        Card {
-                            MarkdownText(
-                                modifier = Modifier.padding(12.dp),
-                                markdown = message.content
-                            )
-                        }
+    Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        when (message.role) {
+            ChatRole.Bot -> {
+                MarkdownText(
+                    modifier = Modifier.fillMaxWidth(),
+                    markdown = message.content
+                )
+            }
+
+            ChatRole.User -> {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Card {
+                        MarkdownText(
+                            modifier = Modifier.padding(12.dp),
+                            markdown = message.content
+                        )
                     }
                 }
             }
-        },
-        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-    )
+        }
+    }
 }
 
 @Composable
@@ -595,20 +563,22 @@ private fun ChatMessagePreview() {
 @Composable
 @Preview(showBackground = true)
 private fun EvaluateBoardPreview() {
-    var state by remember {
-        mutableStateOf<EvaluateState>(
-            EvaluateState.Prepared(
+    val state by remember {
+        mutableStateOf(
+            EvaluateState.Data(
                 word = Word(
                     id = "",
                     word = "Good",
                     language = Language.English
-                )
+                ),
+                question = "",
+                userAnswer = ""
             )
         )
     }
 
     EvaluateBoard(
         state,
-        onEvaluate = { state = it }
+        onEvaluate = { _, _ -> }
     )
 }

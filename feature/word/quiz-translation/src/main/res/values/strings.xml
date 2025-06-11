@@ -11,4 +11,6 @@
     <string name="word_quiz_sentence_screen_evaluate_is_used">Use the word: %s?</string>
     <string name="word_quiz_sentence_screen_evaluate_usage">Are the word forms and collocations correct?</string>
     <string name="word_quiz_sentence_screen_evaluate_recall">Can recall the usage of the word?</string>
+    <string name="word_quiz_translation_screen_token_cost">Spend token: %s</string>
+    <string name="word_quiz_translation_screen_chat_service_error">Service error</string>
 </resources>

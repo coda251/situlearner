@@ -5,6 +5,7 @@ import com.coda.situlearner.core.model.infra.ChatRole
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.sse.SSE
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -18,6 +19,7 @@ class AliyunTest {
         apiKey = apiKey,
         model = "deepseek-v3",
         client = HttpClient(CIO) {
+            install(SSE)
             install(ContentNegotiation) {
                 json(
                     Json {
@@ -37,7 +39,8 @@ class AliyunTest {
             )
         )
 
-        val response = chatbot.sendMessage(message)
-        println(response)
+        chatbot.sendMessage(message).collect {
+            println(it)
+        }
     }
 }

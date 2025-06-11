@@ -1,21 +1,28 @@
 package com.coda.situlearner.infra.chatbot
 
+import com.coda.situlearner.core.model.infra.ChatDelta
 import com.coda.situlearner.core.model.infra.ChatMessage
-import com.coda.situlearner.core.model.infra.ChatResponse
 import com.coda.situlearner.core.model.infra.ChatRole
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.plugins.ResponseException
-import io.ktor.client.request.header
-import io.ktor.client.request.post
+import io.ktor.client.plugins.sse.sse
+import io.ktor.client.request.accept
+import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
+import io.ktor.http.contentType
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 
 internal class Aliyun(
     private val apiKey: String,
@@ -23,35 +30,58 @@ internal class Aliyun(
     private val client: HttpClient,
 ) : Chatbot {
 
-    override suspend fun sendMessage(messages: List<ChatMessage>): ChatResponse =
-        withContext(Dispatchers.IO) {
-            try {
-                val response: AliyunResponse =
-                    client.post("https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions") {
-                        header("Content-Type", "application/json")
-                        header("Authorization", "Bearer $apiKey")
-                        setBody(
-                            buildJsonObject {
-                                put("model", model)
-                                putJsonArray("messages") {
-                                    messages.forEach { msg ->
-                                        addJsonObject {
-                                            put("role", msg.role.asApiValue())
-                                            put("content", msg.content)
-                                        }
-                                    }
-                                }
-                            }
-                        )
-                    }.body()
+    private val json by lazy {
+        Json {
+            ignoreUnknownKeys = true
+        }
+    }
 
-                response.asChatResponse()
-            } catch (e: ResponseException) {
-                ChatResponse.Error(e.response.status.value, e.message ?: "Response Error")
-            } catch (e: Throwable) {
-                ChatResponse.Error(message = e.message ?: "Unexpected error")
+    override fun sendMessage(messages: List<ChatMessage>): Flow<ChatDelta> = flow {
+        val body = buildJsonObject {
+            put("model", model)
+            put("stream", true)
+            putJsonObject("stream_options") { put("include_usage", true) }
+            putJsonArray("messages") {
+                messages.forEach { msg ->
+                    addJsonObject {
+                        put("role", msg.role.asApiValue())
+                        put("content", msg.content)
+                    }
+                }
             }
         }
+
+        client.sse(
+            urlString = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+            request = {
+                method = HttpMethod.Post
+                contentType(ContentType.Application.Json)
+                bearerAuth(apiKey)
+                accept(ContentType.Text.EventStream)
+                setBody(body)
+            }
+        ) {
+            var error: String? = null
+
+            incoming.mapNotNull { it.data }.collect { data ->
+                if (data == "[DONE]") return@collect
+                val chunk = json.decodeFromString<AliyunChunk>(data)
+                val choice = chunk.choices.firstOrNull()
+
+                error = if (chunk.usage?.totalTokens != null) error // avoid overriding error msg
+                else choice?.finishReason?.takeIf { it != "stop" }
+
+                emit(
+                    ChatDelta(
+                        content = choice?.delta?.content,
+                        isFinished = choice?.finishReason != null || chunk.usage?.totalTokens != null,
+                        error = error,
+                        totalTokens = chunk.usage?.totalTokens
+                    )
+                )
+            }
+        }
+    }.flowOn(Dispatchers.IO)
 }
 
 private fun ChatRole.asApiValue(): String = when (this) {
@@ -60,25 +90,25 @@ private fun ChatRole.asApiValue(): String = when (this) {
 }
 
 @kotlinx.serialization.Serializable
-private data class AliyunResponse(
+private data class AliyunChunk(
     val id: String,
     val created: Long,
     @SerialName("object") val obj: String,
     val model: String,
     val choices: List<Choice>,
-    val usage: Usage
+    val usage: Usage?
 ) {
     @kotlinx.serialization.Serializable
     data class Choice(
         val index: Int,
-        @SerialName("finish_reason") val finishReason: String,
-        val message: Message
+        @SerialName("finish_reason") val finishReason: String?,
+        val delta: Delta
     )
 
     @kotlinx.serialization.Serializable
-    data class Message(
-        val role: String,
-        val content: String
+    data class Delta(
+        val content: String,
+        val role: String? = null,
     )
 
     @kotlinx.serialization.Serializable
@@ -88,6 +118,3 @@ private data class AliyunResponse(
         @SerialName("total_tokens") val totalTokens: Int
     )
 }
-
-private fun AliyunResponse.asChatResponse() =
-    ChatResponse.Success(choices.firstOrNull()?.message?.content.orEmpty())

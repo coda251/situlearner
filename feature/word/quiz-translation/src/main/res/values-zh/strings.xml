@@ -11,4 +11,6 @@
     <string name="word_quiz_sentence_screen_evaluate_is_used">使用了单词：%s？</string>
     <string name="word_quiz_sentence_screen_evaluate_usage">单词变形和搭配是否正确？</string>
     <string name="word_quiz_sentence_screen_evaluate_recall">能否回忆起单词的用法？</string>
+    <string name="word_quiz_translation_screen_token_cost">花费token：%s</string>
+    <string name="word_quiz_translation_screen_chat_service_error">服务出错</string>
 </resources>
