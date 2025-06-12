@@ -13,8 +13,6 @@
     <string name="home_settings_common_screen_theme_color_dynamic_with_thumbnail">Dynamic with thumbnail</string>
 
     <string name="home_settings_common_screen_word_library_language">Word library language</string>
-    <string name="home_settings_common_screen_quiz_word_count">Quiz word count</string>
-    <string name="home_settings_common_screen_count">Count</string>
     <string name="home_settings_common_screen_recommended_word_count">Recommended word count</string>
     <string name="home_settings_common_screen_check_update">Check update</string>
     <string name="home_settings_common_screen_current_version">Current version</string>
@@ -24,4 +22,6 @@
     <string name="home_settings_common_screen_update_available">Update available</string>
     <string name="home_settings_common_screen_chatbot">Chatbot</string>
     <string name="home_settings_common_screen_chatbot_none">None</string>
+    <string name="home_settings_common_screen_word_quiz">Word quiz</string>
+    <string name="home_settings_common_screen_word_quiz_desc">Quiz-related settings</string>
 </resources>

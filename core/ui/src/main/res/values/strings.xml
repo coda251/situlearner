@@ -24,4 +24,5 @@
     <string name="core_ui_empty_error">Input should not be empty</string>
     <string name="core_ui_meaning_quiz">Meaning quiz</string>
     <string name="core_ui_translation_quiz">Translation quiz</string>
+    <string name="core_ui_count">Count</string>
 </resources>

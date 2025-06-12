@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.AiStateRepository
 import com.coda.situlearner.core.model.data.ChatbotConfigList
 import com.coda.situlearner.core.model.data.ChatbotType
-import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
 import com.coda.situlearner.feature.home.settings.chatbot.model.ChatbotItem
 import com.coda.situlearner.feature.home.settings.chatbot.model.asChatbotItem
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,10 +27,7 @@ internal class SettingsChatbotViewModel(
             it.status.level
         }
 
-        ChatbotUiState.Success(
-            chatbots = items,
-            quizPromptTemplate = state.promptTemplate.data
-        )
+        ChatbotUiState.Success(chatbots = items)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -43,20 +39,9 @@ internal class SettingsChatbotViewModel(
             aiStateRepository.setChatbotConfigList(chatbotConfigList)
         }
     }
-
-    fun setTranslationQuizPromptTemplate(template: String) {
-        viewModelScope.launch {
-            aiStateRepository.setTranslationQuizPromptTemplate(
-                TranslationQuizPromptTemplate(template)
-            )
-        }
-    }
 }
 
 internal sealed interface ChatbotUiState {
     data object Loading : ChatbotUiState
-    data class Success(
-        val chatbots: List<ChatbotItem>,
-        val quizPromptTemplate: String,
-    ) : ChatbotUiState
+    data class Success(val chatbots: List<ChatbotItem>) : ChatbotUiState
 }

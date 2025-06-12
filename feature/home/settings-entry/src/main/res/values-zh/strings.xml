@@ -10,8 +10,6 @@
     <string name="home_settings_common_screen_theme_color_dynamic_with_wallpaper">根据桌面壁纸的动态主题</string>
     <string name="home_settings_common_screen_theme_color_dynamic_with_thumbnail">根据缩略图的动态主题</string>
     <string name="home_settings_common_screen_word_library_language">单词库语言</string>
-    <string name="home_settings_common_screen_quiz_word_count">测试单词数</string>
-    <string name="home_settings_common_screen_count">数量</string>
     <string name="home_settings_common_screen_recommended_word_count">推荐单词数</string>
     <string name="home_settings_common_screen_check_update">检查更新</string>
     <string name="home_settings_common_screen_current_version">当前版本</string>
@@ -21,4 +19,6 @@
     <string name="home_settings_common_screen_update_available">存在新版本</string>
     <string name="home_settings_common_screen_chatbot">聊天机器人</string>
     <string name="home_settings_common_screen_chatbot_none">无</string>
+    <string name="home_settings_common_screen_word_quiz">单词测验</string>
+    <string name="home_settings_common_screen_word_quiz_desc">单词测验相关配置</string>
 </resources>

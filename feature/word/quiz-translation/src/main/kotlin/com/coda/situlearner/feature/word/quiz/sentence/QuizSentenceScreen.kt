@@ -63,7 +63,6 @@ import com.coda.situlearner.core.model.infra.ChatRole
 import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.feature.word.quiz.sentence.domain.ChatStatus
 import com.coda.situlearner.feature.word.quiz.sentence.util.ExternalChatbot
-import com.coda.situlearner.feature.word.quiz.sentence.util.getReviewPrompt
 import com.coda.situlearner.feature.word.quiz.sentence.util.launchExternalChatbot
 import com.coda.situlearner.feature.word.quiz.translation.R
 import dev.jeziellago.compose.markdowntext.MarkdownText
@@ -347,10 +346,10 @@ private fun ExtraOptionsFAB(
                         clipboard.nativeClipboard.setPrimaryClip(
                             ClipData.newPlainText(
                                 "text",
-                                getReviewPrompt(
+                                state.reviewTemplate.buildPrompt(
                                     word = state.word,
                                     question = state.question,
-                                    userAnswer = state.userAnswer
+                                    answer = state.userAnswer
                                 )
                             )
                         )

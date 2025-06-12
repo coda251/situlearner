@@ -23,4 +23,12 @@ internal class LocalAiStateDataSource(private val aiState: DataStore<AiStateProt
             }
         }
     }
+
+    override suspend fun setTranslationEvalPromptTemplateProto(template: String) {
+        aiState.updateData {
+            it.copy {
+                this.translationEvalPromptTemplate = template
+            }
+        }
+    }
 }

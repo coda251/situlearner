@@ -3,5 +3,4 @@
     <string name="home_settings_chatbot_screen_current">Current</string>
     <string name="home_settings_chatbot_screen_api_key">API key</string>
     <string name="home_settings_chatbot_screen_model">Model</string>
-    <string name="home_settings_chatbot_screen_translation_quiz_prompt">Translation quiz prompt</string>
 </resources>

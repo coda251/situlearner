@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_settings_quiz_screen_quiz_word_count">Quiz word count</string>
+    <string name="home_settings_quiz_screen_translation_quiz_prompt">Translation quiz prompt</string>
+    <string name="home_settings_quiz_screen_translation_eval_prompt">Translation evaluate prompt</string>
+    <string name="home_settings_quiz_screen_translation_quiz_prompt_desc">Quiz prompt template for generating translation question</string>
+    <string name="home_settings_quiz_screen_translation_eval_prompt_desc">Evaluate prompt template for querying chatbot for evalution of user answer</string>
+</resources>

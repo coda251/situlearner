@@ -12,11 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -44,7 +40,6 @@ import com.coda.situlearner.core.model.data.ChatbotConfig
 import com.coda.situlearner.core.model.data.ChatbotConfigList
 import com.coda.situlearner.core.model.data.ChatbotType
 import com.coda.situlearner.core.ui.widget.BackButton
-import com.coda.situlearner.core.ui.widget.NonEmptyTextInputDialog
 import com.coda.situlearner.feature.home.settings.chatbot.model.ChatbotItem
 import com.coda.situlearner.feature.home.settings.chatbot.model.asAiState
 import com.coda.situlearner.feature.home.settings.chatbot.model.asChatbotItem
@@ -62,7 +57,6 @@ internal fun SettingsChatbotScreen(
         uiState = uiState,
         onBack = onBack,
         onSetAiState = viewModel::setChatbotConfigList,
-        onSetQuizPromptTemplate = viewModel::setTranslationQuizPromptTemplate
     )
 }
 
@@ -72,27 +66,12 @@ private fun SettingsChatbotScreen(
     uiState: ChatbotUiState,
     onBack: () -> Unit,
     onSetAiState: (ChatbotConfigList) -> Unit,
-    onSetQuizPromptTemplate: (String) -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {},
-                navigationIcon = {
-                    BackButton(onBack)
-                },
-                actions = {
-                    when (uiState) {
-                        is ChatbotUiState.Success -> {
-                            PromptTemplatePanel(
-                                quizPromptTemplate = uiState.quizPromptTemplate,
-                                onSetQuizPromptTemplate = onSetQuizPromptTemplate
-                            )
-                        }
-
-                        else -> {}
-                    }
-                }
+                navigationIcon = { BackButton(onBack) }
             )
         }
     ) { paddingValues ->
@@ -134,53 +113,6 @@ private fun ContentBoard(
                 onSetCurrentType = onSetCurrentType
             )
         }
-    }
-}
-
-@Composable
-private fun PromptTemplatePanel(
-    quizPromptTemplate: String,
-    onSetQuizPromptTemplate: (String) -> Unit,
-) {
-    var openMenu by remember { mutableStateOf(false) }
-
-    var quizPromptDialog by remember { mutableStateOf(false) }
-
-    IconButton(
-        onClick = { openMenu = true }
-    ) {
-        Icon(
-            painter = painterResource(coreR.drawable.more_vert_24dp_000000_fill0_wght400_grad0_opsz24),
-            contentDescription = null
-        )
-    }
-
-    DropdownMenu(
-        expanded = openMenu,
-        onDismissRequest = { openMenu = false }
-    ) {
-        DropdownMenuItem(
-            text = {
-                Text(text = stringResource(R.string.home_settings_chatbot_screen_translation_quiz_prompt))
-            },
-            onClick = {
-                openMenu = false
-                quizPromptDialog = true
-            }
-        )
-    }
-
-    if (quizPromptDialog) {
-        NonEmptyTextInputDialog(
-            text = quizPromptTemplate,
-            onDismiss = {
-                quizPromptDialog = false
-            },
-            onConfirm = {
-                onSetQuizPromptTemplate(it)
-                quizPromptDialog = false
-            }
-        )
     }
 }
 
@@ -339,14 +271,12 @@ private fun SettingsChatbotScreenPreview() {
     val uiState = ChatbotUiState.Success(
         chatbots = ChatbotType.entries.map {
             it.asChatbotItem().copy(status = ChatbotItem.Status.Active)
-        },
-        quizPromptTemplate = "",
+        }
     )
 
     SettingsChatbotScreen(
         uiState = uiState,
         onBack = {},
         onSetAiState = {},
-        onSetQuizPromptTemplate = {}
     )
 }

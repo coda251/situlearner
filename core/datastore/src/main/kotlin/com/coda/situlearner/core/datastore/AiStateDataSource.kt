@@ -9,4 +9,6 @@ interface AiStateDataSource {
     suspend fun setChatbotConfigProto(configs: List<ChatbotConfigProto>, index: Int)
 
     suspend fun setTranslationQuizPromptTemplateProto(template: String)
+
+    suspend fun setTranslationEvalPromptTemplateProto(template: String)
 }

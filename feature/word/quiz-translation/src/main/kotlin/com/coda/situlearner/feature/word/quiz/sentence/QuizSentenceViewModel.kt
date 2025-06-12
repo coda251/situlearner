@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.AiStateRepository
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.data.repository.WordRepository
+import com.coda.situlearner.core.model.data.TranslationEvalPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.Word
@@ -18,7 +19,6 @@ import com.coda.situlearner.feature.word.quiz.sentence.domain.ChatSession
 import com.coda.situlearner.feature.word.quiz.sentence.domain.ChatStatus
 import com.coda.situlearner.feature.word.quiz.sentence.domain.GetChatSessionUseCase
 import com.coda.situlearner.feature.word.quiz.sentence.domain.QueryChatbotUseCase
-import com.coda.situlearner.feature.word.quiz.sentence.util.getReviewPrompt
 import com.coda.situlearner.infra.chatbot.Chatbot
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -53,13 +53,18 @@ internal class QuizSentenceViewModel(
 
     val quizState = aiStateRepository.aiState.flatMapLatest {
         val chatbotConfig = it.configs.currentItem
-        val quizPromptTemplate = it.promptTemplate
+        val quizPromptTemplate = it.quizPromptTemplate
+        val evalPromptTemplate = it.evalPromptTemplate
         when {
             chatbotConfig == null -> flowOf(QuizUiState.NoChatbotError)
             else -> {
                 val chatbot = Chatbot.getInstance(chatbotConfig, client)
                 val getChatSessionUseCase = GetChatSessionUseCase(QueryChatbotUseCase(chatbot))
-                processQuizEvents(getChatSessionUseCase, quizPromptTemplate)
+                processQuizEvents(
+                    getChatSessionUseCase,
+                    quizPromptTemplate,
+                    evalPromptTemplate
+                )
             }
         }
     }.stateIn(
@@ -97,13 +102,19 @@ internal class QuizSentenceViewModel(
 
     private fun processQuizEvents(
         useCase: GetChatSessionUseCase,
-        template: TranslationQuizPromptTemplate,
+        quizTemplate: TranslationQuizPromptTemplate,
+        evalTemplate: TranslationEvalPromptTemplate
     ): Flow<QuizUiState> =
         _quizEvent
             .onStart { emit(QuizEvent.Start) }
             .flatMapLatest {
                 when (it) {
-                    QuizEvent.Start, QuizEvent.NextQuiz -> startQuiz(useCase, template)
+                    QuizEvent.Start, QuizEvent.NextQuiz -> startQuiz(
+                        useCase,
+                        quizTemplate,
+                        evalTemplate
+                    )
+
                     is QuizEvent.Submit -> submitAnswer(useCase, it)
                     is QuizEvent.Retry -> retry(useCase, it)
                 }
@@ -111,7 +122,8 @@ internal class QuizSentenceViewModel(
 
     private fun startQuiz(
         useCase: GetChatSessionUseCase,
-        template: TranslationQuizPromptTemplate
+        quizTemplate: TranslationQuizPromptTemplate,
+        evalTemplate: TranslationEvalPromptTemplate
     ) = flow {
         val word = getWord() ?: kotlin.run {
             emit(QuizUiState.NoWordError)
@@ -120,7 +132,8 @@ internal class QuizSentenceViewModel(
 
         val state = QuizUiState.Data(
             word = word,
-            questionTemplate = template
+            questionTemplate = quizTemplate,
+            reviewTemplate = evalTemplate,
         )
         emitAll(queryBotFlow(useCase, state))
     }
@@ -334,6 +347,7 @@ internal sealed interface QuizUiState {
     data class Data(
         val word: Word,
         val questionTemplate: TranslationQuizPromptTemplate,
+        val reviewTemplate: TranslationEvalPromptTemplate,
 
         // quiz related
         val phase: QuizPhase = QuizPhase.Idle,
@@ -363,7 +377,7 @@ internal sealed interface QuizUiState {
         val query: String?
             get() = when {
                 shouldQueryQuestion -> questionTemplate.buildPrompt(word)
-                shouldQueryReview -> getReviewPrompt(word, question, userAnswer)
+                shouldQueryReview -> reviewTemplate.buildPrompt(word, question, userAnswer)
                 else -> null
             }
 

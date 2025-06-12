@@ -9,4 +9,5 @@ message AiStateProto {
   repeated ChatbotConfigProto configs = 1;
   int32 current_index = 2;
   string translation_quiz_prompt_template = 3;
+  string translation_eval_prompt_template = 4;
 }

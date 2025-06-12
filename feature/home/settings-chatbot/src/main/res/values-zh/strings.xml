@@ -3,5 +3,4 @@
     <string name="home_settings_chatbot_screen_current">正在使用</string>
     <string name="home_settings_chatbot_screen_api_key">API密钥</string>
     <string name="home_settings_chatbot_screen_model">模型</string>
-    <string name="home_settings_chatbot_screen_translation_quiz_prompt">翻译测试提示词</string>
 </resources>

@@ -17,6 +17,7 @@ dependencies {
     implementation(projects.feature.home.mediaCollection)
     implementation(projects.feature.home.settingsEntry)
     implementation(projects.feature.home.settingsChatbot)
+    implementation(projects.feature.home.settingsQuiz)
     implementation(projects.feature.home.wordEntry)
     implementation(projects.feature.home.wordBook)
 }

@@ -35,7 +35,6 @@ internal class SettingsCommonViewModel(
             darkThemeMode = preference.darkThemeMode,
             themeColorMode = preference.themeColorMode,
             wordLibraryLanguage = preference.wordLibraryLanguage,
-            quizWordCount = preference.quizWordCount,
             recommendedWordCount = preference.recommendedWordCount,
             chatbotConfig = ai.configs.currentItem,
         )
@@ -66,12 +65,6 @@ internal class SettingsCommonViewModel(
         }
     }
 
-    fun setQuizWordCount(count: UInt) {
-        viewModelScope.launch {
-            userPreferenceRepository.setQuizWordCount(count)
-        }
-    }
-
     fun setRecommendedWordCount(count: UInt) {
         viewModelScope.launch {
             userPreferenceRepository.setRecommendedWordCount(count)
@@ -98,7 +91,6 @@ internal sealed interface SettingsCommonUiState {
         val darkThemeMode: DarkThemeMode,
         val themeColorMode: ThemeColorMode,
         val wordLibraryLanguage: Language,
-        val quizWordCount: UInt,
         val recommendedWordCount: UInt,
         val chatbotConfig: ChatbotConfig?,
     ) : SettingsCommonUiState
