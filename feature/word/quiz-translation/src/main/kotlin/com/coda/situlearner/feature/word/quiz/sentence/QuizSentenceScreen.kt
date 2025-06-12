@@ -1,6 +1,5 @@
 package com.coda.situlearner.feature.word.quiz.sentence
 
-import android.content.ClipData
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,13 +56,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.Language
+import com.coda.situlearner.core.model.data.TranslationEvalBackend
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.infra.ChatMessage
 import com.coda.situlearner.core.model.infra.ChatRole
 import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.feature.word.quiz.sentence.domain.ChatStatus
 import com.coda.situlearner.feature.word.quiz.sentence.util.ExternalChatbot
-import com.coda.situlearner.feature.word.quiz.sentence.util.launchExternalChatbot
+import com.coda.situlearner.feature.word.quiz.sentence.util.launchExternalChatbotWithClip
 import com.coda.situlearner.feature.word.quiz.translation.R
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.coroutines.delay
@@ -163,6 +163,9 @@ private fun ChatContentBoard(
     onViewWord: (String) -> Unit,
     onEvaluate: (EvaluateState.Data, Boolean) -> Unit,
 ) {
+    val context = LocalContext.current
+    val clipboard = LocalClipboard.current
+
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(items = quizState.displayedMessages) {
@@ -196,7 +199,20 @@ private fun ChatContentBoard(
         }
 
         if (quizState.phase == QuizPhase.Question) {
-            InputBar(onSubmit)
+            InputBar(onSubmit = {
+                onSubmit(it)
+                if (quizState.reviewBackend == TranslationEvalBackend.UseExternalChatbot) {
+                    launchExternalChatbotWithClip(
+                        data = quizState.reviewTemplate.buildPrompt(
+                            word = quizState.word,
+                            question = quizState.question,
+                            answer = it
+                        ),
+                        clipboard = clipboard,
+                        context = context
+                    )
+                }
+            })
         }
 
         AnimatedVisibility(quizState.hasUserAnswer) {
@@ -343,17 +359,15 @@ private fun ExtraOptionsFAB(
                 onClick = {
                     showExtraOptions = false
                     if (state.hasUserAnswer) {
-                        clipboard.nativeClipboard.setPrimaryClip(
-                            ClipData.newPlainText(
-                                "text",
-                                state.reviewTemplate.buildPrompt(
-                                    word = state.word,
-                                    question = state.question,
-                                    answer = state.userAnswer
-                                )
-                            )
+                        launchExternalChatbotWithClip(
+                            data = state.reviewTemplate.buildPrompt(
+                                word = state.word,
+                                question = state.question,
+                                answer = state.userAnswer
+                            ),
+                            clipboard = clipboard,
+                            context = context
                         )
-                        launchExternalChatbot(context, ExternalChatbot.ChatGPT)
                     }
                 }
             )

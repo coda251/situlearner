@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.AiStateRepository
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.data.repository.WordRepository
+import com.coda.situlearner.core.model.data.TranslationEvalBackend
 import com.coda.situlearner.core.model.data.TranslationEvalPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizStats
@@ -53,8 +54,6 @@ internal class QuizSentenceViewModel(
 
     val quizState = aiStateRepository.aiState.flatMapLatest {
         val chatbotConfig = it.configs.currentItem
-        val quizPromptTemplate = it.quizPromptTemplate
-        val evalPromptTemplate = it.evalPromptTemplate
         when {
             chatbotConfig == null -> flowOf(QuizUiState.NoChatbotError)
             else -> {
@@ -62,8 +61,9 @@ internal class QuizSentenceViewModel(
                 val getChatSessionUseCase = GetChatSessionUseCase(QueryChatbotUseCase(chatbot))
                 processQuizEvents(
                     getChatSessionUseCase,
-                    quizPromptTemplate,
-                    evalPromptTemplate
+                    it.quizPromptTemplate,
+                    it.evalPromptTemplate,
+                    it.evalBackend,
                 )
             }
         }
@@ -103,7 +103,8 @@ internal class QuizSentenceViewModel(
     private fun processQuizEvents(
         useCase: GetChatSessionUseCase,
         quizTemplate: TranslationQuizPromptTemplate,
-        evalTemplate: TranslationEvalPromptTemplate
+        evalTemplate: TranslationEvalPromptTemplate,
+        reviewBackend: TranslationEvalBackend,
     ): Flow<QuizUiState> =
         _quizEvent
             .onStart { emit(QuizEvent.Start) }
@@ -112,7 +113,8 @@ internal class QuizSentenceViewModel(
                     QuizEvent.Start, QuizEvent.NextQuiz -> startQuiz(
                         useCase,
                         quizTemplate,
-                        evalTemplate
+                        evalTemplate,
+                        reviewBackend
                     )
 
                     is QuizEvent.Submit -> submitAnswer(useCase, it)
@@ -123,7 +125,8 @@ internal class QuizSentenceViewModel(
     private fun startQuiz(
         useCase: GetChatSessionUseCase,
         quizTemplate: TranslationQuizPromptTemplate,
-        evalTemplate: TranslationEvalPromptTemplate
+        evalTemplate: TranslationEvalPromptTemplate,
+        reviewBackend: TranslationEvalBackend,
     ) = flow {
         val word = getWord() ?: kotlin.run {
             emit(QuizUiState.NoWordError)
@@ -134,6 +137,7 @@ internal class QuizSentenceViewModel(
             word = word,
             questionTemplate = quizTemplate,
             reviewTemplate = evalTemplate,
+            reviewBackend = reviewBackend
         )
         emitAll(queryBotFlow(useCase, state))
     }
@@ -150,7 +154,10 @@ internal class QuizSentenceViewModel(
             phase = QuizPhase.Answer
         )
         emit(state)
-        emitAll(queryBotFlow(useCase, state))
+
+        if (state.reviewBackend == TranslationEvalBackend.UseBuiltinChatbot) {
+            emitAll(queryBotFlow(useCase, state))
+        }
     }
 
     private fun retry(
@@ -348,6 +355,7 @@ internal sealed interface QuizUiState {
         val word: Word,
         val questionTemplate: TranslationQuizPromptTemplate,
         val reviewTemplate: TranslationEvalPromptTemplate,
+        val reviewBackend: TranslationEvalBackend,
 
         // quiz related
         val phase: QuizPhase = QuizPhase.Idle,

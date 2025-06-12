@@ -11,4 +11,6 @@ interface AiStateDataSource {
     suspend fun setTranslationQuizPromptTemplateProto(template: String)
 
     suspend fun setTranslationEvalPromptTemplateProto(template: String)
+
+    suspend fun setTranslationEvalBackendProto(backend: TranslationEvalBackendProto)
 }

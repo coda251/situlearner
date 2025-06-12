@@ -6,5 +6,6 @@ data class AiState(
      */
     val configs: ChatbotConfigList,
     val quizPromptTemplate: TranslationQuizPromptTemplate,
-    val evalPromptTemplate: TranslationEvalPromptTemplate
+    val evalPromptTemplate: TranslationEvalPromptTemplate,
+    val evalBackend: TranslationEvalBackend
 )

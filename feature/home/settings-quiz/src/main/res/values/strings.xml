@@ -5,4 +5,8 @@
     <string name="home_settings_quiz_screen_translation_eval_prompt">Translation evaluate prompt</string>
     <string name="home_settings_quiz_screen_translation_quiz_prompt_desc">Quiz prompt template for generating translation question</string>
     <string name="home_settings_quiz_screen_translation_eval_prompt_desc">Evaluate prompt template for querying chatbot for evalution of user answer</string>
+    <string name="home_settings_quiz_screen_translation_eval_backend_none">Do not evaluate</string>
+    <string name="home_settings_quiz_screen_translation_eval_backend_builtin">Use builtin chatbot</string>
+    <string name="home_settings_quiz_screen_translation_eval_backend_external">Use external chatbot</string>
+    <string name="home_settings_quiz_screen_translation_eval_backend">Translation evaluation backend</string>
 </resources>

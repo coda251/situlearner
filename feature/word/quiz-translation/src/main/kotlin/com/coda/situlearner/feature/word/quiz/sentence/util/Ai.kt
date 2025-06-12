@@ -1,6 +1,18 @@
 package com.coda.situlearner.feature.word.quiz.sentence.util
 
+import android.content.ClipData
 import android.content.Context
+import androidx.compose.ui.platform.Clipboard
+
+internal fun launchExternalChatbotWithClip(
+    data: String,
+    clipboard: Clipboard,
+    context: Context,
+    chatbot: ExternalChatbot = ExternalChatbot.ChatGPT
+) {
+    clipboard.nativeClipboard.setPrimaryClip(ClipData.newPlainText("text", data))
+    launchExternalChatbot(context, chatbot)
+}
 
 internal enum class ExternalChatbot(
     val packageName: String,
@@ -9,7 +21,7 @@ internal enum class ExternalChatbot(
     ChatGPT("com.openai.chatgpt", "ChatGPT"),
 }
 
-internal fun launchExternalChatbot(
+private fun launchExternalChatbot(
     context: Context,
     externalChatbot: ExternalChatbot
 ) {

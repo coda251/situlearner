@@ -7,6 +7,7 @@ import com.coda.situlearner.core.datastore.AiStateProto
 import com.coda.situlearner.core.model.data.AiState
 import com.coda.situlearner.core.model.data.ChatbotConfig
 import com.coda.situlearner.core.model.data.ChatbotConfigList
+import com.coda.situlearner.core.model.data.TranslationEvalBackend
 import com.coda.situlearner.core.model.data.TranslationEvalPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
 import kotlinx.coroutines.flow.Flow
@@ -31,5 +32,9 @@ internal class LocalAiStateRepository(
 
     override suspend fun setTranslationEvalPromptTemplate(template: TranslationEvalPromptTemplate) {
         aiStateDataSource.setTranslationEvalPromptTemplateProto(template.data)
+    }
+
+    override suspend fun setTranslationEvalBackend(backend: TranslationEvalBackend) {
+        aiStateDataSource.setTranslationEvalBackendProto(backend.asProto())
     }
 }

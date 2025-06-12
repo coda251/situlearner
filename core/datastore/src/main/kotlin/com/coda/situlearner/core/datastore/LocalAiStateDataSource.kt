@@ -31,4 +31,12 @@ internal class LocalAiStateDataSource(private val aiState: DataStore<AiStateProt
             }
         }
     }
+
+    override suspend fun setTranslationEvalBackendProto(backend: TranslationEvalBackendProto) {
+        aiState.updateData {
+            it.copy {
+                this.translationEvalBackend = backend
+            }
+        }
+    }
 }

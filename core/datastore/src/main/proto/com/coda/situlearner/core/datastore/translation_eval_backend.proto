@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option java_package = "com.coda.situlearner.core.datastore";
+option java_multiple_files = true;
+
+enum TranslationEvalBackendProto {
+  BACKEND_UNSPECIFIED = 0;
+  BACKEND_USE_BUILTIN_CHATBOT = 1;
+  BACKEND_USE_EXTERNAL_CHATBOT = 2;
+  BACKEND_NONE = 3;
+}

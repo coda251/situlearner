@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.AiStateRepository
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
+import com.coda.situlearner.core.model.data.TranslationEvalBackend
 import com.coda.situlearner.core.model.data.TranslationEvalPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
 import kotlinx.coroutines.flow.SharingStarted
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 internal class SettingsQuizViewModel(
     private val preferenceRepository: UserPreferenceRepository,
     private val aiStateRepository: AiStateRepository
-): ViewModel() {
+) : ViewModel() {
 
     val uiState = combine(
         preferenceRepository.userPreference,
@@ -24,6 +25,7 @@ internal class SettingsQuizViewModel(
             quizWordCount = preference.quizWordCount,
             quizPromptTemplate = ai.quizPromptTemplate.data,
             evalPromptTemplate = ai.evalPromptTemplate.data,
+            evalBackend = ai.evalBackend
         )
     }.stateIn(
         scope = viewModelScope,
@@ -52,6 +54,12 @@ internal class SettingsQuizViewModel(
             )
         }
     }
+
+    fun setTranslationEvalBackend(evalBackend: TranslationEvalBackend) {
+        viewModelScope.launch {
+            aiStateRepository.setTranslationEvalBackend(evalBackend)
+        }
+    }
 }
 
 internal sealed interface UiState {
@@ -60,5 +68,6 @@ internal sealed interface UiState {
         val quizWordCount: UInt,
         val quizPromptTemplate: String,
         val evalPromptTemplate: String,
+        val evalBackend: TranslationEvalBackend
     ) : UiState
 }
