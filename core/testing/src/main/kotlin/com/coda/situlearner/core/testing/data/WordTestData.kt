@@ -7,7 +7,7 @@ import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.WordMeaning
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordWithContexts
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 val wordsTestData = listOf(
     Word(

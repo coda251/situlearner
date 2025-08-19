@@ -36,7 +36,7 @@ fun SituLearnerTheme(
     // Note: laggy in debug mode, use release mode
     DynamicMaterialTheme(
         seedColor = seedColor,
-        useDarkTheme = useDarkTheme,
+        isDark = useDarkTheme,
         animate = true,
         content = content,
     )

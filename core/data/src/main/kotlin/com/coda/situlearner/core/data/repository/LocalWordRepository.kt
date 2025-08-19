@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 internal class LocalWordRepository(
     private val wordBankDao: WordBankDao,
@@ -158,7 +158,8 @@ internal class LocalWordRepository(
         ).firstOrNull()?.word?.asExternalModel()
 
         val meaningQuizStats =
-            word?.let { null } ?: wordBankDao.getLatestMeaningQuizStatsEntity()?.asExternalModel()
+            if (word != null) null
+            else wordBankDao.getLatestMeaningQuizStatsEntity()?.asExternalModel()
 
         return word to meaningQuizStats
     }

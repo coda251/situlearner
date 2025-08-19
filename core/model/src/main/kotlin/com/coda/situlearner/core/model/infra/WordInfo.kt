@@ -2,7 +2,7 @@ package com.coda.situlearner.core.model.infra
 
 import com.coda.situlearner.core.model.data.WordMeaning
 
-@Suppress("DataClassPrivateConstructor")
+@ConsistentCopyVisibility
 data class WordInfo private constructor(
     val word: String,
     val dictionaryName: String?,

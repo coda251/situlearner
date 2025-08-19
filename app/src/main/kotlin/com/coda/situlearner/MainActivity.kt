@@ -1,7 +1,6 @@
 package com.coda.situlearner
 
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Color
@@ -66,7 +65,7 @@ class MainActivity : ComponentActivity() {
         bindService(
             Intent(this, PlayerService::class.java),
             mediaServiceConnection,
-            Context.BIND_AUTO_CREATE
+            BIND_AUTO_CREATE
         )
 
         var uiState: MainActivityUiState by mutableStateOf(MainActivityUiState.Loading)

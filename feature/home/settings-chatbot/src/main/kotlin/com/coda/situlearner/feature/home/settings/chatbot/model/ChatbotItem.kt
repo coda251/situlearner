@@ -9,7 +9,7 @@ import com.coda.situlearner.feature.home.settings.chatbot.R
 
 internal data class ChatbotItem(
     val type: ChatbotType,
-    @DrawableRes val icon: Int,
+    @param:DrawableRes val icon: Int,
     val modelName: String? = null,
     val cfg: ChatbotConfig? = null,
     val status: Status = Status.Unregistered,

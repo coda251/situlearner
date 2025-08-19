@@ -5,7 +5,9 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class JvmLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -13,6 +15,13 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
             apply(plugin = "org.jetbrains.kotlin.jvm")
 
             configureKotlinJvm()
+
+            // NOTE: remove when kotlin.time.Instant is stable
+            tasks.withType<KotlinCompile>().configureEach {
+                compilerOptions {
+                    optIn.add("kotlin.time.ExperimentalTime")
+                }
+            }
         }
     }
 }

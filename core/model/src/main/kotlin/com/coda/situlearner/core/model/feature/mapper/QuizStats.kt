@@ -4,7 +4,7 @@ import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.MeaningQuizStats
 import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.feature.UserRating
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 

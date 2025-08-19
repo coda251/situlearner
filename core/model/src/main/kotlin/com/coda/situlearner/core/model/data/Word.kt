@@ -1,7 +1,7 @@
 package com.coda.situlearner.core.model.data
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 data class Word(
     val id: String,

@@ -17,7 +17,7 @@ import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.testing.data.wordsTestData
 import com.coda.situlearner.core.ui.util.formatInstant
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 @Composable
 fun WordItem(

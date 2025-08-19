@@ -206,9 +206,9 @@ private fun NavBottomBar(navController: NavController) {
 }
 
 private enum class BottomNavRoute(
-    @StringRes val title: Int,
-    @DrawableRes val selectedIcon: Int,
-    @DrawableRes val unSelectedIcon: Int,
+    @param:StringRes val title: Int,
+    @param:DrawableRes val selectedIcon: Int,
+    @param:DrawableRes val unSelectedIcon: Int,
     val route: KClass<*>
 ) {
     Media(

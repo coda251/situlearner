@@ -107,7 +107,7 @@ private fun WordQuizScreen(
                 navigationIcon = {
                     BackButton(onBack)
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
     ) {

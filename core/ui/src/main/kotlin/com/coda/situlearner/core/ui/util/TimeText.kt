@@ -3,16 +3,17 @@ package com.coda.situlearner.core.ui.util
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.coda.situlearner.core.ui.R
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.Instant
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
+import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
-import java.time.DayOfWeek
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Instant
 
 const val UndefinedTimeText = "--:--"
 
@@ -20,7 +21,7 @@ fun Instant.asTimeText(): String {
     val timeZone = TimeZone.currentSystemDefault()
     val inputDate = toLocalDateTime(timeZone)
 
-    val dayString = "${inputDate.year}-${inputDate.monthNumber}-${inputDate.dayOfMonth}"
+    val dayString = "${inputDate.year}-${inputDate.month.number}-${inputDate.day}"
     val minuteString = "${inputDate.hour}:${inputDate.minute.toString().padStart(2, '0')}"
     return "$dayString $minuteString"
 }
@@ -64,11 +65,11 @@ internal fun formatInstant(
         }
 
         inputDate.year == currentDate.year -> {
-            "${inputDate.monthNumber}-${inputDate.dayOfMonth}"
+            "${inputDate.month.number}-${inputDate.day}"
         }
 
         else -> {
-            "${inputDate.year}-${inputDate.monthNumber}-${inputDate.dayOfMonth}"
+            "${inputDate.year}-${inputDate.month.number}-${inputDate.day}"
         }
     }
 }

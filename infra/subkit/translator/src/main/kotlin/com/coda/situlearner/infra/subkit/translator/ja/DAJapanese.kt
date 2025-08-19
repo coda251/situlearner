@@ -4,32 +4,37 @@ import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.WordMeaning
 import com.coda.situlearner.core.model.infra.WordInfo
 import com.coda.situlearner.infra.subkit.translator.Translator
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
 import java.io.InputStream
 import java.security.KeyStore
-import java.security.SecureRandom
 import java.security.cert.CertificateFactory
-import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 class DAJapanese(
     override val name: String = "DA",
     override val sourceLanguage: Language = Language.Japanese,
 ) : Translator(name, sourceLanguage) {
 
-    private val sslContext by lazy {
+    // NOTE: this is a workaround for jsoup >= 1.21.1 which use
+    // HttpClient (do not accept sslSocketFactory) instead of HttpURLConnection,
+    // so we need to create a customized client for html query.
+    private val client by lazy {
         this.javaClass.getResourceAsStream("/dict.asia.crt")?.let {
-            createSSLContextWithCertificate(it)
-        } ?: SSLContext.getDefault()
+            createClientWithCertificate(it)
+        } ?: HttpClient(CIO)
     }
 
     override suspend fun fetch(word: String): List<WordInfo> {
-        val doc = Jsoup
-            .connect("https://dict.asia/jc/$word")
-            .sslSocketFactory(sslContext.socketFactory)
-            .get()
+        val url = "https://dict.asia/jc/$word"
+        val html = client.get(url).bodyAsText()
+        val doc = Jsoup.parse(html, url)
 
         val infos = doc.select("div#jp_comment").map { block ->
             val wordFromWeb = block.selectFirst("span.jpword")
@@ -100,7 +105,7 @@ class DAJapanese(
     }
 }
 
-private fun createSSLContextWithCertificate(certInputStream: InputStream): SSLContext {
+private fun createClientWithCertificate(certInputStream: InputStream): HttpClient {
     val certFactory = CertificateFactory.getInstance("X.509")
     val caCert = certFactory.generateCertificate(certInputStream)
 
@@ -109,12 +114,17 @@ private fun createSSLContextWithCertificate(certInputStream: InputStream): SSLCo
         setCertificateEntry("missingCA", caCert)
     }
 
-    // get trust manager factory
-    val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+    val tm = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
         .apply { init(ks) }
+        .trustManagers.filterIsInstance<X509TrustManager>().firstOrNull()
 
-    // get ssl socket factory
-    return SSLContext.getInstance("TLS").apply {
-        init(null, tmf.trustManagers, SecureRandom())
+    val client = HttpClient(CIO) {
+        engine {
+            https {
+                trustManager = tm
+            }
+        }
     }
+
+    return client
 }

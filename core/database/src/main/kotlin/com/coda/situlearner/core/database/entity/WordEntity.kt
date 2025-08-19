@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import com.coda.situlearner.core.database.model.Language
 import com.coda.situlearner.core.database.model.Meanings
 import com.coda.situlearner.core.database.model.WordProficiency
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 @Entity
 data class WordEntity(

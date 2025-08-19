@@ -1,6 +1,6 @@
 package com.coda.situlearner.core.model.data
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 data class MeaningQuizStats(
     val wordId: String,

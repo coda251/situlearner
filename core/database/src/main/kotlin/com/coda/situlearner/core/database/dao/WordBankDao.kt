@@ -14,7 +14,7 @@ import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.database.model.Language
 import com.coda.situlearner.core.database.model.WordProficiency
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 @Dao
 interface WordBankDao {
