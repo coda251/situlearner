@@ -1,5 +1,6 @@
 package com.coda.situlearner.feature.word.quiz.meaning
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -73,7 +74,10 @@ internal fun WordQuizScreen(
     WordQuizScreen(
         uiState = uiState,
         playerState = playerState,
-        onBack = onBack,
+        onBack = {
+            playerState.clear()
+            onBack()
+        },
         onRate = viewModel::onRate,
         onNext = viewModel::onNext
     )
@@ -88,6 +92,8 @@ private fun WordQuizScreen(
     onRate: (Word, UserRating) -> Unit,
     onNext: (Int) -> Unit,
 ) {
+    BackHandler(onBack = onBack)
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
