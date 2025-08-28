@@ -253,7 +253,6 @@ private fun AliyunConfigDialog(
                 OutlinedTextField(
                     value = model,
                     onValueChange = { model = it },
-                    enabled = false,
                     label = {
                         Text(
                             text = stringResource(R.string.home_settings_chatbot_screen_model)
