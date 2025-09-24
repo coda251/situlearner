@@ -20,14 +20,14 @@ fun NavController.navigateToHomeSettingsEntry(navOptions: NavOptions) {
 
 fun NavGraphBuilder.homeSettingsEntryScreen(
     onNavigateToChatbot: () -> Unit,
-    onNavigateToQuiz: () -> Unit,
+    onNavigateToWord: () -> Unit,
     destination: NavGraphBuilder.() -> Unit
 ) {
     navigation<HomeSettingsBaseRoute>(startDestination = HomeSettingsEntryRoute) {
         composable<HomeSettingsEntryRoute> {
             SettingsCommonScreen(
                 onNavigateToChatbot = onNavigateToChatbot,
-                onNavigateToQuiz = onNavigateToQuiz,
+                onNavigateToWord = onNavigateToWord,
             )
         }
 

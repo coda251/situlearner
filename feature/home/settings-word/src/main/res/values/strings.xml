@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_settings_word_screen_word_library_indicator">Word library</string>
+    <string name="home_settings_word_screen_word_library_language">Word library language</string>
+    <string name="home_settings_word_screen_recommended_word_count">Recommended word count</string>
+    <string name="home_settings_word_screen_word_quiz_indicator">Word quiz</string>
+    <string name="home_settings_word_screen_quiz_word_count">Quiz word count</string>
+    <string name="home_settings_word_screen_translation_quiz_prompt">Translation quiz prompt</string>
+    <string name="home_settings_word_screen_translation_eval_prompt">Translation evaluate prompt</string>
+    <string name="home_settings_word_screen_translation_quiz_prompt_desc">Quiz prompt template for generating translation question</string>
+    <string name="home_settings_word_screen_translation_eval_prompt_desc">Evaluate prompt template for evaluation of user answer</string>
+    <string name="home_settings_word_screen_translation_eval_backend_none">Do not evaluate</string>
+    <string name="home_settings_word_screen_translation_eval_backend_builtin">Use builtin chatbot</string>
+    <string name="home_settings_word_screen_translation_eval_backend_external">Use external chatbot</string>
+    <string name="home_settings_word_screen_translation_eval_backend">Translation evaluation backend</string>
+</resources>

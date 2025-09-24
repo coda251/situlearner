@@ -6,7 +6,6 @@ import com.coda.situlearner.core.data.repository.AiStateRepository
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.model.data.ChatbotConfig
 import com.coda.situlearner.core.model.data.DarkThemeMode
-import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.ThemeColorMode
 import com.coda.situlearner.feature.home.settings.entry.model.VersionState
 import com.coda.situlearner.feature.home.settings.entry.util.getRelease
@@ -34,8 +33,6 @@ internal class SettingsCommonViewModel(
         SettingsCommonUiState.Success(
             darkThemeMode = preference.darkThemeMode,
             themeColorMode = preference.themeColorMode,
-            wordLibraryLanguage = preference.wordLibraryLanguage,
-            recommendedWordCount = preference.recommendedWordCount,
             chatbotConfig = ai.configs.currentItem,
         )
     }.stateIn(
@@ -59,25 +56,13 @@ internal class SettingsCommonViewModel(
         }
     }
 
-    fun setWordLibraryLanguage(language: Language) {
-        viewModelScope.launch {
-            userPreferenceRepository.setWordLibraryLanguage(language)
-        }
-    }
-
-    fun setRecommendedWordCount(count: UInt) {
-        viewModelScope.launch {
-            userPreferenceRepository.setRecommendedWordCount(count)
-        }
-    }
-
     fun checkAppUpdate(currentVersion: String?) {
         viewModelScope.launch {
             _versionState.value = VersionState.Loading
             _versionState.value = withContext(Dispatchers.IO) {
                 try {
                     getRelease(client).toVersionState(currentVersion)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     VersionState.Failed
                 }
             }
@@ -90,8 +75,6 @@ internal sealed interface SettingsCommonUiState {
     data class Success(
         val darkThemeMode: DarkThemeMode,
         val themeColorMode: ThemeColorMode,
-        val wordLibraryLanguage: Language,
-        val recommendedWordCount: UInt,
         val chatbotConfig: ChatbotConfig?,
     ) : SettingsCommonUiState
 }

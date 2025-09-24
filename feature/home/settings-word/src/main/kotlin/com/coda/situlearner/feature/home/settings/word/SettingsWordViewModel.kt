@@ -1,9 +1,10 @@
-package com.coda.situlearner.feature.home.settings.quiz
+package com.coda.situlearner.feature.home.settings.word
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.AiStateRepository
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
+import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.TranslationEvalBackend
 import com.coda.situlearner.core.model.data.TranslationEvalPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-internal class SettingsQuizViewModel(
+internal class SettingsWordViewModel(
     private val preferenceRepository: UserPreferenceRepository,
     private val aiStateRepository: AiStateRepository
 ) : ViewModel() {
@@ -22,6 +23,8 @@ internal class SettingsQuizViewModel(
         aiStateRepository.aiState,
     ) { preference, ai ->
         UiState.Success(
+            wordLibraryLanguage = preference.wordLibraryLanguage,
+            recommendedWordCount = preference.recommendedWordCount,
             quizWordCount = preference.quizWordCount,
             quizPromptTemplate = ai.quizPromptTemplate.data,
             evalPromptTemplate = ai.evalPromptTemplate.data,
@@ -32,6 +35,18 @@ internal class SettingsQuizViewModel(
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = UiState.Loading
     )
+
+    fun setWordLibraryLanguage(language: Language) {
+        viewModelScope.launch {
+            preferenceRepository.setWordLibraryLanguage(language)
+        }
+    }
+
+    fun setRecommendedWordCount(count: UInt) {
+        viewModelScope.launch {
+            preferenceRepository.setRecommendedWordCount(count)
+        }
+    }
 
     fun setQuizWordCount(count: UInt) {
         viewModelScope.launch {
@@ -65,6 +80,8 @@ internal class SettingsQuizViewModel(
 internal sealed interface UiState {
     data object Loading : UiState
     data class Success(
+        val wordLibraryLanguage: Language,
+        val recommendedWordCount: UInt,
         val quizWordCount: UInt,
         val quizPromptTemplate: String,
         val evalPromptTemplate: String,

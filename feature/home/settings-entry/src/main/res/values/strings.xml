@@ -1,27 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="home_settings_common_screen_title">Settings</string>
-
     <string name="home_settings_common_screen_dark_theme_mode">Dark theme</string>
     <string name="home_settings_common_screen_dark_theme_mode_follow_system">Follow system</string>
     <string name="home_settings_common_screen_dark_theme_mode_light">Light</string>
     <string name="home_settings_common_screen_dark_theme_mode_dark">Dark</string>
-
     <string name="home_settings_common_screen_theme_color_mode">Theme color</string>
     <string name="home_settings_common_screen_theme_color_static">Static</string>
     <string name="home_settings_common_screen_theme_color_dynamic_with_wallpaper">Dynamic with wallpaper</string>
     <string name="home_settings_common_screen_theme_color_dynamic_with_thumbnail">Dynamic with thumbnail</string>
-
-    <string name="home_settings_common_screen_word_library_language">Word library language</string>
-    <string name="home_settings_common_screen_recommended_word_count">Recommended word count</string>
+    <string name="home_settings_common_screen_word">Word</string>
+    <string name="home_settings_common_screen_word_desc">Recommendation and quiz related settings</string>
+    <string name="home_settings_common_screen_chatbot">Chatbot</string>
+    <string name="home_settings_common_screen_chatbot_none">None</string>
     <string name="home_settings_common_screen_check_update">Check update</string>
     <string name="home_settings_common_screen_current_version">Current version</string>
     <string name="home_settings_common_screen_checking">Checking…</string>
     <string name="home_settings_common_screen_check_failed">Check failed</string>
     <string name="home_settings_common_screen_up_to_date">Up to date</string>
     <string name="home_settings_common_screen_update_available">Update available</string>
-    <string name="home_settings_common_screen_chatbot">Chatbot</string>
-    <string name="home_settings_common_screen_chatbot_none">None</string>
-    <string name="home_settings_common_screen_word_quiz">Word quiz</string>
-    <string name="home_settings_common_screen_word_quiz_desc">Quiz-related settings</string>
 </resources>

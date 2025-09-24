@@ -15,8 +15,8 @@ import com.coda.situlearner.feature.home.media.entry.navigation.homeMediaEntrySc
 import com.coda.situlearner.feature.home.settings.chatbot.navigation.homeSettingsChatbotScreen
 import com.coda.situlearner.feature.home.settings.chatbot.navigation.navigateToHomeSettingsChatbot
 import com.coda.situlearner.feature.home.settings.entry.navigation.homeSettingsEntryScreen
-import com.coda.situlearner.feature.home.settings.quiz.navigation.homeSettingsQuizScreen
-import com.coda.situlearner.feature.home.settings.quiz.navigation.navigateToHomeSettingsQuiz
+import com.coda.situlearner.feature.home.settings.word.navigation.homeSettingsWordScreen
+import com.coda.situlearner.feature.home.settings.word.navigation.navigateToHomeSettingsWord
 import com.coda.situlearner.feature.home.word.book.navigation.homeWordBookScreen
 import com.coda.situlearner.feature.home.word.book.navigation.navigateToHomeWordBook
 import com.coda.situlearner.feature.home.word.entry.navigation.HomeWordBaseRoute
@@ -67,13 +67,13 @@ internal fun HomeNavHost(
 
         homeSettingsEntryScreen(
             onNavigateToChatbot = navController::navigateToHomeSettingsChatbot,
-            onNavigateToQuiz = navController::navigateToHomeSettingsQuiz
+            onNavigateToWord = navController::navigateToHomeSettingsWord
         ) {
             homeSettingsChatbotScreen(
                 onBack = navController::popBackStack
             )
 
-            homeSettingsQuizScreen(
+            homeSettingsWordScreen(
                 onBack = navController::popBackStack
             )
         }
