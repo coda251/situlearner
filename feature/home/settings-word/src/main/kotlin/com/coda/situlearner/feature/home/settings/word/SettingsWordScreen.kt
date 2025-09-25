@@ -28,12 +28,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.TranslationEvalBackend
+import com.coda.situlearner.core.model.data.WordBookSortBy
 import com.coda.situlearner.core.ui.util.asText
 import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.core.ui.widget.LanguageSelectorDialog
 import com.coda.situlearner.core.ui.widget.NonEmptyTextInputDialog
 import com.coda.situlearner.core.ui.widget.WordCountSelectorDialog
 import org.koin.androidx.compose.koinViewModel
+import com.coda.situlearner.core.ui.R as coreR
 
 @Composable
 internal fun SettingsWordScreen(
@@ -47,6 +49,7 @@ internal fun SettingsWordScreen(
         onBack = onBack,
         onSelectWordLibraryLanguage = viewModel::setWordLibraryLanguage,
         onSetRecommendedWordCount = viewModel::setRecommendedWordCount,
+        onSetWordBookSortBy = viewModel::setWordBookSortBy,
         onSetQuizWordCount = viewModel::setQuizWordCount,
         onSetQuizPromptTemplate = viewModel::setTranslationQuizPromptTemplate,
         onSetEvalPromptTemplate = viewModel::setTranslationEvalPromptTemplate,
@@ -61,6 +64,7 @@ private fun SettingsWordScreen(
     onBack: () -> Unit,
     onSelectWordLibraryLanguage: (Language) -> Unit,
     onSetRecommendedWordCount: (UInt) -> Unit,
+    onSetWordBookSortBy: (WordBookSortBy) -> Unit,
     onSetQuizWordCount: (UInt) -> Unit,
     onSetQuizPromptTemplate: (String) -> Unit,
     onSetEvalPromptTemplate: (String) -> Unit,
@@ -87,6 +91,7 @@ private fun SettingsWordScreen(
                     ContentBoard(
                         wordLibraryLanguage = uiState.wordLibraryLanguage,
                         recommendedWordCount = uiState.recommendedWordCount,
+                        wordBookSortBy = uiState.wordBookSortBy,
                         quizWordCount = uiState.quizWordCount,
                         quizPromptTemplate = uiState.quizPromptTemplate,
                         evalPromptTemplate = uiState.evalPromptTemplate,
@@ -97,6 +102,7 @@ private fun SettingsWordScreen(
                         onSetEvalBackend = onSetEvalBackend,
                         onSelectWordLibraryLanguage = onSelectWordLibraryLanguage,
                         onSetRecommendedWordCount = onSetRecommendedWordCount,
+                        onSetWordBookSortBy = onSetWordBookSortBy
                     )
                 }
             }
@@ -108,12 +114,14 @@ private fun SettingsWordScreen(
 private fun ContentBoard(
     wordLibraryLanguage: Language,
     recommendedWordCount: UInt,
+    wordBookSortBy: WordBookSortBy,
     quizWordCount: UInt,
     quizPromptTemplate: String,
     evalPromptTemplate: String,
     evalBackend: TranslationEvalBackend,
     onSelectWordLibraryLanguage: (Language) -> Unit,
     onSetRecommendedWordCount: (UInt) -> Unit,
+    onSetWordBookSortBy: (WordBookSortBy) -> Unit,
     onSetQuizWordCount: (UInt) -> Unit,
     onSetQuizPromptTemplate: (String) -> Unit,
     onSetEvalPromptTemplate: (String) -> Unit,
@@ -123,6 +131,7 @@ private fun ContentBoard(
         Indicator(R.string.home_settings_word_screen_word_library_indicator)
         WordFilterLanguageSelector(wordLibraryLanguage, onSelectWordLibraryLanguage)
         RecommendedWordCountSelector(recommendedWordCount, onSetRecommendedWordCount)
+        WordBookSortBySelector(wordBookSortBy, onSetWordBookSortBy)
         Indicator(R.string.home_settings_word_screen_word_quiz_indicator)
         QuizWordCountSelector(quizWordCount, onSetQuizWordCount)
         QuizPromptTemplate(quizPromptTemplate, onSetQuizPromptTemplate)
@@ -201,6 +210,60 @@ private fun RecommendedWordCountSelector(
             onConfirm = {
                 onSetRecommendedWordCount(it)
                 showDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+private fun WordBookSortBySelector(
+    wordBookSortBy: WordBookSortBy,
+    onSelect: (WordBookSortBy) -> Unit
+) {
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    ListItem(
+        headlineContent = {
+            Text(
+                text = stringResource(R.string.home_settings_word_screen_word_book_sort_by)
+            )
+        },
+        supportingContent = {
+            Text(
+                text = wordBookSortBy.asText()
+            )
+        },
+        modifier = Modifier.clickable {
+            showDialog = true
+        }
+    )
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                    }
+                ) {
+                    Text(text = stringResource(coreR.string.core_ui_ok))
+                }
+            },
+            text = {
+                Column {
+                    WordBookSortBy.entries.forEach {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(
+                                selected = it == wordBookSortBy,
+                                onClick = { onSelect(it) },
+                            )
+                            Text(text = it.asText())
+                        }
+                    }
+                }
             }
         )
     }
@@ -362,7 +425,7 @@ private fun EvalBackendSelector(
                         showDialog = false
                     }
                 ) {
-                    Text(text = stringResource(com.coda.situlearner.core.ui.R.string.core_ui_ok))
+                    Text(text = stringResource(coreR.string.core_ui_ok))
                 }
             },
             text = {
@@ -387,4 +450,10 @@ private fun TranslationEvalBackend.asText() = when (this) {
     TranslationEvalBackend.None -> stringResource(R.string.home_settings_word_screen_translation_eval_backend_none)
     TranslationEvalBackend.UseExternalChatbot -> stringResource(R.string.home_settings_word_screen_translation_eval_backend_external)
     TranslationEvalBackend.UseBuiltinChatbot -> stringResource(R.string.home_settings_word_screen_translation_eval_backend_builtin)
+}
+
+@Composable
+private fun WordBookSortBy.asText() = when (this) {
+    WordBookSortBy.Count -> stringResource(R.string.home_settings_word_screen_word_book_sort_by_count)
+    WordBookSortBy.UpdatedDate -> stringResource(R.string.home_settings_word_screen_word_book_sort_by_updated_date)
 }

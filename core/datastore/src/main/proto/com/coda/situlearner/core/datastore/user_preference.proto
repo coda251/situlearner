@@ -6,6 +6,7 @@ option java_multiple_files = true;
 import "com/coda/situlearner/core/datastore/language.proto";
 import "com/coda/situlearner/core/datastore/dark_theme_mode.proto";
 import "com/coda/situlearner/core/datastore/theme_color_mode.proto";
+import "com/coda/situlearner/core/datastore/word_book_sort_by.proto";
 
 message UserPreferenceProto {
   reserved 2;
@@ -15,5 +16,6 @@ message UserPreferenceProto {
   int64 thumbnail_theme_color = 7;
   uint32 quiz_word_count = 5;
   uint32 recommended_word_count = 6;
-  // next id: 8
+  WordBookSortByProto word_book_sort_by = 8;
+  // next id: 9
 }

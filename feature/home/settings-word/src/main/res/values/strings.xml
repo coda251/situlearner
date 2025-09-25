@@ -13,4 +13,7 @@
     <string name="home_settings_word_screen_translation_eval_backend_builtin">Use builtin chatbot</string>
     <string name="home_settings_word_screen_translation_eval_backend_external">Use external chatbot</string>
     <string name="home_settings_word_screen_translation_eval_backend">Translation evaluation backend</string>
+    <string name="home_settings_word_screen_word_book_sort_by">Word book sort by</string>
+    <string name="home_settings_word_screen_word_book_sort_by_count">Count</string>
+    <string name="home_settings_word_screen_word_book_sort_by_updated_date">Updated date</string>
 </resources>

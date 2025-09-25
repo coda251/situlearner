@@ -8,6 +8,7 @@ import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.TranslationEvalBackend
 import com.coda.situlearner.core.model.data.TranslationEvalPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
+import com.coda.situlearner.core.model.data.WordBookSortBy
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -25,6 +26,7 @@ internal class SettingsWordViewModel(
         UiState.Success(
             wordLibraryLanguage = preference.wordLibraryLanguage,
             recommendedWordCount = preference.recommendedWordCount,
+            wordBookSortBy = preference.wordBookSortBy,
             quizWordCount = preference.quizWordCount,
             quizPromptTemplate = ai.quizPromptTemplate.data,
             evalPromptTemplate = ai.evalPromptTemplate.data,
@@ -45,6 +47,12 @@ internal class SettingsWordViewModel(
     fun setRecommendedWordCount(count: UInt) {
         viewModelScope.launch {
             preferenceRepository.setRecommendedWordCount(count)
+        }
+    }
+
+    fun setWordBookSortBy(sortBy: WordBookSortBy) {
+        viewModelScope.launch {
+            preferenceRepository.setWordBookSortBy(sortBy)
         }
     }
 
@@ -82,6 +90,7 @@ internal sealed interface UiState {
     data class Success(
         val wordLibraryLanguage: Language,
         val recommendedWordCount: UInt,
+        val wordBookSortBy: WordBookSortBy,
         val quizWordCount: UInt,
         val quizPromptTemplate: String,
         val evalPromptTemplate: String,

@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.model.data.Language
+import com.coda.situlearner.core.model.data.WordBookSortBy
 import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
@@ -338,17 +339,17 @@ private fun WordsRecommendationContent(
                 .togetherWith(slideOutVertically { -it } + fadeOut())
         },
         label = ""
-    ) {
+    ) { cs ->
         // contexts will not be empty logically
         Column {
-            it.forEach {
+            cs.forEach { c ->
                 ListItem(
                     headlineContent = {
-                        WordContextText(it.wordContext)
+                        WordContextText(c.wordContext)
                     },
                     trailingContent = {
                         IconButton(onClick = {
-                            onClickContextView(it)
+                            onClickContextView(c)
                         }) {
                             Icon(
                                 painter = painterResource(R.drawable.arrow_forward_24dp_000000_fill0_wght400_grad0_opsz24),
@@ -356,11 +357,11 @@ private fun WordsRecommendationContent(
                             )
                         }
                     },
-                    supportingContent = it.mediaFile?.let {
+                    supportingContent = c.mediaFile?.let {
                         { Text(it.name) }
                     },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier.clickable { onClickContextView(it) }
+                    modifier = Modifier.clickable { onClickContextView(c) }
                 )
             }
         }
@@ -402,7 +403,7 @@ private fun WordLibraryScreenContentPreview() {
     val booksUiState by remember {
         mutableStateOf(
             WordBooksUiState.Success(
-                books = wordWithContextsListTestData.toWordBooks(),
+                books = wordWithContextsListTestData.toWordBooks(WordBookSortBy.UpdatedDate),
             )
         )
     }
@@ -453,7 +454,7 @@ private fun WordLibraryScreenEmptyPreview() {
             booksUiState = when (it) {
                 Language.English -> {
                     WordBooksUiState.Success(
-                        books = wordWithContextsListTestData.toWordBooks(),
+                        books = wordWithContextsListTestData.toWordBooks(WordBookSortBy.Count),
                     )
                 }
 

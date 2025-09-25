@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "com.coda.situlearner.core.datastore";
+option java_multiple_files = true;
+
+enum WordBookSortByProto {
+  WORD_BOOK_SORT_BY_COUNT = 0;
+  WORD_BOOK_SORT_BY_UPDATED_DATE = 1;
+}

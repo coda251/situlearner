@@ -17,5 +17,6 @@ internal fun UserPreferenceProto.asExternalModel(
     thumbnailThemeColor = thumbnailThemeColor.takeIf { it != 0L } ?: defaultThemeColor,
     quizWordCount = quizWordCount.toUInt().takeIf { it != 0u } ?: defaultQuizWordCount,
     recommendedWordCount = recommendedWordCount.toUInt().takeIf { it != 0u }
-        ?: defaultRecommendedWordCount
+        ?: defaultRecommendedWordCount,
+    wordBookSortBy = wordBookSortBy.asExternalModel()
 )

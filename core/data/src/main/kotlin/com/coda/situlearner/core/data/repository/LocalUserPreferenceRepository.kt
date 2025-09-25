@@ -8,6 +8,7 @@ import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.ThemeColorMode
 import com.coda.situlearner.core.model.data.UserPreference
+import com.coda.situlearner.core.model.data.WordBookSortBy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -51,5 +52,9 @@ internal class LocalUserPreferenceRepository(
 
     override suspend fun setThumbnailThemeColor(color: Long) {
         dataSource.setThumbnailThemeColorProto(color)
+    }
+
+    override suspend fun setWordBookSortBy(wordBookSortBy: WordBookSortBy) {
+        dataSource.setWordBookSortByProto(wordBookSortBy.asProto())
     }
 }

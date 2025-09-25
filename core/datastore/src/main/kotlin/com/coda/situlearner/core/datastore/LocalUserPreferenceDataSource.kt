@@ -54,4 +54,12 @@ internal class LocalUserPreferenceDataSource(private val userPreference: DataSto
             }
         }
     }
+
+    override suspend fun setWordBookSortByProto(wordBookSortByProto: WordBookSortByProto) {
+        userPreference.updateData {
+            it.copy {
+                this.wordBookSortBy = wordBookSortByProto
+            }
+        }
+    }
 }

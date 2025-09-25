@@ -17,4 +17,6 @@ interface UserPreferenceDataSource {
     suspend fun setRecommendedWordCountProto(recommendedWordCount: UInt)
 
     suspend fun setThumbnailThemeColorProto(color: Long)
+
+    suspend fun setWordBookSortByProto(wordBookSortByProto: WordBookSortByProto)
 }

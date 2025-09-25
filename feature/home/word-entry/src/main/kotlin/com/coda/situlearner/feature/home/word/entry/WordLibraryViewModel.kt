@@ -31,7 +31,7 @@ internal class WordLibraryViewModel(
         userPreferenceRepository.userPreference
     ) { words, preference ->
         if (words.isEmpty()) WordBooksUiState.Empty(preference.wordLibraryLanguage)
-        else WordBooksUiState.Success(words.toWordBooks())
+        else WordBooksUiState.Success(words.toWordBooks(preference.wordBookSortBy))
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),

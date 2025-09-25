@@ -13,4 +13,7 @@
     <string name="home_settings_word_screen_translation_eval_backend_builtin">使用内置聊天机器人</string>
     <string name="home_settings_word_screen_translation_eval_backend_external">使用外部聊天机器人</string>
     <string name="home_settings_word_screen_translation_eval_backend">翻译评估后端</string>
+    <string name="home_settings_word_screen_word_book_sort_by">单词本排序</string>
+    <string name="home_settings_word_screen_word_book_sort_by_count">单词数量</string>
+    <string name="home_settings_word_screen_word_book_sort_by_updated_date">上次更新时间</string>
 </resources>
