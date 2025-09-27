@@ -59,6 +59,7 @@ import com.coda.situlearner.core.ui.widget.ProficiencyIconSet
 import com.coda.situlearner.core.ui.widget.WordContextText
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 import com.coda.situlearner.core.ui.R as coreR
 
@@ -159,6 +160,10 @@ private fun WordDetailContentBoard(
 ) {
     LaunchedEffect(Unit) {
         playerState.clear()
+        // two concerns:
+        // 1. immediately update word property will cause ui lag during transition
+        // 2. quickly leaving the screen after entering should not be regarded as an effective view
+        delay(2000L)
         onViewWord(wordWithContexts.word)
     }
 
