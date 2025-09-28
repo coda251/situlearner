@@ -9,6 +9,7 @@ enum class MediaFileFormat(
     MP3("mp3", MediaType.Audio),
     WAV("wav", MediaType.Audio),
     FLAC("flac", MediaType.Audio),
+    M4A("m4a", MediaType.Audio),
 
     MP4("mp4", MediaType.Video),
     MKV("mkv", MediaType.Video);
