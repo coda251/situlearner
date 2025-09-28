@@ -14,12 +14,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -109,8 +112,6 @@ private fun WordLibraryScreen(
     onChangeLanguage: (Language) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -161,14 +162,18 @@ private fun WordLibraryScreen(
             when (wordsUiState) {
                 RecommendedWordsUiState.Loading -> {}
                 RecommendedWordsUiState.Empty -> {}
-                is RecommendedWordsUiState.Success ->
+                is RecommendedWordsUiState.Success -> {
                     WordRecommendationBoard(
+                        modifier = Modifier.weight(1f),
                         wordContexts = wordsUiState.wordContexts,
                         offset = wordsUiState.offset,
                         onClickContextView = onClickContextView,
                         onSetOffset = onSetOffset,
                         onClickRecommendations = onClickRecommendations
                     )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
         }
     }
@@ -299,8 +304,11 @@ private fun WordRecommendationBoard(
     onClickContextView: (WordContextView) -> Unit,
     onClickRecommendations: () -> Unit,
     onSetOffset: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Column {
+    val scrollState = rememberScrollState()
+
+    Column(modifier = modifier) {
         ListItem(
             headlineContent = {
                 Text(
@@ -310,7 +318,9 @@ private fun WordRecommendationBoard(
         )
 
         Card(
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .verticalScroll(scrollState)
         ) {
             WordsRecommendationContent(
                 wordContexts = wordContexts,

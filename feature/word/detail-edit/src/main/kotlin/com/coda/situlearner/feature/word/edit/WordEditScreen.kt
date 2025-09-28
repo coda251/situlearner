@@ -553,6 +553,7 @@ private fun MeaningDialog(
                             )
                         }
                     },
+                    maxLines = 10,
                     modifier = Modifier.focusRequester(focusRequester)
                 )
             }

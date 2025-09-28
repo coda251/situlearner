@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
@@ -127,7 +129,9 @@ private fun ContentBoard(
     onSetEvalPromptTemplate: (String) -> Unit,
     onSetEvalBackend: (TranslationEvalBackend) -> Unit,
 ) {
-    Column {
+    val scrollState = rememberScrollState()
+
+    Column(modifier = Modifier.verticalScroll(scrollState)) {
         Indicator(R.string.home_settings_word_screen_word_library_indicator)
         WordFilterLanguageSelector(wordLibraryLanguage, onSelectWordLibraryLanguage)
         RecommendedWordCountSelector(recommendedWordCount, onSetRecommendedWordCount)
