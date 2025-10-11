@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.Word
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.core.model.data.WordWithContexts
+import com.coda.situlearner.core.model.data.mapper.proficiencyType
 import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.feature.word.list.entry.model.SortMode
 import com.coda.situlearner.feature.word.list.entry.model.WordSortBy
@@ -23,7 +25,7 @@ internal class WordListViewModel(
     private val wordRepository: WordRepository
 ) : ViewModel() {
 
-    val route = savedStateHandle.toRoute<WordListEntryRoute>()
+    private val route = savedStateHandle.toRoute<WordListEntryRoute>()
 
     private val _wordOptionUiState = MutableStateFlow(
         WordOptionUiState.Success(
@@ -39,45 +41,51 @@ internal class WordListViewModel(
     ) { words, options ->
         if (words.isEmpty()) WordListUiState.Empty
         else {
-            val selector = getWordSelector(options.sortMode, options.wordSortBy)
+
+            val data = when (route.wordListType) {
+                WordListType.All -> words
+                WordListType.MediaCollection -> words
+                    .filter { word ->
+                        word.contexts.any { it.mediaCollection?.id == route.id }
+                    }
+
+                WordListType.MediaFile -> words
+                    .filter { word -> word.contexts.any { it.mediaFile?.id == route.id } }
+
+                WordListType.NoMedia -> words
+                    .filter { word -> word.contexts.all { it.mediaFile == null } }
+
+                WordListType.Recommendation -> {
+                    val wordContextIds =
+                        wordRepository.cachedRecommendedWords.map { it.contexts.single().wordContext.id }
+                    // since recommendedWords may not be latest, we use words to filter
+                    // to latest ones and still keep each word has one and only one wordContext
+                    words
+                        .flatMap { wordWithContexts ->
+                            wordWithContexts.contexts.map {
+                                Pair(wordWithContexts.word, it)
+                            }
+                        }
+                        .filter { it.second.wordContext.id in wordContextIds }
+                        .map {
+                            WordWithContexts(
+                                word = it.first,
+                                contexts = listOf(it.second)
+                            )
+                        }
+                }
+            }
+            val wordProficiencyType = route.wordProficiencyType ?: data.proficiencyType
+
+            val selector =
+                getWordSelector(options.sortMode, options.wordSortBy, wordProficiencyType)
+
             WordListUiState.Success(
                 wordSortBy = options.wordSortBy,
-                data = when (route.wordListType) {
-                    WordListType.All -> words.sortedBy(selector)
-                    WordListType.MediaCollection -> words
-                        .filter { word ->
-                            word.contexts.any { it.mediaCollection?.id == route.id }
-                        }
-                        .sortedBy(selector)
-
-                    WordListType.MediaFile -> words
-                        .filter { word -> word.contexts.any { it.mediaFile?.id == route.id } }
-                        .sortedBy(selector)
-
-                    WordListType.NoMedia -> words
-                        .filter { word -> word.contexts.all { it.mediaFile == null } }
-                        .sortedBy(selector)
-
-                    WordListType.Recommendation -> {
-                        val wordContextIds =
-                            wordRepository.cachedRecommendedWords.map { it.contexts.single().wordContext.id }
-                        // since recommendedWords may not be latest, we use words to filter
-                        // to latest ones and still keep each word has one and only one wordContext
-                        words
-                            .flatMap { wordWithContexts ->
-                                wordWithContexts.contexts.map {
-                                    Pair(wordWithContexts.word, it)
-                                }
-                            }
-                            .filter { it.second.wordContext.id in wordContextIds }
-                            .map {
-                                WordWithContexts(
-                                    word = it.first,
-                                    contexts = listOf(it.second)
-                                )
-                            }.sortedBy(selector)
-                    }
-                }
+                data = data.sortedBy(selector),
+                proficiencyType = wordProficiencyType,
+                wordListType = route.wordListType,
+                id = route.id
             )
         }
     }.stateIn(
@@ -88,7 +96,8 @@ internal class WordListViewModel(
 
     private fun getWordSelector(
         sortMode: SortMode,
-        wordSortBy: WordSortBy
+        wordSortBy: WordSortBy,
+        wordProficiencyType: WordProficiencyType,
     ): (WordWithContexts) -> Long {
         val sortModeFactor = when (sortMode) {
             SortMode.Ascending -> 1
@@ -100,7 +109,7 @@ internal class WordListViewModel(
                 WordSortBy.LastViewedDate -> (it.word.lastViewedDate?.toEpochMilliseconds()
                     ?: 0L) * sortModeFactor
 
-                WordSortBy.Proficiency -> it.word.meaningProficiency.level.toLong() * sortModeFactor
+                WordSortBy.Proficiency -> it.word.proficiency(wordProficiencyType).level.toLong() * sortModeFactor
             }
         }
     }
@@ -138,5 +147,8 @@ internal sealed interface WordListUiState {
     data class Success(
         val wordSortBy: WordSortBy,
         val data: List<WordWithContexts>,
+        val proficiencyType: WordProficiencyType,
+        val wordListType: WordListType,
+        val id: String?
     ) : WordListUiState
 }

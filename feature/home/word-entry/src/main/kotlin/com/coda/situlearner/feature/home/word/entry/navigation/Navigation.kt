@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.feature.home.word.entry.WordLibraryScreen
 import kotlinx.serialization.Serializable
@@ -21,8 +22,8 @@ fun NavController.navigateToHomeWordEntry(navOptions: NavOptions) {
 
 fun NavGraphBuilder.homeWordEntryScreen(
     onNavigateToWordBook: (String) -> Unit,
-    onNavigateToWordList: (WordListType, String?) -> Unit,
-    onNavigateToWordDetail: (String) -> Unit,
+    onNavigateToWordList: (WordListType, String?, WordProficiencyType?) -> Unit,
+    onNavigateToWordDetail: (String, WordProficiencyType) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
     destination: NavGraphBuilder.() -> Unit,
 ) {
@@ -32,7 +33,7 @@ fun NavGraphBuilder.homeWordEntryScreen(
                 onNavigateToWordBook = onNavigateToWordBook,
                 onNavigateToWordDetail = onNavigateToWordDetail,
                 onNavigateToWordQuiz = onNavigateToWordQuiz,
-                onNavigateToWordList = onNavigateToWordList,
+                onNavigateToWordList = { type, id -> onNavigateToWordList(type, id, null) },
             )
         }
 

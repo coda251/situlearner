@@ -56,6 +56,8 @@ import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.WordBookSortBy
 import com.coda.situlearner.core.model.data.WordContextView
+import com.coda.situlearner.core.model.data.WordProficiencyType
+import com.coda.situlearner.core.model.data.mapper.proficiencyType
 import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
 import com.coda.situlearner.core.ui.util.asText
@@ -72,7 +74,7 @@ import com.coda.situlearner.core.ui.R as coreR
 internal fun WordLibraryScreen(
     onNavigateToWordBook: (String) -> Unit,
     onNavigateToWordList: (WordListType, String?) -> Unit,
-    onNavigateToWordDetail: (String) -> Unit,
+    onNavigateToWordDetail: (String, WordProficiencyType) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WordLibraryViewModel = koinViewModel()
@@ -90,7 +92,9 @@ internal fun WordLibraryScreen(
                 WordBookType.MediaCollection -> onNavigateToWordBook(it.id)
             }
         },
-        onClickContextView = { onNavigateToWordDetail(it.wordContext.wordId) },
+        onClickContextView = { contextView, type ->
+            onNavigateToWordDetail(contextView.wordContext.wordId, type)
+        },
         onClickRecommendations = { onNavigateToWordList(WordListType.Recommendation, null) },
         onQuiz = onNavigateToWordQuiz,
         onSetOffset = viewModel::setWordsOffset,
@@ -105,7 +109,7 @@ private fun WordLibraryScreen(
     booksUiState: WordBooksUiState,
     wordsUiState: RecommendedWordsUiState,
     onClickBook: (WordBook) -> Unit,
-    onClickContextView: (WordContextView) -> Unit,
+    onClickContextView: (WordContextView, WordProficiencyType) -> Unit,
     onClickRecommendations: () -> Unit,
     onQuiz: () -> Unit,
     onSetOffset: (Int) -> Unit,
@@ -136,11 +140,11 @@ private fun WordLibraryScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
-    ) {
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(paddingValues)
         ) {
             when (booksUiState) {
                 is WordBooksUiState.Empty -> {
@@ -167,7 +171,9 @@ private fun WordLibraryScreen(
                         modifier = Modifier.weight(1f),
                         wordContexts = wordsUiState.wordContexts,
                         offset = wordsUiState.offset,
-                        onClickContextView = onClickContextView,
+                        onClickContextView = {
+                            onClickContextView(it, wordsUiState.proficiencyType)
+                        },
                         onSetOffset = onSetOffset,
                         onClickRecommendations = onClickRecommendations
                     )
@@ -422,7 +428,8 @@ private fun WordLibraryScreenContentPreview() {
         mutableStateOf(
             RecommendedWordsUiState.Success(
                 wordContexts = wordWithContextsListTestData.flatMap { it.contexts },
-                offset = 0
+                offset = 0,
+                proficiencyType = wordWithContextsListTestData.proficiencyType
             )
         )
     }
@@ -431,7 +438,7 @@ private fun WordLibraryScreenContentPreview() {
         booksUiState = booksUiState,
         wordsUiState = wordsUiState,
         onClickBook = {},
-        onClickContextView = {},
+        onClickContextView = { _, _ -> },
         onClickRecommendations = {},
         onSetOffset = {
             wordsUiState = wordsUiState.copy(
@@ -457,7 +464,7 @@ private fun WordLibraryScreenEmptyPreview() {
         booksUiState = booksUiState,
         wordsUiState = RecommendedWordsUiState.Empty,
         onClickBook = {},
-        onClickContextView = {},
+        onClickContextView = { _, _ -> },
         onClickRecommendations = {},
         onSetOffset = {},
         onChangeLanguage = {

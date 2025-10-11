@@ -14,4 +14,9 @@ data class Word(
     val createdDate: Instant = Clock.System.now(),
     val meaningProficiency: WordProficiency = WordProficiency.Unset,
     val translationProficiency: WordProficiency = WordProficiency.Unset
-)
+) {
+    fun proficiency(type: WordProficiencyType) = when (type) {
+        WordProficiencyType.Meaning -> meaningProficiency
+        WordProficiencyType.Translation -> translationProficiency
+    }
+}

@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.feature.word.detail.entry.WordDetailScreen
 import kotlinx.serialization.Serializable
 
@@ -11,10 +12,21 @@ import kotlinx.serialization.Serializable
 data object WordDetailBaseRoute
 
 @Serializable
-data class WordDetailEntryRoute(val wordId: String)
+data class WordDetailEntryRoute(
+    val wordId: String,
+    val wordProficiencyType: WordProficiencyType?,
+)
 
-fun NavController.navigateToWordDetailEntry(fromWordId: String) {
-    navigate(WordDetailEntryRoute(wordId = fromWordId))
+fun NavController.navigateToWordDetailEntry(
+    fromWordId: String,
+    wordProficiencyType: WordProficiencyType?,
+) {
+    navigate(
+        WordDetailEntryRoute(
+            wordId = fromWordId,
+            wordProficiencyType = wordProficiencyType
+        )
+    )
 }
 
 fun NavGraphBuilder.wordDetailEntryScreen(

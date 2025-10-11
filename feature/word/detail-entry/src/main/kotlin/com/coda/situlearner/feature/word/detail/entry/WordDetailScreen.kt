@@ -50,8 +50,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.MediaType
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContextView
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.core.model.data.WordWithContexts
 import com.coda.situlearner.core.model.data.mapper.asPlaylistItem
+import com.coda.situlearner.core.model.data.mapper.proficiencyType
 import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
 import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.core.ui.widget.PlayOrPauseButton
@@ -141,6 +143,7 @@ private fun WordDetailScreen(
                     WordDetailContentBoard(
                         playerState = playerState,
                         wordWithContexts = uiState.wordWithContexts,
+                        wordProficiencyType = uiState.wordProficiencyType,
                         onNavigateToPlayer = onNavigateToPlayer,
                         onViewWord = onViewWord,
                     )
@@ -154,6 +157,7 @@ private fun WordDetailScreen(
 private fun WordDetailContentBoard(
     playerState: PlayerState,
     wordWithContexts: WordWithContexts,
+    wordProficiencyType: WordProficiencyType,
     onNavigateToPlayer: () -> Unit,
     onViewWord: (Word) -> Unit,
     modifier: Modifier = Modifier
@@ -190,6 +194,7 @@ private fun WordDetailContentBoard(
             WordWithContextsCard(
                 word = wordWithContexts.word,
                 contexts = wordWithContexts.contexts,
+                wordProficiencyType = wordProficiencyType,
                 onClickWordContext = {
                     val mediaFile = it.mediaFile
                     val mediaCollection = it.mediaCollection
@@ -277,6 +282,7 @@ private fun PlayerViewCard(
 @Composable
 private fun WordWithContextsCard(
     word: Word,
+    wordProficiencyType: WordProficiencyType,
     contexts: List<WordContextView>,
     onClickWordContext: (WordContextView) -> Unit,
     modifier: Modifier = Modifier
@@ -300,7 +306,7 @@ private fun WordWithContextsCard(
                         modifier = Modifier
                             .clickable { showQuizStats = true }
                             .padding(vertical = 12.dp),
-                        proficiency = word.meaningProficiency,
+                        proficiency = word.proficiency(wordProficiencyType),
                     )
                 }
             },
@@ -387,7 +393,8 @@ private fun WordWithContextsCard(
 private fun WordDetailScreenPreview() {
 
     val uiState = WordDetailUiState.Success(
-        wordWithContexts = wordWithContextsListTestData[0]
+        wordWithContexts = wordWithContextsListTestData[0],
+        wordProficiencyType = wordWithContextsListTestData[0].word.proficiencyType
     )
 
     WordDetailScreen(

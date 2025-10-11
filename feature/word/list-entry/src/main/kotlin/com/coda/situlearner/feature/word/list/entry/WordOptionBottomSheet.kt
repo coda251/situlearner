@@ -20,12 +20,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.feature.word.list.entry.model.SortMode
 import com.coda.situlearner.feature.word.list.entry.model.WordSortBy
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun WordOptionBottomSheet(
+    proficiencyType: WordProficiencyType,
     onDismiss: () -> Unit,
     viewModel: WordListViewModel = koinViewModel(),
 ) {
@@ -33,6 +35,7 @@ internal fun WordOptionBottomSheet(
 
     WordOptionBottomSheet(
         uiState = uiState,
+        proficiencyType = proficiencyType,
         onDismiss = onDismiss,
         onSelectSortMode = viewModel::setWordSortMode,
         onSelectWordSortBy = viewModel::setWordSortBy
@@ -43,6 +46,7 @@ internal fun WordOptionBottomSheet(
 @Composable
 private fun WordOptionBottomSheet(
     uiState: WordOptionUiState,
+    proficiencyType: WordProficiencyType,
     onDismiss: () -> Unit,
     onSelectSortMode: (SortMode) -> Unit,
     onSelectWordSortBy: (WordSortBy) -> Unit,
@@ -58,6 +62,7 @@ private fun WordOptionBottomSheet(
                 WordSortOptionBoard(
                     sortMode = uiState.sortMode,
                     wordSortBy = uiState.wordSortBy,
+                    proficiencyType = proficiencyType,
                     onSelectSortMode = onSelectSortMode,
                     onSelectWordSortBy = onSelectWordSortBy
                 )
@@ -70,6 +75,7 @@ private fun WordOptionBottomSheet(
 private fun WordSortOptionBoard(
     sortMode: SortMode,
     wordSortBy: WordSortBy,
+    proficiencyType: WordProficiencyType,
     onSelectSortMode: (SortMode) -> Unit,
     onSelectWordSortBy: (WordSortBy) -> Unit,
 ) {
@@ -110,7 +116,7 @@ private fun WordSortOptionBoard(
                         FilterChip(
                             selected = it == wordSortBy,
                             onClick = { onSelectWordSortBy(it) },
-                            label = { Text(text = it.asText()) }
+                            label = { Text(text = it.asText(proficiencyType)) }
                         )
                     }
                 }
@@ -132,9 +138,12 @@ private fun SortMode.asText() = when (this) {
 }
 
 @Composable
-private fun WordSortBy.asText() = when (this) {
+private fun WordSortBy.asText(proficiencyType: WordProficiencyType) = when (this) {
     WordSortBy.LastViewedDate -> stringResource(R.string.word_list_screen_word_sort_by_date)
-    WordSortBy.Proficiency -> stringResource(R.string.word_list_screen_word_sort_by_proficiency)
+    WordSortBy.Proficiency -> when (proficiencyType) {
+        WordProficiencyType.Meaning -> stringResource(R.string.word_list_screen_word_sort_by_meaning_proficiency)
+        WordProficiencyType.Translation -> stringResource(R.string.word_list_screen_word_sort_by_translation_proficiency)
+    }
 }
 
 @Composable
@@ -151,6 +160,7 @@ private fun WordOptionBottomSheetPreview() {
 
     WordOptionBottomSheet(
         uiState = uiState,
+        proficiencyType = WordProficiencyType.Meaning,
         onDismiss = {},
         onSelectSortMode = { uiState = uiState.copy(sortMode = it) },
         onSelectWordSortBy = { uiState = uiState.copy(wordSortBy = it) }

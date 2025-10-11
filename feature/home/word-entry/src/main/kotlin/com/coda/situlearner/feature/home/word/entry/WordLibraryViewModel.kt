@@ -6,6 +6,8 @@ import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.WordContextView
+import com.coda.situlearner.core.model.data.WordProficiencyType
+import com.coda.situlearner.core.model.data.mapper.proficiencyType
 import com.coda.situlearner.feature.home.word.entry.model.WordBook
 import com.coda.situlearner.feature.home.word.entry.model.toWordBooks
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -80,6 +82,7 @@ internal class WordLibraryViewModel(
             if (data.isEmpty()) RecommendedWordsUiState.Empty
             else RecommendedWordsUiState.Success(
                 wordContexts = data.map { it.contexts.single() },
+                proficiencyType = data.proficiencyType,
                 offset = 0
             )
     }
@@ -113,5 +116,6 @@ internal sealed interface RecommendedWordsUiState {
     data class Success(
         val wordContexts: List<WordContextView>,
         val offset: Int,
+        val proficiencyType: WordProficiencyType,
     ) : RecommendedWordsUiState
 }

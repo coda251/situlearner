@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.RepeatMode
 import com.coda.situlearner.core.model.data.Word
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.core.model.data.WordWithContexts
 import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
@@ -41,7 +42,6 @@ import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.core.ui.widget.WordItem
 import com.coda.situlearner.feature.word.list.entry.model.WordSortBy
 import com.coda.situlearner.feature.word.list.entry.model.toPlaylistItems
-import com.coda.situlearner.feature.word.list.entry.navigation.WordListEntryRoute
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 import org.koin.androidx.compose.koinViewModel
@@ -50,8 +50,8 @@ import com.coda.situlearner.core.ui.R as coreR
 @Composable
 internal fun WordListScreen(
     onBack: () -> Unit,
-    onNavigateToWordDetail: (String) -> Unit,
-    onNavigateToWordEcho: () -> Unit,
+    onNavigateToWordDetail: (String, WordProficiencyType) -> Unit,
+    onNavigateToWordEcho: (WordProficiencyType) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WordListViewModel = koinViewModel()
 ) {
@@ -61,12 +61,11 @@ internal fun WordListScreen(
 
     WordListScreen(
         uiState = uiState,
-        route = viewModel.route,
         playerState = playerState,
         onBack = onBack,
-        onClickWord = { onNavigateToWordDetail(it.id) },
+        onClickWord = { word, type -> onNavigateToWordDetail(word.id, type) },
         onDeleteWord = viewModel::deleteWord,
-        onRepeatWordContexts = { onNavigateToWordEcho() },
+        onRepeatWordContexts = onNavigateToWordEcho,
         modifier = modifier,
     )
 }
@@ -75,12 +74,11 @@ internal fun WordListScreen(
 @Composable
 private fun WordListScreen(
     uiState: WordListUiState,
-    route: WordListEntryRoute,
     playerState: PlayerState,
     onBack: () -> Unit,
-    onClickWord: (Word) -> Unit,
+    onClickWord: (Word, WordProficiencyType) -> Unit,
     onDeleteWord: (Word) -> Unit,
-    onRepeatWordContexts: () -> Unit,
+    onRepeatWordContexts: (WordProficiencyType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showOptionBottomSheet by remember { mutableStateOf(false) }
@@ -119,15 +117,15 @@ private fun WordListScreen(
                 FloatingActionButton(
                     onClick = {
                         val items = uiState.data.toPlaylistItems(
-                            wordListType = route.wordListType,
-                            id = route.id
+                            wordListType = uiState.wordListType,
+                            id = uiState.id
                         )
                         if (items.isNotEmpty()) {
                             playerState.setRepeatMode(RepeatMode.All)
                             playerState.setRepeatNumber(3)
                             playerState.setItems(items)
                             playerState.play()
-                            onRepeatWordContexts()
+                            onRepeatWordContexts(uiState.proficiencyType)
                         }
                     }
                 ) {
@@ -152,8 +150,8 @@ private fun WordListScreen(
                 is WordListUiState.Success -> {
                     ContentBoard(
                         words = uiState.data,
-                        showProficiency = uiState.wordSortBy == WordSortBy.Proficiency,
-                        onClickWord = onClickWord,
+                        proficiencyType = uiState.proficiencyType,
+                        onClickWord = { onClickWord(it, uiState.proficiencyType) },
                         onLongClickWord = {
                             currentWord = it
                             showWordBottomSheet = true
@@ -164,10 +162,12 @@ private fun WordListScreen(
         }
     }
 
-    if (showOptionBottomSheet) {
-        WordOptionBottomSheet(onDismiss = {
-            showOptionBottomSheet = false
-        })
+    if (showOptionBottomSheet && uiState is WordListUiState.Success) {
+        WordOptionBottomSheet(
+            proficiencyType = uiState.proficiencyType,
+            onDismiss = {
+                showOptionBottomSheet = false
+            })
     }
 
     if (showWordBottomSheet) {
@@ -185,7 +185,7 @@ private fun WordListScreen(
 @Composable
 private fun ContentBoard(
     words: List<WordWithContexts>,
-    showProficiency: Boolean,
+    proficiencyType: WordProficiencyType,
     onClickWord: (Word) -> Unit,
     onLongClickWord: (Word) -> Unit,
     modifier: Modifier = Modifier,
@@ -200,7 +200,7 @@ private fun ContentBoard(
         ) {
             WordItem(
                 word = it,
-                showProficiency = showProficiency,
+                proficiencyType = proficiencyType,
                 modifier = Modifier.combinedClickable(
                     onLongClick = { onLongClickWord(it) },
                     onClick = { onClickWord(it) }
@@ -249,20 +249,17 @@ private fun WordBottomSheet(
 private fun WordListScreenPreview() {
     val uiState = WordListUiState.Success(
         wordSortBy = WordSortBy.Proficiency,
-        data = wordWithContextsListTestData.sortedBy { it.word.meaningProficiency }
-    )
-
-    val route = WordListEntryRoute(
+        data = wordWithContextsListTestData.sortedBy { it.word.meaningProficiency },
+        proficiencyType = WordProficiencyType.Meaning,
         wordListType = WordListType.MediaCollection,
-        id = "0"
+        id = "0",
     )
 
     WordListScreen(
         uiState = uiState,
-        route = route,
         playerState = PlayerStateProvider.EmptyPlayerState,
         onBack = {},
-        onClickWord = {},
+        onClickWord = { _, _ -> },
         onDeleteWord = {},
         onRepeatWordContexts = {}
     )

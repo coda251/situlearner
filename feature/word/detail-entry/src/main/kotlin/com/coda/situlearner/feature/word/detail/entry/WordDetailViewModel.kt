@@ -8,7 +8,9 @@ import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.MeaningQuizStats
 import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.Word
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.core.model.data.WordWithContexts
+import com.coda.situlearner.core.model.data.mapper.proficiencyType
 import com.coda.situlearner.feature.word.detail.entry.navigation.WordDetailEntryRoute
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +30,10 @@ internal class WordDetailViewModel(
     val uiState: StateFlow<WordDetailUiState> =
         wordRepository.getWordWithContexts(route.wordId).map {
             if (it == null) WordDetailUiState.Empty
-            else WordDetailUiState.Success(it)
+            else WordDetailUiState.Success(
+                wordWithContexts = it,
+                wordProficiencyType = route.wordProficiencyType ?: it.word.proficiencyType,
+            )
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
@@ -59,7 +64,10 @@ internal class WordDetailViewModel(
 internal sealed interface WordDetailUiState {
     data object Empty : WordDetailUiState
     data object Loading : WordDetailUiState
-    data class Success(val wordWithContexts: WordWithContexts) : WordDetailUiState
+    data class Success(
+        val wordWithContexts: WordWithContexts,
+        val wordProficiencyType: WordProficiencyType,
+    ) : WordDetailUiState
 }
 
 internal sealed interface QuizStatsUiState {

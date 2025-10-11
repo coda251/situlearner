@@ -1,10 +1,14 @@
 package com.coda.situlearner.feature.word.list.echo
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
+import com.coda.situlearner.core.model.data.WordProficiencyType
+import com.coda.situlearner.feature.word.list.echo.navigation.WordListEchoRoute
 import com.coda.situlearner.infra.player.PlayerStateProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -14,8 +18,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 internal class WordEchoViewModel(
-    wordRepository: WordRepository
+    wordRepository: WordRepository,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+    private val route = savedStateHandle.toRoute<WordListEchoRoute>()
 
     val playerState = PlayerStateProvider.state
 
@@ -36,7 +42,7 @@ internal class WordEchoViewModel(
         }
         .map {
             if (it.isEmpty()) WordEchoUiState.Empty
-            else WordEchoUiState.Success(it)
+            else WordEchoUiState.Success(it, route.wordProficiencyType)
         }
         .stateIn(
             scope = viewModelScope,
@@ -48,5 +54,8 @@ internal class WordEchoViewModel(
 internal sealed interface WordEchoUiState {
     data object Loading : WordEchoUiState
     data object Empty : WordEchoUiState
-    data class Success(val words: List<Pair<Word, WordContext>>) : WordEchoUiState
+    data class Success(
+        val words: List<Pair<Word, WordContext>>,
+        val proficiencyType: WordProficiencyType,
+    ) : WordEchoUiState
 }

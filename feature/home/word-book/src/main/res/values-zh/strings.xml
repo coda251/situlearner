@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="home_word_book_screen_progress">进度</string>
+    <string name="home_word_book_screen_meaning_progress">含义进度</string>
+    <string name="home_word_book_screen_translation_progress">翻译进度</string>
 </resources>

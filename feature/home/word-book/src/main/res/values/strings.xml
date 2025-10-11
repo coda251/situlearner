@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="home_word_book_screen_progress">Progress</string>
+    <string name="home_word_book_screen_meaning_progress">Meaning progress</string>
+    <string name="home_word_book_screen_translation_progress">Translation progress</string>
 </resources>

@@ -6,5 +6,6 @@
     <string name="word_list_screen_sort_mode_descending">Descending</string>
     <string name="word_list_screen_word_sort_by">Type</string>
     <string name="word_list_screen_word_sort_by_date">Last viewed date</string>
-    <string name="word_list_screen_word_sort_by_proficiency">Proficiency</string>
+    <string name="word_list_screen_word_sort_by_meaning_proficiency">Meaning proficiency</string>
+    <string name="word_list_screen_word_sort_by_translation_proficiency">Translation proficiency</string>
 </resources>

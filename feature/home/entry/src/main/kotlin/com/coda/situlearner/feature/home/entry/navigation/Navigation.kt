@@ -2,6 +2,7 @@ package com.coda.situlearner.feature.home.entry.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.feature.home.entry.HomeScreen
 import kotlinx.serialization.Serializable
@@ -10,8 +11,8 @@ import kotlinx.serialization.Serializable
 data object HomeEntryRoute
 
 fun NavGraphBuilder.homeEntryScreen(
-    onNavigateToWordList: (WordListType, String?) -> Unit,
-    onNavigateToWordDetail: (String) -> Unit,
+    onNavigateToWordList: (WordListType, String?, WordProficiencyType?) -> Unit,
+    onNavigateToWordDetail: (String, WordProficiencyType) -> Unit,
     onNavigateToPlayer: () -> Unit,
     onNavigateToWordQuiz: () -> Unit,
 ) {

@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
 import com.coda.situlearner.core.ui.widget.BackButton
@@ -30,7 +31,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 internal fun WordBookScreen(
     onBack: () -> Unit,
-    onNavigateToWordList: (WordListType, String) -> Unit,
+    onNavigateToWordList: (WordListType, String, WordProficiencyType) -> Unit,
     viewModel: WordBookViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -44,7 +45,8 @@ internal fun WordBookScreen(
                     WordChapterType.MediaFile -> WordListType.MediaFile
                     WordChapterType.MediaCollection -> WordListType.MediaCollection
                 },
-                it.id
+                it.id,
+                it.progressType
             )
         }
     )
@@ -113,7 +115,15 @@ private fun ChapterItem(
             )
         },
         supportingContent = {
-            Text(text = "${stringResource(R.string.home_word_book_screen_progress)} ${chapter.progress}%")
+            val label = when (chapter.type) {
+                WordChapterType.MediaCollection -> when (chapter.progressType) {
+                    WordProficiencyType.Meaning -> stringResource(R.string.home_word_book_screen_meaning_progress)
+                    WordProficiencyType.Translation -> stringResource(R.string.home_word_book_screen_translation_progress)
+                }
+
+                WordChapterType.MediaFile -> stringResource(R.string.home_word_book_screen_progress)
+            }
+            Text(text = "$label ${chapter.progress}%")
         },
         trailingContent = {
             Text(text = chapter.wordCount.toString())

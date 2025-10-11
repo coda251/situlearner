@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.core.testing.data.wordContextsTestData
 import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
 import com.coda.situlearner.core.ui.R
@@ -134,6 +135,7 @@ private fun WordEchoScreen(
                         playWhenReady = playWhenReady,
                         currentIndex = currentIndex,
                         wordContexts = uiState.words,
+                        wordProficiencyType = uiState.proficiencyType,
                         onToggleShouldBePlaying = onToggleShouldBePlaying,
                         onSeekTo = onSeekTo,
                     )
@@ -148,6 +150,7 @@ private fun WordEchoContentBoard(
     playWhenReady: Boolean,
     currentIndex: Int,
     wordContexts: List<Pair<Word, WordContext>>,
+    wordProficiencyType: WordProficiencyType,
     onToggleShouldBePlaying: (Boolean) -> Unit,
     onSeekTo: (Int) -> Unit,
 ) {
@@ -169,7 +172,7 @@ private fun WordEchoContentBoard(
 
                 WordItem(
                     word = it.first,
-                    showProficiency = false,
+                    proficiencyType = wordProficiencyType,
                     modifier = Modifier
                         .clickable {
                             if (isCurrent) {
@@ -273,7 +276,7 @@ private fun WordEchoScreenPreview() {
 
     val uiState = WordEchoUiState.Success(words = wordWithContextsListTestData.mapNotNull {
         it.contexts.randomOrNull()?.let { context -> it.word to context.wordContext }
-    })
+    }, proficiencyType = WordProficiencyType.Meaning)
 
     WordEchoScreen(
         playWhenReady = playWhenReady,

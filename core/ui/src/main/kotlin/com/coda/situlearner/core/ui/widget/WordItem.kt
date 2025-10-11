@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordProficiency
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.core.testing.data.wordsTestData
 import com.coda.situlearner.core.ui.util.formatInstant
 import kotlin.time.Instant
@@ -22,14 +23,14 @@ import kotlin.time.Instant
 @Composable
 fun WordItem(
     word: Word,
-    showProficiency: Boolean,
+    proficiencyType: WordProficiencyType,
     modifier: Modifier = Modifier,
 ) {
     WordItem(
         word = word.word,
         pronunciation = word.pronunciation,
         definition = word.meanings.firstOrNull()?.definition,
-        proficiency = if (showProficiency) word.meaningProficiency else null,
+        proficiency = word.proficiency(proficiencyType),
         lastViewedDate = word.lastViewedDate,
         modifier = modifier
     )
@@ -92,10 +93,7 @@ fun WordItem(
 private fun WordItemPreview() {
     val word = wordsTestData[5]
 
-    WordItem(
-        word = word,
-        showProficiency = false
-    )
+    WordItem(word = word, proficiencyType = WordProficiencyType.Meaning)
     // Note that the pronunciation "これ⓪" will add an expected padding at the supporting
     // line when using ListItem
 }

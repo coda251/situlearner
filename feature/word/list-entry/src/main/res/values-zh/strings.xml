@@ -6,5 +6,6 @@
     <string name="word_list_screen_sort_mode_descending">降序</string>
     <string name="word_list_screen_word_sort_by">类型</string>
     <string name="word_list_screen_word_sort_by_date">上次查看</string>
-    <string name="word_list_screen_word_sort_by_proficiency">熟练度</string>
+    <string name="word_list_screen_word_sort_by_meaning_proficiency">含义熟练度</string>
+    <string name="word_list_screen_word_sort_by_translation_proficiency">翻译熟练度</string>
 </resources>

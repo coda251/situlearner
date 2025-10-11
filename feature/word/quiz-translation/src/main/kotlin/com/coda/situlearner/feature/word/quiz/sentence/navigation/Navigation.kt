@@ -3,6 +3,7 @@ package com.coda.situlearner.feature.word.quiz.sentence.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.feature.word.quiz.sentence.QuizSentenceScreen
 import kotlinx.serialization.Serializable
 
@@ -15,9 +16,12 @@ fun NavController.navigateToWordQuizTranslation() {
 
 fun NavGraphBuilder.wordQuizTranslationScreen(
     onBack: () -> Unit,
-    onNavigateToWordDetail: (String) -> Unit,
+    onNavigateToWordDetail: (String, WordProficiencyType?) -> Unit,
 ) {
     composable<WordQuizTranslationRoute> {
-        QuizSentenceScreen(onBack, onNavigateToWordDetail)
+        QuizSentenceScreen(
+            onBack = onBack,
+            onNavigateToWordDetail = { onNavigateToWordDetail(it, null) }
+        )
     }
 }

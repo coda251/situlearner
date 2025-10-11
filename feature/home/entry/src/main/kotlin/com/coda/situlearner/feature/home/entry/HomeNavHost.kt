@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.core.model.feature.WordListType
 import com.coda.situlearner.feature.home.explore.collection.navigation.homeExploreCollectionScreen
 import com.coda.situlearner.feature.home.explore.collection.navigation.navigateToHomeExploreCollection
@@ -24,8 +25,8 @@ import com.coda.situlearner.feature.home.word.entry.navigation.homeWordEntryScre
 
 @Composable
 internal fun HomeNavHost(
-    onNavigateToWordList: (WordListType, String?) -> Unit,
-    onNavigateToWordDetail: (String) -> Unit,
+    onNavigateToWordList: (WordListType, String?, WordProficiencyType?) -> Unit,
+    onNavigateToWordDetail: (String, WordProficiencyType) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
     navController: NavHostController,
     modifier: Modifier = Modifier,
