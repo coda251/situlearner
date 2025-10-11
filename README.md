@@ -20,7 +20,7 @@ SituLearner是综合影视字幕或音乐歌词的android单词学习软件，
 
 1. 在本地存储目录`Movies/`下添加视频合集，`Music/`下添加音乐合集，合集以文件夹的形式储存。
    - 文件夹下为所有媒体文件和字幕文件，字幕文件与对应的媒体文件应当同名。
-   - 支持常见的媒体格式（.mp3，.wav，.flac，.mp4，.mkv）和字幕格式（.ass，.srt，.lrc）。
+   - 支持常见的媒体格式（.mp3，.wav，.flac，.m4a，.mp4，.mkv）和字幕格式（.ass，.srt，.lrc）。
      - 字幕文件需为UTF-8编码的文本文件。
      - android 11开始限制了对外部存储的访问，此时即使申请访问外部存储的权限`android.permission.READ_EXTERNAL_STORAGE`也无法读取到.ass文件，因此app目前需要获取完全的外部存储管理权限。
 
@@ -39,12 +39,14 @@ SituLearner是综合影视字幕或音乐歌词的android单词学习软件，
 
 2. 回顾单词：
    - `单词`界面，提供了不同媒体组对应的所有单词，同时根据掌握熟练度为用户推荐需要学习的单词。
+   - `单词书`界面，显示不同剧集或曲目的进度。如果含义测验进度达到100%，则显示翻译进度。
    - `单词详情`界面，点击某一个例句即可循环播放该例句的界面。
    - `单词测验`界面，依据anki SM-2算法的简化版本，从单词库中挑选部分单词进行测验。
    - `单词回声`界面，单词对应字幕的列表播放。
    - `单词翻译`界面，将中文句子翻译成目标语言。目前需要引入聊天机器人的API-key才可以使用此功能。
    <div style="display: flex; justify-content: center; gap: 10px;">
       <img width="250" src=".readme/image/word.jpg" alt="word">
+      <img width="250" src=".readme/image/word_book.jpg" alt="word_book">
       <img width="250" src=".readme/image/word_detail.jpg" alt="word_detail">
       <img width="250" src=".readme/image/word_meaning_quiz.jpg" alt="word_meaning_quiz">
       <img width="250" src=".readme/image/word_echo.jpg" alt="word_echo">
