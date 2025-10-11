@@ -2,13 +2,17 @@ package com.coda.situlearner.core.data.util
 
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordWithContexts
+import com.coda.situlearner.core.model.data.mapper.proficiencyType
 
 internal fun selectRecommendedWords(
     words: List<WordWithContexts>,
     count: Int,
 ): List<WordWithContexts> {
+
+    val useType = words.proficiencyType
     val proficiencyToWords =
-        words.filter { it.contexts.isNotEmpty() }.groupBy { it.word.meaningProficiency }
+        words.filter { it.contexts.isNotEmpty() }
+            .groupBy { it.word.proficiency(useType) }
     val proficiencyToCount = computeQuotasByProficiency(count)
 
     val layers = mutableListOf<List<WordWithContexts>>()
