@@ -7,16 +7,17 @@ import com.coda.situlearner.infra.subkit.matcher.weightedLevenshteinSimilarity
 internal class MatcherJa : Matcher {
 
     companion object {
-        private const val DELETION_KANJI = 2.0
+        // estimate of information density when comparing kanji to kana
+        private const val DELETION_KANJI = 2.5
         private const val DELETION_KANA = 1.0
-        private const val INSERTION_KANJI = 2.0
+        private const val INSERTION_KANJI = 2.5
         private const val INSERTION_KANA = 1.0
         private const val SUBSTITUTION_MATCH = 0.0
         private const val SUBSTITUTION_DAKUTEN_VARIANT = 0.2
         private const val SUBSTITUTION_SAME_ROW = 0.4
         private const val SUBSTITUTION_SAME_COL = 0.7
         private const val SUBSTITUTION_MISMATCH_ONLY_KANA = 1.0
-        private const val SUBSTITUTION_MISMATCH_WITH_KANJI = 2.0
+        private const val SUBSTITUTION_MISMATCH_WITH_KANJI = 2.5
     }
 
     override fun matchLemma(
