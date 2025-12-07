@@ -102,7 +102,7 @@ private fun WordListScreen(
                                 }
                             ) {
                                 Icon(
-                                    painter = painterResource(R.drawable.filter_list_24dp_000000_fill0_wght400_grad0_opsz24),
+                                    painter = painterResource(coreR.drawable.filter_list_24dp_000000_fill0_wght400_grad0_opsz24),
                                     contentDescription = null
                                 )
                             }

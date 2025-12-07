@@ -1,13 +1,10 @@
 package com.coda.situlearner.feature.home.media.entry
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +15,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.MediaCollection
 import com.coda.situlearner.core.testing.data.mediaCollectionsTestData
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
+import com.coda.situlearner.core.ui.widget.LineSpacer
 import com.coda.situlearner.core.ui.widget.NonEmptyTextInputDialog
 import org.koin.androidx.compose.koinViewModel
 import com.coda.situlearner.core.ui.R as coreR
@@ -217,12 +214,7 @@ private fun CollectionMenuBottomSheet(
     ) {
         ListItem(headlineContent = { Text(text = title) })
 
-        Spacer(
-            modifier = Modifier
-                .height(1.dp)
-                .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f))
-        )
+        LineSpacer(modifier = Modifier.fillMaxWidth())
 
         onRename?.let {
             ListItem(
