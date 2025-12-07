@@ -12,6 +12,7 @@ import com.coda.situlearner.feature.home.entry.di.homeEntryModules
 import com.coda.situlearner.feature.player.entry.di.playerEntryModule
 import com.coda.situlearner.feature.player.word.di.playerWordModule
 import com.coda.situlearner.feature.word.detail.entry.di.wordDetailEntryModule
+import com.coda.situlearner.feature.word.detail.relation.di.wordDetailRelationModule
 import com.coda.situlearner.feature.word.edit.di.wordDetailEditModule
 import com.coda.situlearner.feature.word.list.echo.di.wordListEchoModule
 import com.coda.situlearner.feature.word.list.entry.di.wordListEntryModule
@@ -39,6 +40,7 @@ private val featureModules = listOf(
     playerWordModule,
     wordDetailEditModule,
     wordDetailEntryModule,
+    wordDetailRelationModule,
     wordListEchoModule,
     wordListEntryModule,
     wordQuizEntryModule,

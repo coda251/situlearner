@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="word_relation_screen_similarity_type">Similarity</string>
+    <string name="word_relation_screen_similarity_type_comprehensive">Comprehensive</string>
+    <string name="word_relation_screen_similarity_type_lemma">Lemma</string>
+    <string name="word_relation_screen_similarity_type_pronunciation">Pronunciation</string>
+    <string name="word_relation_screen_similarity_threshold">Threshold</string>
+    <string name="word_relation_screen_filter">Filter</string>
+</resources>

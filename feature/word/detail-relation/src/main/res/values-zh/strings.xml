@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="word_relation_screen_filter">过滤器</string>
+    <string name="word_relation_screen_similarity_type">相似度类型</string>
+    <string name="word_relation_screen_similarity_type_comprehensive">综合</string>
+    <string name="word_relation_screen_similarity_type_lemma">词形</string>
+    <string name="word_relation_screen_similarity_type_pronunciation">发音</string>
+    <string name="word_relation_screen_similarity_threshold">相似度阈值</string>
+</resources>

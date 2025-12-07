@@ -70,6 +70,7 @@ internal fun WordDetailScreen(
     onBack: () -> Unit,
     onNavigateToPlayer: () -> Unit,
     onNavigateToWordEdit: (String) -> Unit,
+    onNavigateToWordRelation: (String) -> Unit,
     viewModel: WordDetailViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -84,7 +85,8 @@ internal fun WordDetailScreen(
         },
         onViewWord = viewModel::setWordViewedDate,
         onNavigateToPlayer = onNavigateToPlayer,
-        onNavigateToWordEdit = onNavigateToWordEdit
+        onNavigateToWordEdit = onNavigateToWordEdit,
+        onNavigateToWordRelation = onNavigateToWordRelation
     )
 }
 
@@ -97,6 +99,7 @@ private fun WordDetailScreen(
     onViewWord: (Word) -> Unit,
     onNavigateToPlayer: () -> Unit,
     onNavigateToWordEdit: (String) -> Unit,
+    onNavigateToWordRelation: (String) -> Unit,
 ) {
     BackHandler {
         onBack()
@@ -118,6 +121,18 @@ private fun WordDetailScreen(
                             ) {
                                 Icon(
                                     painter = painterResource(coreR.drawable.edit_24dp_000000_fill0_wght400_grad0_opsz24),
+                                    contentDescription = null
+                                )
+                            }
+
+                            IconButton(
+                                onClick = {
+                                    playerState.clear()
+                                    onNavigateToWordRelation(uiState.wordWithContexts.word.id)
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.linked_services_24dp_000000_fill0_wght400_grad0_opsz24),
                                     contentDescription = null
                                 )
                             }
@@ -403,6 +418,7 @@ private fun WordDetailScreenPreview() {
         onBack = {},
         onViewWord = {},
         onNavigateToPlayer = {},
-        onNavigateToWordEdit = {}
+        onNavigateToWordEdit = {},
+        onNavigateToWordRelation = {}
     )
 }

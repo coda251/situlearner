@@ -27,6 +27,8 @@ import com.coda.situlearner.feature.player.word.navigation.playerWordBottomSheet
 import com.coda.situlearner.feature.word.detail.entry.navigation.WordDetailBaseRoute
 import com.coda.situlearner.feature.word.detail.entry.navigation.navigateToWordDetailEntry
 import com.coda.situlearner.feature.word.detail.entry.navigation.wordDetailEntryScreen
+import com.coda.situlearner.feature.word.detail.relation.navigation.navigateToWordDetailRelation
+import com.coda.situlearner.feature.word.detail.relation.navigation.wordDetailRelationScreen
 import com.coda.situlearner.feature.word.edit.navigation.navigateToWordDetailEdit
 import com.coda.situlearner.feature.word.edit.navigation.wordDetailEditScreen
 import com.coda.situlearner.feature.word.list.echo.navigation.navigateToWordListEcho
@@ -78,10 +80,18 @@ fun AppNavHost(
         wordDetailEntryScreen(
             onBack = appNavController::popBackStack,
             onNavigateToPlayer = appNavController::navigateToPlayerEntry,
-            onNavigateToWordEdit = appNavController::navigateToWordDetailEdit
+            onNavigateToWordEdit = appNavController::navigateToWordDetailEdit,
+            onNavigateToWordRelation = appNavController::navigateToWordDetailRelation
         ) {
             wordDetailEditScreen(
                 onBack = appNavController::popBackStack
+            )
+
+            wordDetailRelationScreen(
+                onBack = appNavController::popBackStack,
+                onNavigateToWordDetail = {
+                    appNavController.navigateToWordDetailEntry(it, null)
+                }
             )
         }
 

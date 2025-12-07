@@ -33,6 +33,7 @@ fun NavGraphBuilder.wordDetailEntryScreen(
     onBack: () -> Unit,
     onNavigateToPlayer: () -> Unit,
     onNavigateToWordEdit: (String) -> Unit,
+    onNavigateToWordRelation: (String) -> Unit,
     destination: NavGraphBuilder.() -> Unit,
 ) {
     navigation<WordDetailBaseRoute>(startDestination = WordDetailEntryRoute::class) {
@@ -40,7 +41,8 @@ fun NavGraphBuilder.wordDetailEntryScreen(
             WordDetailScreen(
                 onBack = onBack,
                 onNavigateToPlayer = onNavigateToPlayer,
-                onNavigateToWordEdit = onNavigateToWordEdit
+                onNavigateToWordEdit = onNavigateToWordEdit,
+                onNavigateToWordRelation = onNavigateToWordRelation
             )
         }
 
