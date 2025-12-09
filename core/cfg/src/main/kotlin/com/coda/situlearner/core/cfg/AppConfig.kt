@@ -24,4 +24,7 @@ object AppConfig {
     // word config
     const val DEFAULT_QUIZ_WORD_COUNT = 15u
     const val DEFAULT_RECOMMENDED_WORD_COUNT = 20u
+
+    // app db config
+    const val ROOM_DATABASE_FILENAME = "SituLearner.db"
 }

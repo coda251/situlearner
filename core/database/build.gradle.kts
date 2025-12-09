@@ -13,8 +13,9 @@ android {
 }
 
 dependencies {
-    implementation(libs.kotlinx.serialization.json)
+    implementation(projects.core.cfg)
 
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.test)
     implementation(libs.androidx.test.core.ktx)
     androidTestImplementation(libs.junit)
