@@ -1,7 +1,10 @@
 package com.coda.situlearner.feature.home.settings.entry
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,11 +17,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.ChatbotConfig
 import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.ThemeColorMode
+import com.coda.situlearner.feature.home.settings.entry.model.ExportState
 import com.coda.situlearner.feature.home.settings.entry.model.VersionState
 import org.koin.androidx.compose.koinViewModel
 import com.coda.situlearner.core.ui.R as coreR
@@ -46,15 +54,19 @@ internal fun SettingsCommonScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val versionState by viewModel.versionState.collectAsStateWithLifecycle()
+    val exportState by viewModel.exportState.collectAsStateWithLifecycle()
 
     SettingsCommonScreen(
         uiState = uiState,
         versionState = versionState,
+        exportState = exportState,
         onSelectDarkThemeMode = viewModel::setDarkThemeMode,
         onSelectThemeColorMode = viewModel::setThemeColorMode,
         onClickWord = onNavigateToWord,
         onClickChatbot = onNavigateToChatbot,
         onCheckUpdate = viewModel::checkAppUpdate,
+        onExport = viewModel::exportData,
+        onResetExportState = viewModel::resetExportState,
         modifier = modifier
     )
 }
@@ -64,13 +76,18 @@ internal fun SettingsCommonScreen(
 private fun SettingsCommonScreen(
     uiState: SettingsCommonUiState,
     versionState: VersionState,
+    exportState: ExportState,
     onSelectDarkThemeMode: (DarkThemeMode) -> Unit,
     onSelectThemeColorMode: (ThemeColorMode) -> Unit,
     onClickWord: () -> Unit,
     onClickChatbot: () -> Unit,
     onCheckUpdate: (String?) -> Unit,
+    onExport: (Uri) -> Unit,
+    onResetExportState: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,6 +95,11 @@ private fun SettingsCommonScreen(
                     Text(text = stringResource(R.string.home_settings_common_screen_title))
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            )
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState
             )
         }
     ) {
@@ -95,11 +117,15 @@ private fun SettingsCommonScreen(
                         themeColorMode = uiState.themeColorMode,
                         chatbotConfig = uiState.chatbotConfig,
                         versionState = versionState,
+                        exportState = exportState,
+                        snackbarHostState = snackbarHostState,
                         onSelectDarkThemeMode = onSelectDarkThemeMode,
                         onSelectThemeColorMode = onSelectThemeColorMode,
                         onClickWord = onClickWord,
                         onClickChatbot = onClickChatbot,
-                        onCheckUpdate = onCheckUpdate
+                        onCheckUpdate = onCheckUpdate,
+                        onExport = onExport,
+                        onResetExportState = onResetExportState
                     )
                 }
             }
@@ -113,17 +139,22 @@ private fun SettingsContentBoard(
     themeColorMode: ThemeColorMode,
     chatbotConfig: ChatbotConfig?,
     versionState: VersionState,
+    exportState: ExportState,
+    snackbarHostState: SnackbarHostState,
     onSelectDarkThemeMode: (DarkThemeMode) -> Unit,
     onSelectThemeColorMode: (ThemeColorMode) -> Unit,
     onClickWord: () -> Unit,
     onClickChatbot: () -> Unit,
     onCheckUpdate: (String?) -> Unit,
+    onExport: (Uri) -> Unit,
+    onResetExportState: () -> Unit,
 ) {
     Column {
         ThemeColorModeSelector(themeColorMode, onSelectThemeColorMode)
         DarkThemeModeSelector(darkThemeMode, onSelectDarkThemeMode)
         WordConfigItem(onClickWord)
         ChatbotConfigItem(chatbotConfig, onClickChatbot)
+        ExportDataItem(exportState, snackbarHostState, onExport, onResetExportState)
         AppVersionCheckItem(versionState, onCheckUpdate)
     }
 }
@@ -325,6 +356,104 @@ private fun AppVersionCheckItem(
         },
         modifier = Modifier.clickable { handleClick() }
     )
+}
+
+@Composable
+private fun ExportDataItem(
+    exportState: ExportState,
+    snackbarHostState: SnackbarHostState,
+    onExport: (Uri) -> Unit,
+    onResetExportState: () -> Unit,
+) {
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocumentTree()
+    ) { it?.let { onExport(it) } }
+
+    val msgSuccess = stringResource(R.string.home_settings_common_screen_export_success)
+    val msgError = stringResource(R.string.home_settings_common_screen_export_error)
+
+    LaunchedEffect(exportState) {
+        when (exportState) {
+            is ExportState.Success -> {
+                snackbarHostState.showSnackbar(
+                    message = msgSuccess,
+                    withDismissAction = true,
+                    duration = SnackbarDuration.Short
+                )
+                onResetExportState()
+            }
+
+            is ExportState.Error -> {
+                snackbarHostState.showSnackbar(
+                    message = "${msgError}${exportState.message}",
+                    withDismissAction = true,
+                    duration = SnackbarDuration.Long
+                )
+                onResetExportState()
+            }
+
+            else -> {}
+        }
+    }
+
+    ListItem(
+        headlineContent = {
+            Text(
+                text = stringResource(R.string.home_settings_common_screen_export_data)
+            )
+        },
+        supportingContent = {
+            Text(
+                text = stringResource(R.string.home_settings_common_screen_export_data_desc)
+            )
+        },
+        modifier = Modifier.clickable { showDialog = true }
+    )
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialog = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        launcher.launch(null)
+                        showDialog = false
+                    }
+                ) {
+                    Text(text = stringResource(coreR.string.core_ui_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDialog = false }
+                ) {
+                    Text(text = stringResource(coreR.string.core_ui_cancel))
+                }
+            },
+            title = {
+                Text(text = stringResource(R.string.home_settings_common_screen_export_dialog_title))
+            },
+            text = {
+                Text(text = stringResource(R.string.home_settings_common_screen_export_dialog_text))
+            },
+        )
+    }
+
+    if (exportState is ExportState.Running) {
+        AlertDialog(
+            onDismissRequest = {},
+            confirmButton = {},
+            text = {
+                Text(text = stringResource(R.string.home_settings_common_screen_exporting_data))
+            }
+        )
+    }
 }
 
 @Composable

@@ -5,6 +5,7 @@ androidxAnnotation = "1.9.1"
 androidxComposeBom = "2025.12.00"
 androidxCore = "1.17.0"
 androidxDatastore = "1.2.0"
+androidxDocumentfile = "1.1.0"
 androidxLifecycle = "2.10.0"
 androidxMedia3 = "1.8.0"
 androidxNavigation = "2.9.6"
@@ -42,6 +43,7 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDatastore" }
+androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "androidxDocumentfile" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
 androidx-lifecycle-service = { group = "androidx.lifecycle", name = "lifecycle-service", version.ref = "androidxLifecycle" }
 androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }

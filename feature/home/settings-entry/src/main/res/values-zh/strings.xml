@@ -19,4 +19,11 @@
     <string name="home_settings_common_screen_update_available">存在新版本</string>
     <string name="home_settings_common_screen_chatbot">聊天机器人</string>
     <string name="home_settings_common_screen_chatbot_none">无</string>
+    <string name="home_settings_common_screen_export_data">导出数据</string>
+    <string name="home_settings_common_screen_export_data_desc">将单词和偏好设置导出到zip文件</string>
+    <string name="home_settings_common_screen_export_dialog_title">选择导出目录</string>
+    <string name="home_settings_common_screen_export_dialog_text">所有单词数据与偏好设置都将被导出为一个zip文件。首次安装应用（与当前版本保持一致）时，可通过该文件恢复数据。请注意：媒体文件不会包含在导出内容中，如需迁移，请在保持目录结构不变的条件下，手动将其复制到新的存储环境中。</string>
+    <string name="home_settings_common_screen_exporting_data">导出数据中……</string>
+    <string name="home_settings_common_screen_export_success">数据导出成功！🎉 文件已保存。</string>
+    <string name="home_settings_common_screen_export_error">导出失败：</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.coda.situlearner.feature.home.settings.entry
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.AiStateRepository
@@ -7,6 +8,8 @@ import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.model.data.ChatbotConfig
 import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.ThemeColorMode
+import com.coda.situlearner.feature.home.settings.entry.domain.ExportDataUseCase
+import com.coda.situlearner.feature.home.settings.entry.model.ExportState
 import com.coda.situlearner.feature.home.settings.entry.model.VersionState
 import com.coda.situlearner.feature.home.settings.entry.util.getRelease
 import com.coda.situlearner.feature.home.settings.entry.util.toVersionState
@@ -24,6 +27,7 @@ internal class SettingsCommonViewModel(
     private val userPreferenceRepository: UserPreferenceRepository,
     aiStateRepository: AiStateRepository,
     private val client: HttpClient,
+    private val exportDataUseCase: ExportDataUseCase,
 ) : ViewModel() {
 
     val uiState = combine(
@@ -43,6 +47,9 @@ internal class SettingsCommonViewModel(
 
     private val _versionState = MutableStateFlow<VersionState>(VersionState.NotChecked)
     val versionState = _versionState.asStateFlow()
+
+    private val _exportState = MutableStateFlow<ExportState>(ExportState.Idle)
+    val exportState = _exportState.asStateFlow()
 
     fun setDarkThemeMode(darkThemeMode: DarkThemeMode) {
         viewModelScope.launch {
@@ -67,6 +74,17 @@ internal class SettingsCommonViewModel(
                 }
             }
         }
+    }
+
+    fun exportData(uri: Uri) {
+        viewModelScope.launch {
+            _exportState.value = ExportState.Running
+            _exportState.value = exportDataUseCase(uri)
+        }
+    }
+
+    fun resetExportState() {
+        _exportState.value = ExportState.Idle
     }
 }
 

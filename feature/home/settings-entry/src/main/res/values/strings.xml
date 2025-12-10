@@ -19,4 +19,11 @@
     <string name="home_settings_common_screen_check_failed">Check failed</string>
     <string name="home_settings_common_screen_up_to_date">Up to date</string>
     <string name="home_settings_common_screen_update_available">Update available</string>
+    <string name="home_settings_common_screen_export_data">Export data</string>
+    <string name="home_settings_common_screen_export_data_desc">Export words and preferences to a zip file</string>
+    <string name="home_settings_common_screen_export_dialog_title">Select export directory</string>
+    <string name="home_settings_common_screen_export_dialog_text">All words and preferences will be exported into a zip file. This file can be used to restore your data when the app (with the version the same as current version) is installed for the first time. Please note: media files are not included in the export and should be manually copied to the new storage environment, keeping the directory structure unchanged.</string>
+    <string name="home_settings_common_screen_exporting_data">Exporting data...</string>
+    <string name="home_settings_common_screen_export_success">Data exported successfully! 🎉 File saved.</string>
+    <string name="home_settings_common_screen_export_error">"Export failed: "</string>
 </resources>
