@@ -11,6 +11,7 @@ import com.coda.situlearner.core.network.di.networkModule
 import com.coda.situlearner.feature.home.entry.di.homeEntryModules
 import com.coda.situlearner.feature.player.entry.di.playerEntryModule
 import com.coda.situlearner.feature.player.word.di.playerWordModule
+import com.coda.situlearner.feature.restore.di.restoreModule
 import com.coda.situlearner.feature.word.detail.entry.di.wordDetailEntryModule
 import com.coda.situlearner.feature.word.detail.relation.di.wordDetailRelationModule
 import com.coda.situlearner.feature.word.edit.di.wordDetailEditModule
@@ -38,6 +39,7 @@ private val configModule = module {
 private val featureModules = listOf(
     playerEntryModule,
     playerWordModule,
+    restoreModule,
     wordDetailEditModule,
     wordDetailEntryModule,
     wordDetailRelationModule,

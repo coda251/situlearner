@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_screen_import_backup_data">Import backup data</string>
+    <string name="restore_screen_start_without_restoring">Start without restoring</string>
+    <string name="restore_screen_importing_data">Importing data...</string>
+    <string name="restore_screen_import_error">"Import error: "</string>
+</resources>

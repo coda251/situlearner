@@ -4,8 +4,8 @@ import com.coda.situlearner.core.model.data.Language
 
 object AppConfig {
 
-    // ui config
-    const val DEFAULT_THEME_COLOR: Long = 0xFF6750A4
+    // ui config: seed color as app icon color
+    const val DEFAULT_THEME_COLOR: Long = 0xFF8FAADC
 
     // language config
     val targetLanguage = Language.Chinese

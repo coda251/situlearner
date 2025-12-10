@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_screen_import_backup_data">导入备份数据</string>
+    <string name="restore_screen_start_without_restoring">直接开始</string>
+    <string name="restore_screen_importing_data">导入数据中……</string>
+    <string name="restore_screen_import_error">导入失败：</string>
+</resources>
