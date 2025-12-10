@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -12,6 +13,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
+import androidx.media3.ui.compose.modifiers.resizeWithContentScale
+import androidx.media3.ui.compose.state.rememberPresentationState
 import com.coda.situlearner.core.model.data.PlayerStateData
 import com.coda.situlearner.core.model.data.Playlist
 import com.coda.situlearner.core.model.data.PlaylistItem
@@ -313,12 +316,17 @@ internal class ExoPlayerEngine(
     @OptIn(UnstableApi::class)
     @Composable
     override fun VideoOutput(modifier: Modifier) {
-        // NOTE:
-        // SurfaceView may cause frame retained in the screen during navigation,
-        // see also: https://github.com/androidx/media/issues/1237
+        val presentationState = rememberPresentationState(player)
+
         PlayerSurface(
             player = player,
-            modifier = modifier,
+            modifier = modifier.resizeWithContentScale(
+                ContentScale.Fit,
+                presentationState.videoSizeDp
+            ),
+            // NOTE:
+            // SurfaceView may cause frame retained in the screen during navigation,
+            // see also: https://github.com/androidx/media/issues/1237
             surfaceType = SURFACE_TYPE_TEXTURE_VIEW
         )
     }
