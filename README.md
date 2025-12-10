@@ -44,6 +44,7 @@ SituLearner是综合影视字幕或音乐歌词的android单词学习软件，
    - `单词测验`界面，依据anki SM-2算法的简化版本，从单词库中挑选部分单词进行测验。
    - `单词回声`界面，单词对应字幕的列表播放。
    - `单词翻译`界面，将中文句子翻译成目标语言。目前需要引入聊天机器人的API-key才可以使用此功能。
+   - `单词关联`界面，基于字形和发音，展示词库中与当前单词相似的其它单词。
    <div style="display: flex; justify-content: center; gap: 10px;">
       <img width="250" src=".readme/image/word.jpg" alt="word">
       <img width="250" src=".readme/image/word_book.jpg" alt="word_book">
@@ -51,6 +52,7 @@ SituLearner是综合影视字幕或音乐歌词的android单词学习软件，
       <img width="250" src=".readme/image/word_meaning_quiz.jpg" alt="word_meaning_quiz">
       <img width="250" src=".readme/image/word_echo.jpg" alt="word_echo">
       <img width="250" src=".readme/image/word_translation_quiz.jpg" alt="word_translation_quiz">
+      <img width="250" src=".readme/image/word_relation.jpg" alt="word_relation">
    </div>
 
 
