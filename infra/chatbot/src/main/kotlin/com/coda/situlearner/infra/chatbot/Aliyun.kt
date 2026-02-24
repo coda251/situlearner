@@ -40,6 +40,7 @@ internal class Aliyun(
         val body = buildJsonObject {
             put("model", model)
             put("stream", true)
+            put("enable_thinking", false)
             putJsonObject("stream_options") { put("include_usage", true) }
             putJsonArray("messages") {
                 messages.forEach { msg ->
@@ -101,7 +102,7 @@ private data class AliyunChunk(
     @kotlinx.serialization.Serializable
     data class Choice(
         val index: Int,
-        @SerialName("finish_reason") val finishReason: String?,
+        @SerialName("finish_reason") val finishReason: String? = null,
         val delta: Delta
     )
 

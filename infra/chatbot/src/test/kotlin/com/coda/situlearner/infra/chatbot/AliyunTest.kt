@@ -17,7 +17,7 @@ class AliyunTest {
     private val apiKey = System.getenv()["ALIYUN_API_KEY"] ?: error("ALIYUN_API_KEY is not set")
     private val chatbot = Aliyun(
         apiKey = apiKey,
-        model = "deepseek-v3",
+        model = "qwen3.5-plus",
         client = HttpClient(CIO) {
             install(SSE)
             install(ContentNegotiation) {
