@@ -1,5 +1,6 @@
 package com.coda.situlearner.feature.restore
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -59,6 +60,7 @@ internal fun RestoreScreen(
 }
 
 @Composable
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 private fun RestoreScreen(
     restoreState: RestoreState,
     onRestoreFinished: () -> Unit,
