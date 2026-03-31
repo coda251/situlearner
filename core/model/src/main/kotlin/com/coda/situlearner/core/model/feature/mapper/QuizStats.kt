@@ -44,7 +44,8 @@ private fun calcNextQuizDate(interval: Int) = Clock.System.now()
 
 private fun Pair<Int, Double>.updateWith(rating: UserRating): Pair<Int, Double> {
     // refer to sm-2
-    val oldInterval = this.first
+    // to simplify, new words (interval = 0) will be set to 1
+    val oldInterval = this.first.coerceAtLeast(1)
     val oldEaseFactor = this.second
 
     val newEaseFactor: Double

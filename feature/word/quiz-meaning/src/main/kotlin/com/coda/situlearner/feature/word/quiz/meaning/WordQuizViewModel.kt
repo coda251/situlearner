@@ -78,14 +78,13 @@ internal class WordQuizViewModel(
                 val infoInDb = wordRepository.getMeaningQuizStats(quizResult.keys)
                 addAll(infoInDb)
                 val keysInDb = infoInDb.map { it.wordId }.toSet()
+                val currentDate = Clock.System.now()
                 quizResult.keys.forEach {
                     if (it !in keysInDb) {
                         add(
-                            MeaningQuizStats(
+                            MeaningQuizStats.create(
                                 wordId = it,
-                                easeFactor = 2.5,
-                                intervalDays = 1,
-                                nextQuizDate = Clock.System.now()
+                                currentDate = currentDate
                             )
                         )
                     }

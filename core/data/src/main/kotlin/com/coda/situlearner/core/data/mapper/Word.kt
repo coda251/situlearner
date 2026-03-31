@@ -95,14 +95,14 @@ internal fun MeaningQuizStats.asEntity() = MeaningQuizStatsEntity(
     nextQuizDate = nextQuizDate
 )
 
-internal fun MeaningQuizStatsEntity.asExternalModel() = MeaningQuizStats(
+internal fun MeaningQuizStatsEntity.asExternalModel() = MeaningQuizStats.fromDb(
     wordId = wordId,
     easeFactor = easeFactor,
     intervalDays = intervalDays,
     nextQuizDate = nextQuizDate
 )
 
-internal fun TranslationQuizStatsEntity.asExternalModel() = TranslationQuizStats(
+internal fun TranslationQuizStatsEntity.asExternalModel() = TranslationQuizStats.fromDb(
     wordId = wordId,
     easeFactor = easeFactor,
     intervalDays = intervalDays,
