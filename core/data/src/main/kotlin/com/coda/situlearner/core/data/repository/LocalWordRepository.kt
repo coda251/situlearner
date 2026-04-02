@@ -18,6 +18,7 @@ import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordWithContexts
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -146,45 +147,45 @@ internal class LocalWordRepository(
         return wordBankDao.upsertTranslationQuizStatsEntity(stats.asEntity())
     }
 
-    override suspend fun getMeaningQuizStats(
+    override fun getMeaningQuizStats(
         language: Language,
         due: Instant
-    ): List<MeaningQuizStats> {
-        val neverQuizzed = words.firstOrNull()?.filter {
-            it.word.meaningProficiency == WordProficiency.Unset
-        }?.map {
-            MeaningQuizStats.create(
-                wordId = it.word.id,
-                currentDate = Instant.DISTANT_PAST
-            )
-        } ?: emptyList()
-
-        val quizzed = wordBankDao.getMeaningQuizStatsEntities(
-            language.asValue(), due
-        ).map { it.asExternalModel() }
-
-        return neverQuizzed + quizzed
+    ): Flow<List<MeaningQuizStats>> = combine(
+        words,
+        wordBankDao.getMeaningQuizStatsEntities(language.asValue(), due)
+    ) { allWords, quizzedEntities ->
+        val neverQuizzed = allWords
+            .filter { it.word.meaningProficiency == WordProficiency.Unset }
+            .map {
+                MeaningQuizStats.create(
+                    wordId = it.word.id,
+                    currentDate = Instant.DISTANT_PAST
+                )
+            }
+        val quizzed = quizzedEntities.map { it.asExternalModel() }
+        neverQuizzed + quizzed
     }
 
-    override suspend fun getTranslationQuizStats(
+    override fun getTranslationQuizStats(
         language: Language,
         due: Instant
-    ): List<TranslationQuizStats> {
-        val neverQuizzed = words.firstOrNull()?.filter {
-            it.word.meaningProficiency == WordProficiency.Proficient &&
-                    it.word.translationProficiency == WordProficiency.Unset
-        }?.map {
-            TranslationQuizStats.create(
-                wordId = it.word.id,
-                currentDate = Instant.DISTANT_PAST
-            )
-        } ?: emptyList()
-
-        val quizzed = wordBankDao.getTranslationQuizStatsEntities(
-            language.asValue(), due
-        ).map { it.asExternalModel() }
-
-        return neverQuizzed + quizzed
+    ): Flow<List<TranslationQuizStats>> = combine(
+        words,
+        wordBankDao.getTranslationQuizStatsEntities(language.asValue(), due)
+    ) { allWords, quizzedEntities ->
+        val neverQuizzed = allWords
+            .filter {
+                it.word.meaningProficiency == WordProficiency.Proficient &&
+                        it.word.translationProficiency == WordProficiency.Unset
+            }
+            .map {
+                TranslationQuizStats.create(
+                    wordId = it.word.id,
+                    currentDate = Instant.DISTANT_PAST
+                )
+            }
+        val quizzed = quizzedEntities.map { it.asExternalModel() }
+        neverQuizzed + quizzed
     }
 
     private fun WordWithContexts.resolveMediaUrl(

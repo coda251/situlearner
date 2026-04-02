@@ -174,10 +174,10 @@ interface WordBankDao {
             AND q.nextQuizDate <= :due
         """
     )
-    suspend fun getMeaningQuizStatsEntities(
+    fun getMeaningQuizStatsEntities(
         language: Language,
         due: Instant
-    ): List<MeaningQuizStatsEntity>
+    ): Flow<List<MeaningQuizStatsEntity>>
 
     @Transaction
     @Query(
@@ -189,9 +189,9 @@ interface WordBankDao {
             AND q.nextQuizDate <= :due
         """
     )
-    suspend fun getTranslationQuizStatsEntities(
+    fun getTranslationQuizStatsEntities(
         language: Language,
         due: Instant,
         proficiency: WordProficiency = Proficient
-    ): List<TranslationQuizStatsEntity>
+    ): Flow<List<TranslationQuizStatsEntity>>
 }

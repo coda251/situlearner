@@ -11,9 +11,11 @@ import com.coda.situlearner.feature.word.quiz.entry.model.QuizState
 import com.coda.situlearner.feature.word.quiz.entry.model.QuizTaskByDay
 import com.coda.situlearner.feature.word.quiz.entry.model.asQuizState
 import com.coda.situlearner.feature.word.quiz.entry.model.asTasks
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.DateTimeUnit
@@ -45,27 +47,30 @@ internal class EntryViewModel(
         )
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
+        started = SharingStarted.WhileSubscribed(5000L),
         initialValue = UiState.Loading
     )
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun getMeaningQuizFlow(): Flow<List<MeaningQuizStats>> =
         preferenceRepository.userPreference.map {
             it.wordLibraryLanguage
-        }.map { language ->
-            wordRepository.getMeaningQuizStats(
-                language,
-                dueDate
-            ).sortedBy { it.nextQuizDate }
+        }.flatMapLatest { language ->
+            wordRepository.getMeaningQuizStats(language, dueDate)
+                .map { statsList ->
+                    statsList.sortedBy { it.nextQuizDate }
+                }
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun getTranslationQuizFlow(): Flow<List<TranslationQuizStats>> =
         preferenceRepository.userPreference.map {
             it.wordLibraryLanguage
-        }.map { language ->
-            wordRepository.getTranslationQuizStats(
-                language, dueDate
-            ).sortedBy { it.nextQuizDate }
+        }.flatMapLatest { language ->
+            wordRepository.getTranslationQuizStats(language, dueDate)
+                .map { statsList ->
+                    statsList.sortedBy { it.nextQuizDate }
+                }
         }
 
     private fun hasChatBotFlow(): Flow<Boolean> = aiRepository.aiState.map {

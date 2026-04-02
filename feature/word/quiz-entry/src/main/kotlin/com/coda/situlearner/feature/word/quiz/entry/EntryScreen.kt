@@ -230,7 +230,7 @@ private fun QuizOngoingChart(
     val modelProducer = remember { CartesianChartModelProducer() }
 
     val context = LocalContext.current
-    LaunchedEffect(Unit) {
+    LaunchedEffect(tasks, showTranslationTask) {
         modelProducer.runTransaction {
             columnSeries {
                 series(y = tasks.map { it.numMeaning })

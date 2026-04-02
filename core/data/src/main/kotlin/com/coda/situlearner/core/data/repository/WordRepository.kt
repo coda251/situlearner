@@ -106,13 +106,13 @@ interface WordRepository {
      * If a word has not been selected for meaning quiz before, a MeaningQuizStats
      * object will still be created with the same word id.
      */
-    suspend fun getMeaningQuizStats(
+    fun getMeaningQuizStats(
         language: Language,
         due: Instant
-    ): List<MeaningQuizStats>
+    ): Flow<List<MeaningQuizStats>>
 
-    suspend fun getTranslationQuizStats(
+    fun getTranslationQuizStats(
         language: Language,
         due: Instant
-    ): List<TranslationQuizStats>
+    ): Flow<List<TranslationQuizStats>>
 }
