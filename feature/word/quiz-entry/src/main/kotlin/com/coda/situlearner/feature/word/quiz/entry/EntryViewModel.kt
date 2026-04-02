@@ -5,13 +5,21 @@ import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.AiStateRepository
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.data.repository.WordRepository
+import com.coda.situlearner.core.model.data.MeaningQuizStats
+import com.coda.situlearner.core.model.data.TranslationQuizStats
+import com.coda.situlearner.feature.word.quiz.entry.model.QuizState
+import com.coda.situlearner.feature.word.quiz.entry.model.QuizTaskByDay
+import com.coda.situlearner.feature.word.quiz.entry.model.asQuizState
+import com.coda.situlearner.feature.word.quiz.entry.model.asTasks
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 internal class EntryViewModel(
     private val preferenceRepository: UserPreferenceRepository,
@@ -19,79 +27,58 @@ internal class EntryViewModel(
     private val aiRepository: AiStateRepository,
 ) : ViewModel() {
 
+    private val dayWindow = 14 // including today
+    private val timeZone = TimeZone.currentSystemDefault()
+    private val currentDate = Clock.System.now()
+    private val dueDate = currentDate.plus(dayWindow - 1, DateTimeUnit.DAY, timeZone)
+
     val uiState = combine(
         getMeaningQuizFlow(),
-        getTranslationQuizFlow()
-    ) { m, t ->
+        getTranslationQuizFlow(),
+        hasChatBotFlow()
+    ) { m, t, h ->
         UiState.Success(
-            meaningQuizState = m,
-            translationQuizState = t
+            meaningQuizState = m.firstOrNull()?.nextQuizDate.asQuizState(currentDate),
+            translationQuizState = t.firstOrNull()?.nextQuizDate.asQuizState(currentDate),
+            tasks = (m to t).asTasks(currentDate, timeZone, dayWindow),
+            hasChatbot = h
         )
     }.stateIn(
         scope = viewModelScope,
-        // NOTE: set stopTimeoutMillis to zero so the flow will emit (and update
-        // Clock.System.now()) every time the screen is shown.
-        started = SharingStarted.WhileSubscribed(),
+        started = SharingStarted.WhileSubscribed(5_000),
         initialValue = UiState.Loading
     )
 
-    private fun getMeaningQuizFlow(): Flow<MeaningQuizState> =
+    private fun getMeaningQuizFlow(): Flow<List<MeaningQuizStats>> =
         preferenceRepository.userPreference.map {
             it.wordLibraryLanguage
-        }.map {
-            val (word, quizStats) = wordRepository.getMeaningQuizWordWithStats(
-                it,
-                Clock.System.now()
-            )
-            when {
-                word != null -> MeaningQuizState.Success
-                quizStats != null -> MeaningQuizState.WaitUntil(quizStats.nextQuizDate)
-                else -> MeaningQuizState.NoWord
-            }
+        }.map { language ->
+            wordRepository.getMeaningQuizStats(
+                language,
+                dueDate
+            ).sortedBy { it.nextQuizDate }
         }
 
-    private fun getTranslationQuizFlow() = combine(
-        hasChatBotFlow(),
-        hasTranslationWordFlow()
-    ) { hasChatbot, hasWord ->
-        when {
-            !hasChatbot -> TranslationQuizState.NoChatbot
-            !hasWord -> TranslationQuizState.NoWord
-            else -> TranslationQuizState.Success
+    private fun getTranslationQuizFlow(): Flow<List<TranslationQuizStats>> =
+        preferenceRepository.userPreference.map {
+            it.wordLibraryLanguage
+        }.map { language ->
+            wordRepository.getTranslationQuizStats(
+                language, dueDate
+            ).sortedBy { it.nextQuizDate }
         }
-    }
 
     private fun hasChatBotFlow(): Flow<Boolean> = aiRepository.aiState.map {
         it.configs.isNotEmpty()
     }
-
-    private fun hasTranslationWordFlow(): Flow<Boolean> =
-        preferenceRepository.userPreference.map {
-            it.wordLibraryLanguage
-        }.map {
-            wordRepository.getTranslationQuizWord(
-                it,
-                Clock.System.now()
-            ) != null
-        }
 }
 
 internal sealed interface UiState {
     data object Loading : UiState
     data class Success(
-        val meaningQuizState: MeaningQuizState,
-        val translationQuizState: TranslationQuizState
+        val meaningQuizState: QuizState,
+        val translationQuizState: QuizState,
+        val tasks: List<QuizTaskByDay>,
+        val hasChatbot: Boolean,
     ) : UiState
-}
-
-internal sealed interface MeaningQuizState {
-    data object Success : MeaningQuizState
-    data class WaitUntil(val nextQuizDate: Instant) : MeaningQuizState
-    data object NoWord : MeaningQuizState
-}
-
-internal enum class TranslationQuizState {
-    NoChatbot,
-    NoWord,
-    Success
 }

@@ -102,8 +102,17 @@ interface WordRepository {
 
     suspend fun upsertTranslationQuizStats(stats: TranslationQuizStats)
 
-    suspend fun getMeaningQuizWordWithStats(
+    /**
+     * If a word has not been selected for meaning quiz before, a MeaningQuizStats
+     * object will still be created with the same word id.
+     */
+    suspend fun getMeaningQuizStats(
         language: Language,
-        currentDate: Instant
-    ): Pair<Word?, MeaningQuizStats?>
+        due: Instant
+    ): List<MeaningQuizStats>
+
+    suspend fun getTranslationQuizStats(
+        language: Language,
+        due: Instant
+    ): List<TranslationQuizStats>
 }

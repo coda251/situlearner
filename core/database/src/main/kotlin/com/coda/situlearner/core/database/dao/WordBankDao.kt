@@ -12,6 +12,7 @@ import com.coda.situlearner.core.database.entity.WordContextEntity
 import com.coda.situlearner.core.database.entity.WordEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.database.model.Language
+import com.coda.situlearner.core.database.model.Proficient
 import com.coda.situlearner.core.database.model.WordProficiency
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
@@ -119,7 +120,7 @@ interface WordBankDao {
     suspend fun getWordEntity(
         language: Language,
         currentDate: Instant,
-        proficiency: WordProficiency
+        proficiency: WordProficiency = Proficient
     ): WordEntity?
 
     @Query("SELECT * FROM MeaningQuizStatsEntity WHERE wordId IN (:ids)")
@@ -163,6 +164,34 @@ interface WordBankDao {
     @Upsert
     suspend fun upsertTranslationQuizStatsEntity(entity: TranslationQuizStatsEntity)
 
-    @Query("SELECT * FROM MeaningQuizStatsEntity ORDER BY nextQuizDate ASC LIMIT 1")
-    suspend fun getLatestMeaningQuizStatsEntity(): MeaningQuizStatsEntity?
+    @Transaction
+    @Query(
+        """
+        SELECT q.* FROM MeaningQuizStatsEntity q
+        INNER JOIN WordEntity w ON q.wordId = w.id
+        WHERE 
+            w.language = :language
+            AND q.nextQuizDate <= :due
+        """
+    )
+    suspend fun getMeaningQuizStatsEntities(
+        language: Language,
+        due: Instant
+    ): List<MeaningQuizStatsEntity>
+
+    @Transaction
+    @Query(
+        """
+        SELECT q.* FROM TranslationQuizStatsEntity q
+        INNER JOIN WordEntity w ON q.wordId = w.id
+        WHERE 
+            w.language = :language AND w.meaningProficiency = :proficiency
+            AND q.nextQuizDate <= :due
+        """
+    )
+    suspend fun getTranslationQuizStatsEntities(
+        language: Language,
+        due: Instant,
+        proficiency: WordProficiency = Proficient
+    ): List<TranslationQuizStatsEntity>
 }

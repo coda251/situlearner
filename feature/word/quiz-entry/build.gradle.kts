@@ -9,4 +9,8 @@ android {
 dependencies {
     implementation(projects.core.data)
     implementation(projects.core.model)
+
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
 }

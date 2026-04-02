@@ -32,6 +32,7 @@ protobufJavalite = "4.34.1"
 protobufPlugin = "0.9.6" # wait for 0.9.7 for android.newDsl=true option in gradle.properties
 reorderable = "3.0.0"
 slf4jApi = "2.0.17"
+vico = "3.0.3"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
@@ -80,6 +81,8 @@ protobuf-kotlinlite = { group = "com.google.protobuf", name = "protobuf-kotlin-l
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4jApi" }
+vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
+vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }

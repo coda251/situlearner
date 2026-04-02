@@ -73,8 +73,7 @@ internal class LocalWordRepository(
     override suspend fun getTranslationQuizWord(language: Language, currentDate: Instant): Word? {
         return wordBankDao.getWordEntity(
             language.asValue(),
-            currentDate,
-            proficiency = WordProficiency.Proficient.asValue()
+            currentDate
         )?.asExternalModel()
     }
 
@@ -147,21 +146,45 @@ internal class LocalWordRepository(
         return wordBankDao.upsertTranslationQuizStatsEntity(stats.asEntity())
     }
 
-    override suspend fun getMeaningQuizWordWithStats(
+    override suspend fun getMeaningQuizStats(
         language: Language,
-        currentDate: Instant
-    ): Pair<Word?, MeaningQuizStats?> {
-        val word = wordBankDao.getWordWithContextEntities(
-            language = language.asValue(),
-            currentDate = currentDate,
-            number = 1
-        ).firstOrNull()?.word?.asExternalModel()
+        due: Instant
+    ): List<MeaningQuizStats> {
+        val neverQuizzed = words.firstOrNull()?.filter {
+            it.word.meaningProficiency == WordProficiency.Unset
+        }?.map {
+            MeaningQuizStats.create(
+                wordId = it.word.id,
+                currentDate = Instant.DISTANT_PAST
+            )
+        } ?: emptyList()
 
-        val meaningQuizStats =
-            if (word != null) null
-            else wordBankDao.getLatestMeaningQuizStatsEntity()?.asExternalModel()
+        val quizzed = wordBankDao.getMeaningQuizStatsEntities(
+            language.asValue(), due
+        ).map { it.asExternalModel() }
 
-        return word to meaningQuizStats
+        return neverQuizzed + quizzed
+    }
+
+    override suspend fun getTranslationQuizStats(
+        language: Language,
+        due: Instant
+    ): List<TranslationQuizStats> {
+        val neverQuizzed = words.firstOrNull()?.filter {
+            it.word.meaningProficiency == WordProficiency.Proficient &&
+                    it.word.translationProficiency == WordProficiency.Unset
+        }?.map {
+            TranslationQuizStats.create(
+                wordId = it.word.id,
+                currentDate = Instant.DISTANT_PAST
+            )
+        } ?: emptyList()
+
+        val quizzed = wordBankDao.getTranslationQuizStatsEntities(
+            language.asValue(), due
+        ).map { it.asExternalModel() }
+
+        return neverQuizzed + quizzed
     }
 
     private fun WordWithContexts.resolveMediaUrl(

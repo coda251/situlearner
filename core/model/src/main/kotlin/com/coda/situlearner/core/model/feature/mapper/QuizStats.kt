@@ -1,8 +1,8 @@
 package com.coda.situlearner.core.model.feature.mapper
 
-import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.MeaningQuizStats
 import com.coda.situlearner.core.model.data.TranslationQuizStats
+import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.feature.UserRating
 import kotlin.time.Clock
 import kotlin.time.DurationUnit
@@ -32,7 +32,7 @@ fun MeaningQuizStats.toWordProficiency() = calcProficiency(intervalDays)
 
 fun TranslationQuizStats.toWordProficiency() = calcProficiency(intervalDays)
 
-private fun calcProficiency(intervalDays: Int) = when {
+fun calcProficiency(intervalDays: Int) = when {
     intervalDays == 0 -> WordProficiency.Unset
     intervalDays <= 2 -> WordProficiency.Beginner
     intervalDays <= 7 -> WordProficiency.Intermediate
@@ -42,7 +42,7 @@ private fun calcProficiency(intervalDays: Int) = when {
 private fun calcNextQuizDate(interval: Int) = Clock.System.now()
     .plus(interval.toLong().toDuration(DurationUnit.DAYS))
 
-private fun Pair<Int, Double>.updateWith(rating: UserRating): Pair<Int, Double> {
+fun Pair<Int, Double>.updateWith(rating: UserRating): Pair<Int, Double> {
     // refer to sm-2
     // to simplify, new words (interval = 0) will be set to 1
     val oldInterval = this.first.coerceAtLeast(1)

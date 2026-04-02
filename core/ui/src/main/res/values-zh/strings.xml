@@ -7,6 +7,7 @@
     <string name="core_ui_language_chinese">汉语</string>
     <string name="core_ui_language_english">英语</string>
     <string name="core_ui_language_japanese">日语</string>
+    <string name="core_ui_tomorrow">明天</string>
     <string name="core_ui_yesterday">昨天</string>
     <string name="core_ui_monday">周一</string>
     <string name="core_ui_tuesday">周二</string>
@@ -15,6 +16,7 @@
     <string name="core_ui_friday">周五</string>
     <string name="core_ui_saturday">周六</string>
     <string name="core_ui_sunday">周日</string>
+    <string name="core_ui_sunday_abbr">周日</string>
     <string name="core_ui_ok">好的</string>
     <string name="core_ui_meanings">含义</string>
     <string name="core_ui_no_pronunciation_and_meanings">无发音和释义</string>
@@ -22,4 +24,11 @@
     <string name="core_ui_meaning_quiz">词义测试</string>
     <string name="core_ui_translation_quiz">翻译测试</string>
     <string name="core_ui_count">数量</string>
+    <string name="core_ui_today">今天</string>
+    <string name="core_ui_monday_abbr">周一</string>
+    <string name="core_ui_tuesday_abbr">周二</string>
+    <string name="core_ui_wednesday_abbr">周三</string>
+    <string name="core_ui_thursday_abbr">周四</string>
+    <string name="core_ui_friday_abbr">周五</string>
+    <string name="core_ui_saturday_abbr">周六</string>
 </resources>

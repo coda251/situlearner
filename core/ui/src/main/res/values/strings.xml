@@ -9,6 +9,8 @@
     <string name="core_ui_language_english">English</string>
     <string name="core_ui_language_japanese">Japanese</string>
 
+    <string name="core_ui_today">Today</string>
+    <string name="core_ui_tomorrow">Tomorrow</string>
     <string name="core_ui_yesterday">Yesterday</string>
     <string name="core_ui_monday">Monday</string>
     <string name="core_ui_tuesday">Tuesday</string>
@@ -17,6 +19,13 @@
     <string name="core_ui_friday">Friday</string>
     <string name="core_ui_saturday">Saturday</string>
     <string name="core_ui_sunday">Sunday</string>
+    <string name="core_ui_monday_abbr">Mon.</string>
+    <string name="core_ui_tuesday_abbr">Tues.</string>
+    <string name="core_ui_wednesday_abbr">Wed.</string>
+    <string name="core_ui_thursday_abbr">Thur.</string>
+    <string name="core_ui_friday_abbr">Fri.</string>
+    <string name="core_ui_saturday_abbr">Sat.</string>
+    <string name="core_ui_sunday_abbr">Sun.</string>
     <string name="core_ui_ok">OK</string>
 
     <string name="core_ui_meanings">Meanings</string>
