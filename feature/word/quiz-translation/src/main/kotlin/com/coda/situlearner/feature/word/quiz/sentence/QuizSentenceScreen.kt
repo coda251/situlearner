@@ -110,6 +110,22 @@ private fun QuizSentenceScreen(
                 title = {},
                 navigationIcon = {
                     BackButton(onBack)
+                },
+                actions = {
+                    if (quizState is QuizUiState.Data &&
+                        quizState.phase == QuizPhase.Question &&
+                        quizState.chatStatus == ChatStatus.Finished
+                    ) {
+                        IconButton(
+                            // refresh current question
+                            onClick = { onNextQuiz() },
+                        ) {
+                            Icon(
+                                painter = painterResource(coreR.drawable.refresh_24dp_000000_fill0_wght400_grad0_opsz24),
+                                contentDescription = null
+                            )
+                        }
+                    }
                 }
             )
         },
