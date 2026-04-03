@@ -31,14 +31,15 @@ internal class EntryViewModel(
 
     private val dayWindow = 14 // including today
     private val timeZone = TimeZone.currentSystemDefault()
-    private val currentDate = Clock.System.now()
-    private val dueDate = currentDate.plus(dayWindow - 1, DateTimeUnit.DAY, timeZone)
+    private val dueDate = Clock.System.now().plus(dayWindow - 1, DateTimeUnit.DAY, timeZone)
 
     val uiState = combine(
         getMeaningQuizFlow(),
         getTranslationQuizFlow(),
         hasChatBotFlow()
     ) { m, t, h ->
+        // update current time when quiz stats change
+        val currentDate = Clock.System.now()
         UiState.Success(
             meaningQuizState = m.firstOrNull()?.nextQuizDate.asQuizState(currentDate),
             translationQuizState = t.firstOrNull()?.nextQuizDate.asQuizState(currentDate),
