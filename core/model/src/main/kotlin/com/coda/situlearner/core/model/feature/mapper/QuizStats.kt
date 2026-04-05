@@ -5,8 +5,8 @@ import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.feature.UserRating
 import kotlin.time.Clock
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 
 fun MeaningQuizStats.updateWith(rating: UserRating): MeaningQuizStats {
     val (newInterval, newEaseFactor) = (intervalDays to easeFactor).updateWith(rating)
@@ -14,7 +14,7 @@ fun MeaningQuizStats.updateWith(rating: UserRating): MeaningQuizStats {
     return copy(
         easeFactor = newEaseFactor,
         intervalDays = newInterval,
-        nextQuizDate = calcNextQuizDate(newInterval)
+        nextQuizDate = calcNextQuizDate(newInterval, nextQuizDate)
     )
 }
 
@@ -24,7 +24,7 @@ fun TranslationQuizStats.updateWith(rating: UserRating): TranslationQuizStats {
     return copy(
         easeFactor = newEaseFactor,
         intervalDays = newInterval,
-        nextQuizDate = calcNextQuizDate(newInterval)
+        nextQuizDate = calcNextQuizDate(newInterval, nextQuizDate)
     )
 }
 
@@ -39,8 +39,12 @@ fun calcProficiency(intervalDays: Int) = when {
     else -> WordProficiency.Proficient
 }
 
-private fun calcNextQuizDate(interval: Int) = Clock.System.now()
-    .plus(interval.toLong().toDuration(DurationUnit.DAYS))
+fun calcNextQuizDate(
+    interval: Int,
+    currentQuizDate: Instant,
+    now: Instant = Clock.System.now()
+    // we currently did not take overdue days into the calculation
+) = maxOf(currentQuizDate, now) + interval.toLong().days
 
 fun Pair<Int, Double>.updateWith(rating: UserRating): Pair<Int, Double> {
     // refer to sm-2

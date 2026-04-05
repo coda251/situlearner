@@ -4,6 +4,7 @@ import com.coda.situlearner.core.model.data.MeaningQuizStats
 import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.feature.UserRating
+import com.coda.situlearner.core.model.feature.mapper.calcNextQuizDate
 import com.coda.situlearner.core.model.feature.mapper.calcProficiency
 import com.coda.situlearner.core.model.feature.mapper.toWordProficiency
 import com.coda.situlearner.core.model.feature.mapper.updateWith
@@ -51,7 +52,7 @@ internal fun Pair<List<MeaningQuizStats>, List<TranslationQuizStats>>.asTasks(
         .mapNotNull { stats ->
             mapDateToDayIndex(
                 today = today,
-                nextQuizDate = stats.nextQuizDate.toLocalDateTime(timeZone).date,
+                other = stats.nextQuizDate.toLocalDateTime(timeZone).date,
                 maxDayIndex = maxDayIndex
             )?.let { it to stats.toWordProficiency() }
         }
@@ -61,7 +62,7 @@ internal fun Pair<List<MeaningQuizStats>, List<TranslationQuizStats>>.asTasks(
         .mapNotNull { stats ->
             mapDateToDayIndex(
                 today = today,
-                nextQuizDate = stats.nextQuizDate.toLocalDateTime(timeZone).date,
+                other = stats.nextQuizDate.toLocalDateTime(timeZone).date,
                 maxDayIndex = maxDayIndex
             )?.let { it to stats.toWordProficiency() }
         }
@@ -71,8 +72,14 @@ internal fun Pair<List<MeaningQuizStats>, List<TranslationQuizStats>>.asTasks(
     meaningStatsList.forEach { stats ->
         // NOTE: only words with intermediate proficiency are predicted
         if (stats.toWordProficiency() == WordProficiency.Intermediate) {
-            predictTranslationTriggerDay(stats, today, timeZone, maxDayIndex)?.let { day ->
-                predictedCounts[day]++
+            predictTranslationTriggerDate(stats, currentDate)?.let {
+                mapDateToDayIndex(
+                    today = today,
+                    other = it.toLocalDateTime(timeZone).date,
+                    maxDayIndex = maxDayIndex
+                )
+            }?.let {
+                predictedCounts[it]++
             }
         }
     }
@@ -99,36 +106,39 @@ internal fun Pair<List<MeaningQuizStats>, List<TranslationQuizStats>>.asTasks(
 
 private fun mapDateToDayIndex(
     today: LocalDate,
-    nextQuizDate: LocalDate,
+    other: LocalDate,
     maxDayIndex: Int,
 ): Int? {
-    val daysBetween = today.daysUntil(nextQuizDate)
+    val daysBetween = today.daysUntil(other)
     val dayIndex = daysBetween.coerceAtLeast(0)
     // two weeks time window
     return if (dayIndex <= maxDayIndex) dayIndex
     else null
 }
 
-private fun predictTranslationTriggerDay(
+private fun predictTranslationTriggerDate(
     stats: MeaningQuizStats,
-    today: LocalDate,
-    timeZone: TimeZone,
-    maxDayIndex: Int,
-): Int? {
+    now: Instant,
+): Instant? {
     var currentInterval = stats.intervalDays
     var currentEF = stats.easeFactor
-    var currentQuizDate = stats.nextQuizDate.toLocalDateTime(timeZone).date
+    var currentQuizDate = stats.nextQuizDate.coerceAtLeast(now)
+
+    if (calcProficiency(currentInterval) == WordProficiency.Proficient) {
+        return currentQuizDate
+    }
 
     repeat(10) {
-        val dayIndex = mapDateToDayIndex(today, currentQuizDate, maxDayIndex) ?: return null
-        if (calcProficiency(currentInterval) == WordProficiency.Proficient) {
-            return dayIndex
-        }
-        // simulate: if user rating is always good
+        // simulate: if user rating is good at currentQuizDate
         val (nextInterval, nextEF) = (currentInterval to currentEF).updateWith(UserRating.Good)
         currentInterval = nextInterval
         currentEF = nextEF
-        currentQuizDate = currentQuizDate.plus(nextInterval, DateTimeUnit.DAY)
+        if (calcProficiency(currentInterval) == WordProficiency.Proficient) {
+            return currentQuizDate
+        }
+
+        // update currentQuizDate
+        currentQuizDate = calcNextQuizDate(currentInterval, currentQuizDate, now)
     }
 
     return null
