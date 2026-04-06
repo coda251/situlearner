@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_settings_player_screen_playback_on_word_click">Playback on word click</string>
+    <string name="home_settings_player_screen_playback_on_word_click_unchange">Unchange</string>
+    <string name="home_settings_player_screen_playback_on_word_click_pause">Pause</string>
+    <string name="home_settings_player_screen_playback_on_word_click_play_in_loop">Play in loop</string>
+</resources>

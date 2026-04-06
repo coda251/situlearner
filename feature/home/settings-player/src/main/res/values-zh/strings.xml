@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_settings_player_screen_playback_on_word_click">点击单词时播放器状态</string>
+    <string name="home_settings_player_screen_playback_on_word_click_unchange">不变</string>
+    <string name="home_settings_player_screen_playback_on_word_click_pause">暂停</string>
+    <string name="home_settings_player_screen_playback_on_word_click_play_in_loop">循环播放</string>
+</resources>

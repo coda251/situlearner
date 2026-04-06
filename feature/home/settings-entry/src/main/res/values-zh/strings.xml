@@ -26,4 +26,6 @@
     <string name="home_settings_common_screen_exporting_data">导出数据中……</string>
     <string name="home_settings_common_screen_export_success">数据导出成功！🎉 文件已保存。</string>
     <string name="home_settings_common_screen_export_error">导出失败：</string>
+    <string name="home_settings_common_screen_player">播放器</string>
+    <string name="home_settings_common_screen_player_desc">播放状态、字幕界面相关配置</string>
 </resources>

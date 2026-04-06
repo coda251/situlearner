@@ -18,5 +18,6 @@ internal fun UserPreferenceProto.asExternalModel(
     quizWordCount = quizWordCount.toUInt().takeIf { it != 0u } ?: defaultQuizWordCount,
     recommendedWordCount = recommendedWordCount.toUInt().takeIf { it != 0u }
         ?: defaultRecommendedWordCount,
-    wordBookSortBy = wordBookSortBy.asExternalModel()
+    wordBookSortBy = wordBookSortBy.asExternalModel(),
+    playbackOnWordClick = playbackOnWordClick.asExternalModel(),
 )

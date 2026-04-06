@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option java_package = "com.coda.situlearner.core.datastore";
+option java_multiple_files = true;
+
+enum PlaybackOnWordClickProto {
+  PLAYBACK_ON_WORD_CLICK_UNCHANGE = 0;
+  PLAYBACK_ON_WORD_CLICK_PAUSE = 1;
+  PLAYBACK_ON_WORD_CLICK_PLAY_IN_LOOP = 2;
+}

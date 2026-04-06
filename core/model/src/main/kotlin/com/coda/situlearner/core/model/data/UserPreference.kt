@@ -7,5 +7,6 @@ data class UserPreference(
     val thumbnailThemeColor: Long,
     val quizWordCount: UInt,
     val recommendedWordCount: UInt,
-    val wordBookSortBy: WordBookSortBy
+    val wordBookSortBy: WordBookSortBy,
+    val playbackOnWordClick: PlaybackOnWordClick
 )

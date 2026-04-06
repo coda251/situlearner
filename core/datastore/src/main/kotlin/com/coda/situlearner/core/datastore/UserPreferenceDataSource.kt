@@ -19,4 +19,6 @@ interface UserPreferenceDataSource {
     suspend fun setThumbnailThemeColorProto(color: Long)
 
     suspend fun setWordBookSortByProto(wordBookSortByProto: WordBookSortByProto)
+
+    suspend fun setPlaybackOnWordClickProto(playbackOnWordClickProto: PlaybackOnWordClickProto)
 }

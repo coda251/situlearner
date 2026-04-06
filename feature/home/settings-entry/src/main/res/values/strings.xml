@@ -26,4 +26,6 @@
     <string name="home_settings_common_screen_exporting_data">Exporting data…</string>
     <string name="home_settings_common_screen_export_success">Data exported successfully! 🎉 File saved.</string>
     <string name="home_settings_common_screen_export_error">"Export failed: "</string>
+    <string name="home_settings_common_screen_player">Player</string>
+    <string name="home_settings_common_screen_player_desc">Player state and subtitle ui related settings</string>
 </resources>

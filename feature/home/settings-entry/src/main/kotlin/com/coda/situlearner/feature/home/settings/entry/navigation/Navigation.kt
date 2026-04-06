@@ -21,6 +21,7 @@ fun NavController.navigateToHomeSettingsEntry(navOptions: NavOptions) {
 fun NavGraphBuilder.homeSettingsEntryScreen(
     onNavigateToChatbot: () -> Unit,
     onNavigateToWord: () -> Unit,
+    onNavigateToPlayer: () -> Unit,
     destination: NavGraphBuilder.() -> Unit
 ) {
     navigation<HomeSettingsBaseRoute>(startDestination = HomeSettingsEntryRoute) {
@@ -28,6 +29,7 @@ fun NavGraphBuilder.homeSettingsEntryScreen(
             SettingsCommonScreen(
                 onNavigateToChatbot = onNavigateToChatbot,
                 onNavigateToWord = onNavigateToWord,
+                onNavigateToPlayer = onNavigateToPlayer
             )
         }
 

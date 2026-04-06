@@ -2,6 +2,7 @@ package com.coda.situlearner.core.data.repository
 
 import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.Language
+import com.coda.situlearner.core.model.data.PlaybackOnWordClick
 import com.coda.situlearner.core.model.data.ThemeColorMode
 import com.coda.situlearner.core.model.data.UserPreference
 import com.coda.situlearner.core.model.data.WordBookSortBy
@@ -24,4 +25,6 @@ interface UserPreferenceRepository {
     suspend fun setThumbnailThemeColor(color: Long)
 
     suspend fun setWordBookSortBy(wordBookSortBy: WordBookSortBy)
+
+    suspend fun setPlaybackOnWordClick(playbackOnWordClick: PlaybackOnWordClick)
 }

@@ -10,10 +10,12 @@ import androidx.compose.ui.res.painterResource
 @Composable
 fun BackButton(
     onBack: () -> Unit,
+    modifier: Modifier = Modifier,
     rotated: Boolean = false,
 ) {
     IconButton(
         onClick = onBack,
+        modifier = modifier
     ) {
         Icon(
             painter = painterResource(com.coda.situlearner.core.ui.R.drawable.arrow_back_24dp_000000_fill0_wght400_grad0_opsz24),

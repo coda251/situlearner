@@ -62,4 +62,12 @@ internal class LocalUserPreferenceDataSource(private val userPreference: DataSto
             }
         }
     }
+
+    override suspend fun setPlaybackOnWordClickProto(playbackOnWordClickProto: PlaybackOnWordClickProto) {
+        userPreference.updateData {
+            it.copy {
+                this.playbackOnWordClick = playbackOnWordClickProto
+            }
+        }
+    }
 }

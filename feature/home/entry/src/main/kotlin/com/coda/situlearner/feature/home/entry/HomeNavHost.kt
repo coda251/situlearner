@@ -16,6 +16,8 @@ import com.coda.situlearner.feature.home.media.entry.navigation.homeMediaEntrySc
 import com.coda.situlearner.feature.home.settings.chatbot.navigation.homeSettingsChatbotScreen
 import com.coda.situlearner.feature.home.settings.chatbot.navigation.navigateToHomeSettingsChatbot
 import com.coda.situlearner.feature.home.settings.entry.navigation.homeSettingsEntryScreen
+import com.coda.situlearner.feature.home.settings.player.navigation.homeSettingsPlayerScreen
+import com.coda.situlearner.feature.home.settings.player.navigation.navigateToHomeSettingsPlayer
 import com.coda.situlearner.feature.home.settings.word.navigation.homeSettingsWordScreen
 import com.coda.situlearner.feature.home.settings.word.navigation.navigateToHomeSettingsWord
 import com.coda.situlearner.feature.home.word.book.navigation.homeWordBookScreen
@@ -68,13 +70,18 @@ internal fun HomeNavHost(
 
         homeSettingsEntryScreen(
             onNavigateToChatbot = navController::navigateToHomeSettingsChatbot,
-            onNavigateToWord = navController::navigateToHomeSettingsWord
+            onNavigateToWord = navController::navigateToHomeSettingsWord,
+            onNavigateToPlayer = navController::navigateToHomeSettingsPlayer
         ) {
             homeSettingsChatbotScreen(
                 onBack = navController::popBackStack
             )
 
             homeSettingsWordScreen(
+                onBack = navController::popBackStack
+            )
+
+            homeSettingsPlayerScreen(
                 onBack = navController::popBackStack
             )
         }

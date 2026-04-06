@@ -49,6 +49,7 @@ import com.coda.situlearner.core.ui.R as coreR
 internal fun SettingsCommonScreen(
     onNavigateToChatbot: () -> Unit,
     onNavigateToWord: () -> Unit,
+    onNavigateToPlayer: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsCommonViewModel = koinViewModel()
 ) {
@@ -62,6 +63,7 @@ internal fun SettingsCommonScreen(
         exportState = exportState,
         onSelectDarkThemeMode = viewModel::setDarkThemeMode,
         onSelectThemeColorMode = viewModel::setThemeColorMode,
+        onClickPlayer = onNavigateToPlayer,
         onClickWord = onNavigateToWord,
         onClickChatbot = onNavigateToChatbot,
         onCheckUpdate = viewModel::checkAppUpdate,
@@ -79,6 +81,7 @@ private fun SettingsCommonScreen(
     exportState: ExportState,
     onSelectDarkThemeMode: (DarkThemeMode) -> Unit,
     onSelectThemeColorMode: (ThemeColorMode) -> Unit,
+    onClickPlayer: () -> Unit,
     onClickWord: () -> Unit,
     onClickChatbot: () -> Unit,
     onCheckUpdate: (String?) -> Unit,
@@ -123,6 +126,7 @@ private fun SettingsCommonScreen(
                         onSelectThemeColorMode = onSelectThemeColorMode,
                         onClickWord = onClickWord,
                         onClickChatbot = onClickChatbot,
+                        onClickPlayer = onClickPlayer,
                         onCheckUpdate = onCheckUpdate,
                         onExport = onExport,
                         onResetExportState = onResetExportState
@@ -143,6 +147,7 @@ private fun SettingsContentBoard(
     snackbarHostState: SnackbarHostState,
     onSelectDarkThemeMode: (DarkThemeMode) -> Unit,
     onSelectThemeColorMode: (ThemeColorMode) -> Unit,
+    onClickPlayer: () -> Unit,
     onClickWord: () -> Unit,
     onClickChatbot: () -> Unit,
     onCheckUpdate: (String?) -> Unit,
@@ -152,6 +157,7 @@ private fun SettingsContentBoard(
     Column {
         ThemeColorModeSelector(themeColorMode, onSelectThemeColorMode)
         DarkThemeModeSelector(darkThemeMode, onSelectDarkThemeMode)
+        PlayerConfigItem(onClickPlayer)
         WordConfigItem(onClickWord)
         ChatbotConfigItem(chatbotConfig, onClickChatbot)
         ExportDataItem(exportState, snackbarHostState, onExport, onResetExportState)
@@ -267,6 +273,23 @@ private fun DarkThemeModeSelector(
             }
         )
     }
+}
+
+@Composable
+private fun PlayerConfigItem(
+    onClickPlayer: () -> Unit
+) {
+    ListItem(
+        headlineContent = {
+            Text(
+                text = stringResource(R.string.home_settings_common_screen_player)
+            )
+        },
+        supportingContent = {
+            Text(text = stringResource(R.string.home_settings_common_screen_player_desc))
+        },
+        modifier = Modifier.clickable(onClick = onClickPlayer)
+    )
 }
 
 @Composable
