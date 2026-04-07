@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="home_media_collection_screen_set_playlist">set as playlist</string>
+    <string name="home_media_collection_screen_add_media_files">add media files</string>
 </resources>

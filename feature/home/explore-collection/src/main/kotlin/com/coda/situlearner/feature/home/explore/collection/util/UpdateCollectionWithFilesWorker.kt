@@ -30,15 +30,17 @@ internal class UpdateCollectionWithFilesWorker(
             mediaRepository.getMediaCollectionWithFilesById(collectionId).firstOrNull()
                 ?: return
 
-        // media duration
-        val idToDuration = extractMediaDuration(collectionWithFiles.files)
-        mediaRepository.setMediaFilesDuration(idToDuration)
-
-        // cover
+        // 1. cover
         saveCoverImage(collectionWithFiles.collection)
 
-        // subtitles
+        // 2. subtitles
         processSubtitleFiles(collectionWithFiles.files, sourceLanguage, targetLanguage)
+
+        // 3. media duration
+        // NOTE: we make this as the last step to update db and
+        // emit new data with subtitle file already cached (as a workaround solution).
+        val idToDuration = extractMediaDuration(collectionWithFiles.files)
+        mediaRepository.setMediaFilesDuration(idToDuration)
     }
 
     private suspend fun processSubtitleFiles(

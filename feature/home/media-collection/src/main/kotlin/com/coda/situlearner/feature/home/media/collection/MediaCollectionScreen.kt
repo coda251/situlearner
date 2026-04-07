@@ -43,6 +43,7 @@ import com.coda.situlearner.core.ui.R as coreR
 @Composable
 internal fun MediaCollectionScreen(
     onBack: () -> Unit,
+    onNavigateToExplore: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MediaCollectionViewModel = koinViewModel()
 ) {
@@ -53,6 +54,7 @@ internal fun MediaCollectionScreen(
         uiState = uiState,
         playerState = playerState,
         onBack = onBack,
+        onNavigateToExplore = onNavigateToExplore,
         modifier = modifier
     )
 }
@@ -63,6 +65,7 @@ private fun MediaCollectionScreen(
     uiState: MediaCollectionUiState,
     playerState: PlayerState,
     onBack: () -> Unit,
+    onNavigateToExplore: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -84,10 +87,15 @@ private fun MediaCollectionScreen(
                 actions = {
                     when (uiState) {
                         is MediaCollectionUiState.Success -> {
-                            MoreActionMenu {
-                                playerState.setItems(uiState.collectionWithFiles.asPlaylist())
-                                playerState.play()
-                            }
+                            MoreActionMenu(
+                                onSetPlaylist = {
+                                    playerState.setItems(uiState.collectionWithFiles.asPlaylist())
+                                    playerState.play()
+                                },
+                                onAddMediaFiles = {
+                                    onNavigateToExplore(uiState.collectionWithFiles.collection.url)
+                                }
+                            )
                         }
 
                         else -> {}
@@ -144,7 +152,10 @@ private fun MediaCollectionContentBoard(
 }
 
 @Composable
-private fun MoreActionMenu(onSetPlaylist: () -> Unit) {
+private fun MoreActionMenu(
+    onSetPlaylist: () -> Unit,
+    onAddMediaFiles: () -> Unit,
+) {
     var showFileListMenu by remember {
         mutableStateOf(false)
     }
@@ -158,7 +169,8 @@ private fun MoreActionMenu(onSetPlaylist: () -> Unit) {
 
     DropdownMenu(
         expanded = showFileListMenu,
-        onDismissRequest = { showFileListMenu = false }) {
+        onDismissRequest = { showFileListMenu = false }
+    ) {
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.home_media_collection_screen_set_playlist)) },
             leadingIcon = {
@@ -169,6 +181,19 @@ private fun MoreActionMenu(onSetPlaylist: () -> Unit) {
             },
             onClick = {
                 onSetPlaylist()
+                showFileListMenu = false
+            }
+        )
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.home_media_collection_screen_add_media_files)) },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(coreR.drawable.add_24dp_000000_fill0_wght400_grad0_opsz24),
+                    contentDescription = null
+                )
+            },
+            onClick = {
+                onAddMediaFiles()
                 showFileListMenu = false
             }
         )

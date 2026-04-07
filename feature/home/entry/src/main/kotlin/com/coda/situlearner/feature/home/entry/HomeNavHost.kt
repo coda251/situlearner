@@ -43,7 +43,8 @@ internal fun HomeNavHost(
             onNavigateToExplore = navController::navigateToHomeExploreEntry
         ) {
             homeMediaCollectionScreen(
-                onBack = navController::popBackStack
+                onBack = navController::popBackStack,
+                onNavigateToExplore = navController::navigateToHomeExploreCollection
             )
 
             homeExploreEntryScreen(
