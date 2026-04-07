@@ -35,12 +35,17 @@ internal class WorkerDialogViewModel(
 
             val id = collectionWithFiles.collection.idInDb ?: Uuid.random().toString()
             mediaRepository.insertMediaCollectionWithFiles(
-                collectionWithFiles.asMediaCollectionWithFiles(
+                collectionWithFiles.let { c ->
+                    SourceCollectionWithFiles(
+                        collection = c.collection,
+                        files = c.files.filter { it.idInDb == null }
+                    )
+                }.asMediaCollectionWithFiles(
                     collectionId = id
                 )
             )
 
-            // TODO: consider more callbacks to indicate which stage the worker is now on
+            // ~ 1 second per file
             val worker = UpdateCollectionWithFilesWorker(
                 sourceLanguage = sourceLanguage,
                 targetLanguage = targetLanguage,

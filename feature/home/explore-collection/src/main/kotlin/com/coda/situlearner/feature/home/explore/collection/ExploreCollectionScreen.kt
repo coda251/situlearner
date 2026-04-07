@@ -15,6 +15,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coda.situlearner.core.model.infra.SourceCollectionWithFiles
 import com.coda.situlearner.core.model.infra.SourceFile
 import com.coda.situlearner.core.ui.widget.BackButton
 import org.koin.androidx.compose.koinViewModel
@@ -61,7 +63,7 @@ private fun ExploreCollectionScreen(
                 actions = {
                     when (uiState) {
                         is ExploreCollectionUiState.Success -> {
-                            AddCollectionAction(uiState = uiState)
+                            AddCollectionAction(collectionWithFiles = uiState.collectionWithFiles)
                         }
 
                         else -> {}
@@ -93,11 +95,15 @@ private fun ExploreCollectionScreen(
 }
 
 @Composable
-private fun AddCollectionAction(uiState: ExploreCollectionUiState.Success) {
+private fun AddCollectionAction(collectionWithFiles: SourceCollectionWithFiles) {
     var showWorkerDialog by remember {
         mutableStateOf(false)
     }
-    val showAddButton = uiState.collectionWithFiles.collection.idInDb == null
+    val showAddButton by remember(collectionWithFiles) {
+        derivedStateOf {
+            collectionWithFiles.files.any { it.idInDb == null }
+        }
+    }
 
     if (showAddButton) {
         TextButton(
@@ -111,7 +117,7 @@ private fun AddCollectionAction(uiState: ExploreCollectionUiState.Success) {
 
     if (showWorkerDialog) {
         WorkerDialog(
-            collectionWithFiles = uiState.collectionWithFiles,
+            collectionWithFiles = collectionWithFiles,
             onDismiss = { showWorkerDialog = false }
         )
     }
@@ -161,10 +167,17 @@ private fun SourceFileItemView(
         Text(text = exploreFile.metaDataString())
     }
 
+    val trailingContent: @Composable (() -> Unit)? = exploreFile.idInDb?.let {
+        {
+            Text(text = stringResource(R.string.home_explore_collection_screen_added))
+        }
+    }
+
     ListItem(
         headlineContent = headlineContent,
         leadingContent = leadingContent,
         supportingContent = supportingContent,
+        trailingContent = trailingContent
     )
 }
 

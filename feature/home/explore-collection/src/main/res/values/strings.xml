@@ -7,5 +7,6 @@
     <string name="home_explore_collection_screen_unknown_file_format">unknown format</string>
 
     <string name="home_explore_collection_screen_adding_to_db">Adding to media library…</string>
+    <string name="home_explore_collection_screen_added">Added</string>
 
 </resources>

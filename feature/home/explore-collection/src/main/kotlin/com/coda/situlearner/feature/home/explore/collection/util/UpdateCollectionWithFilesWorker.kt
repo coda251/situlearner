@@ -49,23 +49,24 @@ internal class UpdateCollectionWithFilesWorker(
         val tokenizer = Tokenizer.getTokenizer(sourceLanguage) ?: return@withContext
         val languageDetector = LanguageDetector.getInstance()
 
-        mediaFiles.forEach { mediaFile ->
-            val subtitlePath = mediaFile.originalSubtitleUrl?.toUri()?.path
-            subtitlePath?.let { s ->
-                val content = processor.process(
-                    s,
-                    sourceLanguage,
-                    targetLanguage,
-                    tokenizer,
-                    languageDetector
-                )
-                content?.let {
-                    mediaRepository.cacheSubtitleFile(
-                        mediaFile.collectionId, mediaFile.id, it
+        mediaFiles.filter { it.subtitleUrl == null } // does not have cached subtitle
+            .forEach { mediaFile ->
+                val subtitlePath = mediaFile.originalSubtitleUrl?.toUri()?.path
+                subtitlePath?.let { s ->
+                    val content = processor.process(
+                        s,
+                        sourceLanguage,
+                        targetLanguage,
+                        tokenizer,
+                        languageDetector
                     )
+                    content?.let {
+                        mediaRepository.cacheSubtitleFile(
+                            mediaFile.collectionId, mediaFile.id, it
+                        )
+                    }
                 }
             }
-        }
     }
 
     private suspend fun extractMediaDuration(mediaFiles: List<MediaFile>): Map<String, Long> {
@@ -96,6 +97,8 @@ internal class UpdateCollectionWithFilesWorker(
     }
 
     private suspend fun saveCoverImage(mediaCollection: MediaCollection) {
+        if (mediaCollection.coverImageUrl != null) return
+
         withContext(Dispatchers.IO) {
             runCatching {
                 mediaCollection.originalCoverImageUrl?.let {

@@ -5,4 +5,5 @@
     <string name="home_explore_collection_screen_no_subtitles">无字幕</string>
     <string name="home_explore_collection_screen_unknown_file_format">未知格式</string>
     <string name="home_explore_collection_screen_adding_to_db">正在添加到媒体库……</string>
+    <string name="home_explore_collection_screen_added">已添加</string>
 </resources>
