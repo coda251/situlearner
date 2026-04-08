@@ -7,6 +7,7 @@ import com.coda.situlearner.feature.home.media.entry.di.homeMediaEntryModule
 import com.coda.situlearner.feature.home.settings.chatbot.di.homeSettingsChatbotModule
 import com.coda.situlearner.feature.home.settings.entry.di.homeSettingsEntryModule
 import com.coda.situlearner.feature.home.settings.player.di.homeSettingsPlayerModule
+import com.coda.situlearner.feature.home.settings.theme.di.homeSettingsThemeModule
 import com.coda.situlearner.feature.home.settings.word.di.homeSettingsWordModule
 import com.coda.situlearner.feature.home.word.book.di.homeWordBookModule
 import com.coda.situlearner.feature.home.word.entry.di.homeWordEntryModule
@@ -19,6 +20,7 @@ val homeEntryModules = listOf(
     homeSettingsChatbotModule,
     homeSettingsEntryModule,
     homeSettingsPlayerModule,
+    homeSettingsThemeModule,
     homeSettingsWordModule,
     homeWordBookModule,
     homeWordEntryModule,

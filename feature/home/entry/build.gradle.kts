@@ -18,6 +18,7 @@ dependencies {
     implementation(projects.feature.home.settingsEntry)
     implementation(projects.feature.home.settingsChatbot)
     implementation(projects.feature.home.settingsPlayer)
+    implementation(projects.feature.home.settingsTheme)
     implementation(projects.feature.home.settingsWord)
     implementation(projects.feature.home.wordEntry)
     implementation(projects.feature.home.wordBook)

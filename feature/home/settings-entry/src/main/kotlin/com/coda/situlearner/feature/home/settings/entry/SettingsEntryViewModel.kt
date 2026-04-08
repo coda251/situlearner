@@ -3,11 +3,6 @@ package com.coda.situlearner.feature.home.settings.entry
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.coda.situlearner.core.data.repository.AiStateRepository
-import com.coda.situlearner.core.data.repository.UserPreferenceRepository
-import com.coda.situlearner.core.model.data.ChatbotConfig
-import com.coda.situlearner.core.model.data.DarkThemeMode
-import com.coda.situlearner.core.model.data.ThemeColorMode
 import com.coda.situlearner.feature.home.settings.entry.domain.ExportDataUseCase
 import com.coda.situlearner.feature.home.settings.entry.model.ExportState
 import com.coda.situlearner.feature.home.settings.entry.model.VersionState
@@ -16,52 +11,19 @@ import com.coda.situlearner.feature.home.settings.entry.util.toVersionState
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-internal class SettingsCommonViewModel(
-    private val userPreferenceRepository: UserPreferenceRepository,
-    aiStateRepository: AiStateRepository,
+internal class SettingsEntryViewModel(
     private val client: HttpClient,
     private val exportDataUseCase: ExportDataUseCase,
 ) : ViewModel() {
-
-    val uiState = combine(
-        userPreferenceRepository.userPreference,
-        aiStateRepository.aiState,
-    ) { preference, ai ->
-        SettingsCommonUiState.Success(
-            darkThemeMode = preference.darkThemeMode,
-            themeColorMode = preference.themeColorMode,
-            chatbotConfig = ai.configs.currentItem,
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = SettingsCommonUiState.Loading
-    )
-
     private val _versionState = MutableStateFlow<VersionState>(VersionState.NotChecked)
     val versionState = _versionState.asStateFlow()
 
     private val _exportState = MutableStateFlow<ExportState>(ExportState.Idle)
     val exportState = _exportState.asStateFlow()
-
-    fun setDarkThemeMode(darkThemeMode: DarkThemeMode) {
-        viewModelScope.launch {
-            userPreferenceRepository.setDarkThemeMode(darkThemeMode)
-        }
-    }
-
-    fun setThemeColorMode(themeColorMode: ThemeColorMode) {
-        viewModelScope.launch {
-            userPreferenceRepository.setThemeColorMode(themeColorMode)
-        }
-    }
 
     fun checkAppUpdate(currentVersion: String?) {
         viewModelScope.launch {
@@ -86,13 +48,4 @@ internal class SettingsCommonViewModel(
     fun resetExportState() {
         _exportState.value = ExportState.Idle
     }
-}
-
-internal sealed interface SettingsCommonUiState {
-    data object Loading : SettingsCommonUiState
-    data class Success(
-        val darkThemeMode: DarkThemeMode,
-        val themeColorMode: ThemeColorMode,
-        val chatbotConfig: ChatbotConfig?,
-    ) : SettingsCommonUiState
 }

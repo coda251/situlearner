@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.coda.situlearner.feature.home.settings.entry.SettingsCommonScreen
+import com.coda.situlearner.feature.home.settings.entry.SettingsEntryScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -22,14 +22,16 @@ fun NavGraphBuilder.homeSettingsEntryScreen(
     onNavigateToChatbot: () -> Unit,
     onNavigateToWord: () -> Unit,
     onNavigateToPlayer: () -> Unit,
+    onNavigateToTheme: () -> Unit,
     destination: NavGraphBuilder.() -> Unit
 ) {
     navigation<HomeSettingsBaseRoute>(startDestination = HomeSettingsEntryRoute) {
         composable<HomeSettingsEntryRoute> {
-            SettingsCommonScreen(
+            SettingsEntryScreen(
                 onNavigateToChatbot = onNavigateToChatbot,
                 onNavigateToWord = onNavigateToWord,
-                onNavigateToPlayer = onNavigateToPlayer
+                onNavigateToPlayer = onNavigateToPlayer,
+                onNavigateToTheme = onNavigateToTheme,
             )
         }
 
