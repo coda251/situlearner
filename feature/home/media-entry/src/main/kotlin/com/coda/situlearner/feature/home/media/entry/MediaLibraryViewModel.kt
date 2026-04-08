@@ -8,9 +8,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
-internal class MediaLibraryViewModel(private val mediaRepository: MediaRepository) : ViewModel() {
+internal class MediaLibraryViewModel(mediaRepository: MediaRepository) : ViewModel() {
 
     val uiState: StateFlow<MediaLibraryUiState> = mediaRepository.getMediaCollections().map {
         if (it.isEmpty()) MediaLibraryUiState.Empty
@@ -20,18 +19,6 @@ internal class MediaLibraryViewModel(private val mediaRepository: MediaRepositor
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = MediaLibraryUiState.Loading
     )
-
-    fun deleteMediaCollection(mediaCollection: MediaCollection) {
-        viewModelScope.launch {
-            mediaRepository.deleteMediaCollection(mediaCollection.id)
-        }
-    }
-
-    fun setMediaCollectionName(mediaCollection: MediaCollection, name: String) {
-        viewModelScope.launch {
-            mediaRepository.setMediaCollectionName(mediaCollection.id, name)
-        }
-    }
 }
 
 internal sealed interface MediaLibraryUiState {
