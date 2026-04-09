@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.model.data.PlaybackOnWordClick
+import com.coda.situlearner.core.model.data.SubtitleDisplayMode
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -17,7 +18,8 @@ internal class SettingsPlayerViewModel(
     val uiState: StateFlow<UiState> =
         preferenceRepository.userPreference.map {
             UiState.Success(
-                playbackOnWordClick = it.playbackOnWordClick
+                playbackOnWordClick = it.playbackOnWordClick,
+                subtitleDisplayMode = it.subtitleDisplayMode
             )
         }.stateIn(
             scope = viewModelScope,
@@ -30,11 +32,18 @@ internal class SettingsPlayerViewModel(
             preferenceRepository.setPlaybackOnWordClick(playbackOnWordClick)
         }
     }
+
+    fun setSubtitleDisplayMode(subtitleDisplayMode: SubtitleDisplayMode) {
+        viewModelScope.launch {
+            preferenceRepository.setSubtitleDisplayMode(subtitleDisplayMode)
+        }
+    }
 }
 
 internal sealed interface UiState {
     data object Loading : UiState
     data class Success(
-        val playbackOnWordClick: PlaybackOnWordClick
+        val playbackOnWordClick: PlaybackOnWordClick,
+        val subtitleDisplayMode: SubtitleDisplayMode
     ) : UiState
 }

@@ -8,6 +8,7 @@ import "com/coda/situlearner/core/datastore/dark_theme_mode.proto";
 import "com/coda/situlearner/core/datastore/theme_color_mode.proto";
 import "com/coda/situlearner/core/datastore/word_book_sort_by.proto";
 import "com/coda/situlearner/core/datastore/playback_on_word_click.proto";
+import "com/coda/situlearner/core/datastore/subtitle_display_mode.proto";
 
 message UserPreferenceProto {
   reserved 2;
@@ -19,5 +20,6 @@ message UserPreferenceProto {
   uint32 recommended_word_count = 6;
   WordBookSortByProto word_book_sort_by = 8;
   PlaybackOnWordClickProto playbackOnWordClick = 9;
-  // next id: 10
+  SubtitleDisplayModeProto subtitleDisplayMode = 10;
+  // next id: 11
 }

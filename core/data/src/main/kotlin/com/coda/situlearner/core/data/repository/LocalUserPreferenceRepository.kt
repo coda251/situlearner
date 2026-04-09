@@ -7,6 +7,7 @@ import com.coda.situlearner.core.datastore.UserPreferenceDataSource
 import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.PlaybackOnWordClick
+import com.coda.situlearner.core.model.data.SubtitleDisplayMode
 import com.coda.situlearner.core.model.data.ThemeColorMode
 import com.coda.situlearner.core.model.data.UserPreference
 import com.coda.situlearner.core.model.data.WordBookSortBy
@@ -61,5 +62,9 @@ internal class LocalUserPreferenceRepository(
 
     override suspend fun setPlaybackOnWordClick(playbackOnWordClick: PlaybackOnWordClick) {
         dataSource.setPlaybackOnWordClickProto(playbackOnWordClick.asProto())
+    }
+
+    override suspend fun setSubtitleDisplayMode(subtitleDisplayMode: SubtitleDisplayMode) {
+        dataSource.setSubtitleDisplayModeProto(subtitleDisplayMode.asProto())
     }
 }

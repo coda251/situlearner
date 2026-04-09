@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.PlaybackOnWordClick
+import com.coda.situlearner.core.model.data.SubtitleDisplayMode
 import com.coda.situlearner.core.ui.widget.BackButton
 import org.koin.androidx.compose.koinViewModel
 import com.coda.situlearner.core.ui.R as coreR
@@ -40,7 +41,8 @@ internal fun SettingsPlayerScreen(
     SettingsPlayerScreen(
         uiState = uiState,
         onBack = onBack,
-        onSetPlaybackOnWordClick = viewModel::setPlaybackOnWordClick
+        onSetPlaybackOnWordClick = viewModel::setPlaybackOnWordClick,
+        onSetSubtitleDisplayMode = viewModel::setSubtitleDisplayMode
     )
 }
 
@@ -50,6 +52,7 @@ private fun SettingsPlayerScreen(
     uiState: UiState,
     onBack: () -> Unit,
     onSetPlaybackOnWordClick: (PlaybackOnWordClick) -> Unit,
+    onSetSubtitleDisplayMode: (SubtitleDisplayMode) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -71,7 +74,9 @@ private fun SettingsPlayerScreen(
                 is UiState.Success -> {
                     ContentBoard(
                         playbackOnWordClick = uiState.playbackOnWordClick,
-                        onSetPlaybackOnWordClick = onSetPlaybackOnWordClick
+                        subtitleDisplayMode = uiState.subtitleDisplayMode,
+                        onSetPlaybackOnWordClick = onSetPlaybackOnWordClick,
+                        onSetSubtitleDisplayMode = onSetSubtitleDisplayMode
                     )
                 }
             }
@@ -82,12 +87,15 @@ private fun SettingsPlayerScreen(
 @Composable
 private fun ContentBoard(
     playbackOnWordClick: PlaybackOnWordClick,
+    subtitleDisplayMode: SubtitleDisplayMode,
     onSetPlaybackOnWordClick: (PlaybackOnWordClick) -> Unit,
+    onSetSubtitleDisplayMode: (SubtitleDisplayMode) -> Unit
 ) {
     val scrollState = rememberScrollState()
 
     Column(modifier = Modifier.verticalScroll(scrollState)) {
         PlaybackOnWordClickSelector(playbackOnWordClick, onSetPlaybackOnWordClick)
+        SubtitleDisplayModeSelector(subtitleDisplayMode, onSetSubtitleDisplayMode)
     }
 }
 
@@ -146,8 +154,68 @@ private fun PlaybackOnWordClickSelector(
 }
 
 @Composable
+private fun SubtitleDisplayModeSelector(
+    subtitleDisplayMode: SubtitleDisplayMode,
+    onSelect: (SubtitleDisplayMode) -> Unit
+) {
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    ListItem(
+        headlineContent = {
+            Text(
+                text = stringResource(R.string.home_settings_player_screen_subtitle_display_mode)
+            )
+        },
+        supportingContent = {
+            Text(
+                text = subtitleDisplayMode.asText()
+            )
+        },
+        modifier = Modifier.clickable {
+            showDialog = true
+        }
+    )
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                    }
+                ) {
+                    Text(text = stringResource(coreR.string.core_ui_ok))
+                }
+            },
+            text = {
+                Column {
+                    SubtitleDisplayMode.entries.forEach {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(
+                                selected = it == subtitleDisplayMode,
+                                onClick = { onSelect(it) },
+                            )
+                            Text(text = it.asText())
+                        }
+                    }
+                }
+            }
+        )
+    }
+}
+
+@Composable
 private fun PlaybackOnWordClick.asText() = when (this) {
     PlaybackOnWordClick.Pause -> stringResource(R.string.home_settings_player_screen_playback_on_word_click_pause)
     PlaybackOnWordClick.Unchange -> stringResource(R.string.home_settings_player_screen_playback_on_word_click_unchange)
     PlaybackOnWordClick.PlayInLoop -> stringResource(R.string.home_settings_player_screen_playback_on_word_click_play_in_loop)
+}
+
+@Composable
+private fun SubtitleDisplayMode.asText() = when (this) {
+    SubtitleDisplayMode.All -> stringResource(R.string.home_settings_player_screen_subtitle_display_mode_all)
+    SubtitleDisplayMode.OnlySourceText -> stringResource(R.string.home_settings_player_screen_subtitle_display_mode_only_source_text)
 }

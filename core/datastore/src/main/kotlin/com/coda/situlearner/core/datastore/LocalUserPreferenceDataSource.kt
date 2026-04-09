@@ -70,4 +70,12 @@ internal class LocalUserPreferenceDataSource(private val userPreference: DataSto
             }
         }
     }
+
+    override suspend fun setSubtitleDisplayModeProto(subtitleDisplayModeProto: SubtitleDisplayModeProto) {
+        userPreference.updateData {
+            it.copy {
+                this.subtitleDisplayMode = subtitleDisplayModeProto
+            }
+        }
+    }
 }

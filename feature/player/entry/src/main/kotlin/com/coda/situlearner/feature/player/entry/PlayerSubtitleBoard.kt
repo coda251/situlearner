@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.Language
+import com.coda.situlearner.core.model.data.SubtitleDisplayMode
 import com.coda.situlearner.core.model.infra.Subtitle
 import com.coda.situlearner.core.model.infra.Token
 import com.coda.situlearner.feature.player.entry.widgets.subtitle.CenterIndicator
@@ -72,6 +73,7 @@ internal fun PlayerSubtitleBoard(
     playerState: PlayerState,
     activeSubtitleIndex: Int,
     activeTokenStartIndex: Int,
+    subtitleDisplayMode: SubtitleDisplayMode,
     onClickTokenInSubtitleContext: (Token, SubtitleContext) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PlayerSubtitleViewModel = koinViewModel()
@@ -83,6 +85,7 @@ internal fun PlayerSubtitleBoard(
         subtitleUiState = subtitleUiState,
         activeSubtitleIndex = activeSubtitleIndex,
         activeTokenStartIndex = activeTokenStartIndex,
+        subtitleDisplayMode = subtitleDisplayMode,
         onClickTokenInSubtitleContext = onClickTokenInSubtitleContext,
         modifier = modifier,
     )
@@ -94,6 +97,7 @@ private fun PlayerSubtitleBoard(
     subtitleUiState: SubtitleUiState,
     activeSubtitleIndex: Int,
     activeTokenStartIndex: Int,
+    subtitleDisplayMode: SubtitleDisplayMode,
     onClickTokenInSubtitleContext: (Token, SubtitleContext) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -112,6 +116,7 @@ private fun PlayerSubtitleBoard(
                 playerState = playerState,
                 activeSubtitleIndex = activeSubtitleIndex,
                 activeTokenStartIndex = activeTokenStartIndex,
+                subtitleDisplayMode = subtitleDisplayMode,
                 onClickTokenInSubtitle = { index, token, subtitle ->
                     onClickTokenInSubtitleContext(
                         token, SubtitleContext(
@@ -134,6 +139,7 @@ private fun PlayerSubtitleBoard(
     playerState: PlayerState,
     activeSubtitleIndex: Int,
     activeTokenStartIndex: Int,
+    subtitleDisplayMode: SubtitleDisplayMode,
     onClickTokenInSubtitle: (Int, Token, Subtitle) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -147,6 +153,10 @@ private fun PlayerSubtitleBoard(
             }
             if (result >= 0) result else -(result + 2)
         }
+    }
+
+    var showTargetTextSubtitleIndex by remember(subtitles) {
+        mutableIntStateOf(-1)
     }
 
     val clipboard = LocalClipboard.current
@@ -167,12 +177,25 @@ private fun PlayerSubtitleBoard(
             playingSubtitleIndex = playingSubtitleIndex,
             activeSubtitleIndex = activeSubtitleIndex,
             activeTokenStartIndex = activeTokenStartIndex,
+            subtitleDisplayMode = subtitleDisplayMode,
+            showTargetTextSubtitleIndex = showTargetTextSubtitleIndex,
             loop = loop,
             pageSize = size,
             onClickToken = { index, token ->
                 onClickTokenInSubtitle(index, token, subtitles[index])
             },
-            onClickSubtitle = { playerState.seekTo(it.startTimeInMs) },
+            onClickSubtitleStart = {
+                playerState.seekTo(it.startTimeInMs)
+            },
+            onClickSubtitleEnd = { subtitle, index ->
+                when (subtitleDisplayMode) {
+                    SubtitleDisplayMode.All -> playerState.seekTo(subtitle.startTimeInMs)
+                    SubtitleDisplayMode.OnlySourceText -> {
+                        showTargetTextSubtitleIndex = if (showTargetTextSubtitleIndex == index) -1
+                        else index
+                    }
+                }
+            },
             onDoubleClickSubtitle = {
                 if (loop.first == it.startTimeInMs && loop.second == it.endTimeInMs) {
                     playerState.setPlaybackLoop(
@@ -202,10 +225,13 @@ private fun PlayerSubtitleBoard(
     playingSubtitleIndex: Int,
     activeSubtitleIndex: Int,
     activeTokenStartIndex: Int,
+    subtitleDisplayMode: SubtitleDisplayMode,
+    showTargetTextSubtitleIndex: Int,
     loop: Pair<Long?, Long?>,
     pageSize: IntSize,
     onClickToken: (Int, Token) -> Unit,
-    onClickSubtitle: (Subtitle) -> Unit,
+    onClickSubtitleStart: (Subtitle) -> Unit,
+    onClickSubtitleEnd: (Subtitle, Int) -> Unit,
     onDoubleClickSubtitle: (Subtitle) -> Unit,
     onLongClickSubtitle: (Subtitle) -> Unit,
     modifier: Modifier = Modifier
@@ -267,12 +293,15 @@ private fun PlayerSubtitleBoard(
             loop = loop,
             activeSubtitleIndex = activeSubtitleIndex,
             activeTokenStartIndex = activeTokenStartIndex,
+            subtitleDisplayMode = subtitleDisplayMode,
+            showTargetTextSubtitleIndex = showTargetTextSubtitleIndex,
             listState = listState,
             onClickToken = { index, token ->
                 scope.launch { listState.stopScroll() }
                 onClickToken(index, token)
             },
-            onClickSubtitle = onClickSubtitle,
+            onClickSubtitleStart = onClickSubtitleStart,
+            onClickSubtitleEnd = onClickSubtitleEnd,
             onDoubleClickSubtitle = onDoubleClickSubtitle,
             onLongClickSubtitle = onLongClickSubtitle,
         )
@@ -325,9 +354,12 @@ private fun SubtitleList(
     loop: Pair<Long?, Long?>,
     activeSubtitleIndex: Int,
     activeTokenStartIndex: Int,
+    subtitleDisplayMode: SubtitleDisplayMode,
+    showTargetTextSubtitleIndex: Int,
     listState: LazyListState,
     onClickToken: (Int, Token) -> Unit,
-    onClickSubtitle: (Subtitle) -> Unit,
+    onClickSubtitleStart: (Subtitle) -> Unit,
+    onClickSubtitleEnd: (Subtitle, Int) -> Unit,
     onDoubleClickSubtitle: (Subtitle) -> Unit,
     onLongClickSubtitle: (Subtitle) -> Unit,
     modifier: Modifier = Modifier,
@@ -365,17 +397,23 @@ private fun SubtitleList(
             itemsIndexed(
                 items = subtitles,
                 key = { _, it -> it.hashCode() },
-                contentType = { _, _ -> "content" }) { index, it ->
+                contentType = { _, _ -> "content" }
+            ) { index, it ->
                 SubtitleListItem(
                     sourceText = it.sourceText,
                     targetText = it.targetText,
                     tokens = it.tokens,
                     isActive = index == playingSubtitleIndex,
                     isInClip = it.isInLoop(loop),
+                    showTargetText = when (subtitleDisplayMode) {
+                        SubtitleDisplayMode.All -> true
+                        SubtitleDisplayMode.OnlySourceText -> index == showTargetTextSubtitleIndex
+                    },
                     activeTokenStartIndex = if (index == activeSubtitleIndex) activeTokenStartIndex
                     else -1,
                     onClickToken = { token -> onClickToken(index, token) },
-                    onClickBox = { onClickSubtitle(it) },
+                    onClickStartBox = { onClickSubtitleStart(it) },
+                    onClickEndBox = { onClickSubtitleEnd(it, index) },
                     onDoubleClickBox = { onDoubleClickSubtitle(it) },
                     onLongClickBox = { onLongClickSubtitle(it) },
                 )
@@ -398,10 +436,12 @@ private fun SubtitleListItem(
     targetText: String = "",
     isActive: Boolean,
     isInClip: Boolean,
+    showTargetText: Boolean = true,
     tokens: List<Token>? = null,
     activeTokenStartIndex: Int = -1,
     onClickToken: (Token) -> Unit = {},
-    onClickBox: () -> Unit = {},
+    onClickStartBox: () -> Unit = {},
+    onClickEndBox: () -> Unit = {},
     onDoubleClickBox: () -> Unit = {},
     onLongClickBox: () -> Unit = {}
 ) {
@@ -420,7 +460,8 @@ private fun SubtitleListItem(
                 activeTokenStartIndex = activeTokenStartIndex,
                 onClickToken = onClickToken,
                 isActive = isActive,
-                isInClip = isInClip
+                isInClip = isInClip,
+                showTargetText = showTargetText
             )
         }.map {
             it.measure(
@@ -441,7 +482,7 @@ private fun SubtitleListItem(
                 modifier = Modifier
                     .fillMaxHeight()
                     .combinedClickable(
-                        onClick = onClickBox,
+                        onClick = onClickStartBox,
                         onLongClick = onLongClickBox,
                         onDoubleClick = onDoubleClickBox,
                     ),
@@ -460,7 +501,7 @@ private fun SubtitleListItem(
                 modifier = Modifier
                     .fillMaxHeight()
                     .combinedClickable(
-                        onClick = onClickBox,
+                        onClick = onClickEndBox,
                         onLongClick = onLongClickBox,
                         onDoubleClick = onDoubleClickBox,
                     ),
@@ -646,13 +687,18 @@ private fun SubtitleBoardPreview() {
             playingSubtitleIndex = playingSubtitleIndex,
             activeSubtitleIndex = activeSubtitleIndex,
             activeTokenStartIndex = activeTokenStartIndex,
+            subtitleDisplayMode = SubtitleDisplayMode.OnlySourceText,
+            showTargetTextSubtitleIndex = 10,
             loop = Pair(null, null),
             pageSize = size,
             onClickToken = { index, token ->
                 activeSubtitleIndex = index
                 activeTokenStartIndex = token.startIndex
             },
-            onClickSubtitle = {
+            onClickSubtitleStart = {
+                playingSubtitleIndex = subtitles.indexOf(it)
+            },
+            onClickSubtitleEnd = { it, _ ->
                 playingSubtitleIndex = subtitles.indexOf(it)
             },
             onDoubleClickSubtitle = {

@@ -4,4 +4,7 @@
     <string name="home_settings_player_screen_playback_on_word_click_unchange">Unchange</string>
     <string name="home_settings_player_screen_playback_on_word_click_pause">Pause</string>
     <string name="home_settings_player_screen_playback_on_word_click_play_in_loop">Play in loop</string>
+    <string name="home_settings_player_screen_subtitle_display_mode">Subtitle display mode</string>
+    <string name="home_settings_player_screen_subtitle_display_mode_all">Show source and target text</string>
+    <string name="home_settings_player_screen_subtitle_display_mode_only_source_text">Only source text (click to show target text)</string>
 </resources>

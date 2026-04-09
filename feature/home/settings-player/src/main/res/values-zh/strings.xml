@@ -4,4 +4,7 @@
     <string name="home_settings_player_screen_playback_on_word_click_unchange">不变</string>
     <string name="home_settings_player_screen_playback_on_word_click_pause">暂停</string>
     <string name="home_settings_player_screen_playback_on_word_click_play_in_loop">循环播放</string>
+    <string name="home_settings_player_screen_subtitle_display_mode">字幕展示类型</string>
+    <string name="home_settings_player_screen_subtitle_display_mode_all">展示原文和译文</string>
+    <string name="home_settings_player_screen_subtitle_display_mode_only_source_text">只展示原文（点击才显示译文）</string>
 </resources>

@@ -40,9 +40,11 @@ internal fun SubtitleTextItem(
     onClickToken: (Token) -> Unit = {},
     isActive: Boolean = false,
     isInClip: Boolean = false,
+    showTargetText: Boolean = true,
     subtitleColors: SubtitleTextColors = SubtitleTextDefault.subtitleTextColors()
 ) {
     val sourceTextColor by subtitleColors.sourceTextColor(isActive, isInClip)
+    val targetTextColor by subtitleColors.targetTextColor(showTargetText)
 
     Box(
         modifier = modifier,
@@ -68,7 +70,7 @@ internal fun SubtitleTextItem(
                 text = targetText,
                 fontSize = SubtitleTextDefault.targetTextFontSize,
                 style = TextStyle(
-                    color = subtitleColors.defaultTargetTextColor
+                    color = targetTextColor
                 ),
                 textAlign = TextAlign.Center
             )
@@ -247,6 +249,16 @@ class SubtitleTextColors internal constructor(
             }
         )
     }
+
+    @Composable
+    fun targetTextColor(
+        isShown: Boolean
+    ): State<Color> {
+        return rememberUpdatedState(
+            if (isShown) defaultTargetTextColor
+            else Color.Transparent
+        )
+    }
 }
 
 @Composable
@@ -286,6 +298,7 @@ private fun SubtitleListItemPreview() {
             onClickToken = {
                 activeTokenStartIndex = it.startIndex
             },
+            showTargetText = true,
             modifier = Modifier.weight(4f)
         )
         Box(modifier = Modifier.weight(1f))

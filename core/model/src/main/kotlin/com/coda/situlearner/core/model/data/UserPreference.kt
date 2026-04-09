@@ -8,5 +8,6 @@ data class UserPreference(
     val quizWordCount: UInt,
     val recommendedWordCount: UInt,
     val wordBookSortBy: WordBookSortBy,
-    val playbackOnWordClick: PlaybackOnWordClick
+    val playbackOnWordClick: PlaybackOnWordClick,
+    val subtitleDisplayMode: SubtitleDisplayMode
 )

@@ -126,6 +126,7 @@ private fun PlayerEntryScreen(
                         playerState = playerState,
                         activeSubtitleIndex = activeTokenId.first,
                         activeTokenStartIndex = activeTokenId.second,
+                        subtitleDisplayMode = settingsUiState.subtitleDisplayMode,
                         onClickTokenInSubtitleContext = { token, subtitleContext ->
 
                             val playbackOnWordClick = settingsUiState.playbackOnWordClick

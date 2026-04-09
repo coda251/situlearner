@@ -21,4 +21,6 @@ interface UserPreferenceDataSource {
     suspend fun setWordBookSortByProto(wordBookSortByProto: WordBookSortByProto)
 
     suspend fun setPlaybackOnWordClickProto(playbackOnWordClickProto: PlaybackOnWordClickProto)
+
+    suspend fun setSubtitleDisplayModeProto(subtitleDisplayModeProto: SubtitleDisplayModeProto)
 }
