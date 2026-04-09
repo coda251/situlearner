@@ -18,9 +18,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +32,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -75,15 +79,18 @@ internal fun WordDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val playerState by PlayerStateProvider.state.collectAsStateWithLifecycle()
+    val actionState by viewModel.actionState.collectAsStateWithLifecycle()
 
     WordDetailScreen(
         uiState = uiState,
         playerState = playerState,
+        actionState = actionState,
         onBack = {
             playerState.clear()
             onBack()
         },
         onViewWord = viewModel::setWordViewedDate,
+        onDeleteWord = viewModel::deleteWord,
         onNavigateToPlayer = onNavigateToPlayer,
         onNavigateToWordEdit = onNavigateToWordEdit,
         onNavigateToWordRelation = onNavigateToWordRelation
@@ -95,8 +102,10 @@ internal fun WordDetailScreen(
 private fun WordDetailScreen(
     uiState: WordDetailUiState,
     playerState: PlayerState,
+    actionState: ActionState,
     onBack: () -> Unit,
     onViewWord: (Word) -> Unit,
+    onDeleteWord: (Word) -> Unit,
     onNavigateToPlayer: () -> Unit,
     onNavigateToWordEdit: (String) -> Unit,
     onNavigateToWordRelation: (String) -> Unit,
@@ -104,6 +113,15 @@ private fun WordDetailScreen(
     BackHandler {
         onBack()
     }
+
+    LaunchedEffect(actionState) {
+        // it's quick for deletion so we don't add block ui to avoid flash
+        if (actionState is ActionState.Deleted) {
+            onBack()
+        }
+    }
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -116,18 +134,6 @@ private fun WordDetailScreen(
                             IconButton(
                                 onClick = {
                                     playerState.clear()
-                                    onNavigateToWordEdit(uiState.wordWithContexts.word.id)
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(coreR.drawable.edit_24dp_000000_fill0_wght400_grad0_opsz24),
-                                    contentDescription = null
-                                )
-                            }
-
-                            IconButton(
-                                onClick = {
-                                    playerState.clear()
                                     onNavigateToWordRelation(uiState.wordWithContexts.word.id)
                                 }
                             ) {
@@ -136,6 +142,16 @@ private fun WordDetailScreen(
                                     contentDescription = null
                                 )
                             }
+
+                            MoreActionMenu(
+                                onEditWord = {
+                                    playerState.clear()
+                                    onNavigateToWordEdit(uiState.wordWithContexts.word.id)
+                                },
+                                onDeleteWord = {
+                                    showDeleteDialog = true
+                                }
+                            )
                         }
 
                         else -> {}
@@ -165,6 +181,18 @@ private fun WordDetailScreen(
                 }
             }
         }
+    }
+
+    if (showDeleteDialog && uiState is WordDetailUiState.Success) {
+        DeleteWordDialog(
+            onConfirm = {
+                onDeleteWord(uiState.wordWithContexts.word)
+                showDeleteDialog = false
+            },
+            onDismiss = {
+                showDeleteDialog = false
+            }
+        )
     }
 }
 
@@ -404,6 +432,93 @@ private fun WordWithContextsCard(
 }
 
 @Composable
+private fun MoreActionMenu(
+    onEditWord: () -> Unit,
+    onDeleteWord: () -> Unit,
+) {
+    var showMenu by remember {
+        mutableStateOf(false)
+    }
+
+    IconButton(onClick = { showMenu = true }) {
+        Icon(
+            painter = painterResource(coreR.drawable.more_vert_24dp_000000_fill0_wght400_grad0_opsz24),
+            contentDescription = null
+        )
+    }
+
+    DropdownMenu(
+        expanded = showMenu,
+        onDismissRequest = { showMenu = false }
+    ) {
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.word_detail_screen_edit_word)) },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(coreR.drawable.edit_24dp_000000_fill0_wght400_grad0_opsz24),
+                    contentDescription = null
+                )
+            },
+            onClick = {
+                onEditWord()
+                showMenu = false
+            }
+        )
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = coreR.string.core_ui_delete)) },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(coreR.drawable.delete_24dp_000000_fill0_wght400_grad0_opsz24),
+                    contentDescription = null
+                )
+            },
+            onClick = {
+                onDeleteWord()
+                showMenu = false
+            }
+        )
+    }
+}
+
+@Composable
+private fun DeleteWordDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm
+            ) {
+                Text(text = stringResource(coreR.string.core_ui_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss
+            ) {
+                Text(text = stringResource(coreR.string.core_ui_cancel))
+            }
+        },
+        icon = {
+            Icon(
+                painter = painterResource(coreR.drawable.error_24dp_000000_fill0_wght400_grad0_opsz24),
+                contentDescription = null
+            )
+        },
+        title = {
+            Text(text = stringResource(R.string.word_detail_screen_delete_word_title))
+        },
+        text = {
+            Text(text = stringResource(R.string.word_detail_screen_delete_word_desc))
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
 @Preview
 private fun WordDetailScreenPreview() {
 
@@ -415,8 +530,10 @@ private fun WordDetailScreenPreview() {
     WordDetailScreen(
         playerState = PlayerStateProvider.EmptyPlayerState,
         uiState = uiState,
+        actionState = ActionState.Idle,
         onBack = {},
         onViewWord = {},
+        onDeleteWord = {},
         onNavigateToPlayer = {},
         onNavigateToWordEdit = {},
         onNavigateToWordRelation = {}

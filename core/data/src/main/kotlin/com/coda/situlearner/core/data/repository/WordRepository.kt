@@ -5,7 +5,6 @@ import com.coda.situlearner.core.model.data.MeaningQuizStats
 import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
-import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordWithContexts
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
@@ -71,9 +70,11 @@ interface WordRepository {
 
     suspend fun getMeaningQuizStats(ids: Set<String>): List<MeaningQuizStats>
 
-    suspend fun upsertMeaningQuizStats(statsList: List<MeaningQuizStats>)
-
-    suspend fun updateWords(idToProficiency: Map<String, WordProficiency>)
+    /**
+     * If the word exists in database, then upsert quiz stats and word proficiency.
+     * Otherwise, do nothing.
+     */
+    suspend fun updateMeaningQuizStats(statsList: List<MeaningQuizStats>)
 
     suspend fun getRecommendedWords(count: UInt): List<WordWithContexts>
 
@@ -100,7 +101,11 @@ interface WordRepository {
 
     suspend fun getTranslationQuizStats(wordId: String): TranslationQuizStats?
 
-    suspend fun upsertTranslationQuizStats(stats: TranslationQuizStats)
+    /**
+     * If the word exists in database, then upsert quiz stats and word proficiency.
+     * Otherwise, do nothing.
+     */
+    suspend fun updateTranslationQuizStats(stats: TranslationQuizStats)
 
     /**
      * If a word has not been selected for meaning quiz before, a MeaningQuizStats

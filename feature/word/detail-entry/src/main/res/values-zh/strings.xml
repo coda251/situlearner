@@ -6,4 +6,7 @@
     <string name="word_detail_screen_quiz_question">测试题目</string>
     <string name="word_detail_screen_your_answer">你的回答</string>
     <string name="word_detail_screen_no_data">暂无数据</string>
+    <string name="word_detail_screen_edit_word">编辑单词</string>
+    <string name="word_detail_screen_delete_word_title">删除这个单词？</string>
+    <string name="word_detail_screen_delete_word_desc">该单词关联的所有例句也将被删除。你确定吗？</string>
 </resources>

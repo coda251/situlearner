@@ -11,7 +11,6 @@ import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.feature.UserRating
-import com.coda.situlearner.core.model.feature.mapper.toWordProficiency
 import com.coda.situlearner.core.model.feature.mapper.updateWith
 import com.coda.situlearner.core.model.infra.ChatMessage
 import com.coda.situlearner.core.model.infra.ChatRole
@@ -232,12 +231,7 @@ internal class QuizSentenceViewModel(
                 userAnswer = state.userAnswer
             )).updateWith(state.toUserRating())
 
-        wordRepository.upsertTranslationQuizStats(quizInfo)
-        wordRepository.updateWord(
-            state.word.copy(
-                translationProficiency = quizInfo.toWordProficiency()
-            )
-        )
+        wordRepository.updateTranslationQuizStats(quizInfo)
     }
 
     private fun evaluateQuiz(

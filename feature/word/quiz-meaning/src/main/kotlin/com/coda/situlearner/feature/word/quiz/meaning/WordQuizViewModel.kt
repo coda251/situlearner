@@ -8,7 +8,6 @@ import com.coda.situlearner.core.model.data.MeaningQuizStats
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.feature.UserRating
-import com.coda.situlearner.core.model.feature.mapper.toWordProficiency
 import com.coda.situlearner.core.model.feature.mapper.updateWith
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -95,15 +94,7 @@ internal class WordQuizViewModel(
             val newQuizInfoList = quizInfoList.map {
                 it.updateWith(quizResult[it.wordId] ?: UserRating.Again)
             }
-            wordRepository.upsertMeaningQuizStats(newQuizInfoList)
-
-            // update proficiency
-            wordRepository.updateWords(
-                newQuizInfoList.associateBy(
-                    keySelector = { it.wordId },
-                    valueTransform = { it.toWordProficiency() }
-                )
-            )
+            wordRepository.updateMeaningQuizStats(newQuizInfoList)
 
             _uiState.value =
                 WordQuizUiState.Complete(quizResult.values.groupingBy { it }.eachCount())

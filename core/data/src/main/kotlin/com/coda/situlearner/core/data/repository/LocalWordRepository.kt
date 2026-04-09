@@ -16,6 +16,7 @@ import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordWithContexts
+import com.coda.situlearner.core.model.feature.mapper.toWordProficiency
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -117,12 +118,14 @@ internal class LocalWordRepository(
             .map(MeaningQuizStatsEntity::asExternalModel)
     }
 
-    override suspend fun upsertMeaningQuizStats(statsList: List<MeaningQuizStats>) {
-        return wordBankDao.upsertMeaningQuizStatsEntity(statsList.map(MeaningQuizStats::asEntity))
-    }
-
-    override suspend fun updateWords(idToProficiency: Map<String, WordProficiency>) {
-        return wordBankDao.updateWordEntities(idToProficiency.mapValues { it.value.asValue() })
+    override suspend fun updateMeaningQuizStats(statsList: List<MeaningQuizStats>) {
+        val statsWithProficiency = statsList.map {
+            Pair(
+                it.asEntity(),
+                it.toWordProficiency().asValue()
+            )
+        }
+        return wordBankDao.updateMeaningQuizStats(statsWithProficiency)
     }
 
     override suspend fun getRecommendedWords(count: UInt): List<WordWithContexts> {
@@ -143,8 +146,11 @@ internal class LocalWordRepository(
         return wordBankDao.getTranslationQuizStatsEntity(wordId)?.asExternalModel()
     }
 
-    override suspend fun upsertTranslationQuizStats(stats: TranslationQuizStats) {
-        return wordBankDao.upsertTranslationQuizStatsEntity(stats.asEntity())
+    override suspend fun updateTranslationQuizStats(stats: TranslationQuizStats) {
+        return wordBankDao.updateTranslationQuizStats(
+            stats.asEntity(),
+            stats.toWordProficiency().asValue()
+        )
     }
 
     override fun getMeaningQuizStats(

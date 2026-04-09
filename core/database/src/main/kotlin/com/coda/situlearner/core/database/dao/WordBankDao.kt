@@ -44,7 +44,10 @@ interface WordBankDao {
     }
 
     @Query("UPDATE WordEntity SET meaningProficiency = :proficiency WHERE id = :id")
-    suspend fun updateWordEntity(id: String, proficiency: WordProficiency)
+    suspend fun updateWordEntityMeaningProficiency(id: String, proficiency: WordProficiency)
+
+    @Query("UPDATE WordEntity SET translationProficiency = :proficiency WHERE id = :id")
+    suspend fun updateWordEntityTranslationProficiency(id: String, proficiency: WordProficiency)
 
     @Query(
         """
@@ -126,13 +129,22 @@ interface WordBankDao {
     @Query("SELECT * FROM MeaningQuizStatsEntity WHERE wordId IN (:ids)")
     suspend fun getMeaningQuizStatsEntities(ids: Set<String>): List<MeaningQuizStatsEntity>
 
+    @Query("SELECT id FROM wordentity WHERE id IN (:ids)")
+    suspend fun getExistingWordIds(ids: Set<String>): List<String>
+
     @Upsert
     suspend fun upsertMeaningQuizStatsEntity(entities: List<MeaningQuizStatsEntity>)
 
     @Transaction
-    suspend fun updateWordEntities(idToProficiency: Map<String, WordProficiency>) {
-        idToProficiency.entries.forEach {
-            updateWordEntity(id = it.key, proficiency = it.value)
+    suspend fun updateMeaningQuizStats(
+        statsWithProficiency: List<Pair<MeaningQuizStatsEntity, WordProficiency>>
+    ) {
+        val ids = statsWithProficiency.map { it.first.wordId }.toSet()
+        val existingIds = getExistingWordIds(ids).toSet()
+        val filtered = statsWithProficiency.filter { it.first.wordId in existingIds }
+        upsertMeaningQuizStatsEntity(filtered.map { it.first })
+        filtered.forEach {
+            updateWordEntityMeaningProficiency(it.first.wordId, it.second)
         }
     }
 
@@ -163,6 +175,17 @@ interface WordBankDao {
 
     @Upsert
     suspend fun upsertTranslationQuizStatsEntity(entity: TranslationQuizStatsEntity)
+
+    @Transaction
+    suspend fun updateTranslationQuizStats(
+        entity: TranslationQuizStatsEntity,
+        translationProficiency: WordProficiency
+    ) {
+        getWordEntity(entity.wordId)?.let {
+            upsertTranslationQuizStatsEntity(entity)
+            updateWordEntityTranslationProficiency(entity.wordId, translationProficiency)
+        }
+    }
 
     @Transaction
     @Query(

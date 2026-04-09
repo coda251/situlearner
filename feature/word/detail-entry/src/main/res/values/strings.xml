@@ -6,4 +6,7 @@
     <string name="word_detail_screen_quiz_question">Question</string>
     <string name="word_detail_screen_your_answer">Answer</string>
     <string name="word_detail_screen_no_data">No data</string>
+    <string name="word_detail_screen_edit_word">Edit word</string>
+    <string name="word_detail_screen_delete_word_title">Delete this word?</string>
+    <string name="word_detail_screen_delete_word_desc">All example sentences associated with this word will also be deleted. Are you sure?</string>
 </resources>

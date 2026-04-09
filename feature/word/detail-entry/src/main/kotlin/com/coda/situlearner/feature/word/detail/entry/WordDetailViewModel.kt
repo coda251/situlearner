@@ -12,8 +12,10 @@ import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.core.model.data.WordWithContexts
 import com.coda.situlearner.core.model.data.mapper.proficiencyType
 import com.coda.situlearner.feature.word.detail.entry.navigation.WordDetailEntryRoute
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -26,6 +28,9 @@ internal class WordDetailViewModel(
     private val wordRepository: WordRepository,
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<WordDetailEntryRoute>()
+
+    private val _actionState = MutableStateFlow<ActionState>(ActionState.Idle)
+    val actionState: StateFlow<ActionState> = _actionState.asStateFlow()
 
     val uiState: StateFlow<WordDetailUiState> =
         wordRepository.getWordWithContexts(route.wordId).map {
@@ -43,6 +48,14 @@ internal class WordDetailViewModel(
     fun setWordViewedDate(word: Word, date: Instant = Clock.System.now()) {
         viewModelScope.launch {
             wordRepository.setWordLastViewedDate(word, date)
+        }
+    }
+
+    fun deleteWord(word: Word) {
+        viewModelScope.launch {
+            _actionState.value = ActionState.Deleting
+            wordRepository.deleteWord(word)
+            _actionState.value = ActionState.Deleted
         }
     }
 
@@ -76,4 +89,10 @@ internal sealed interface QuizStatsUiState {
         val meaningQuizStats: MeaningQuizStats?,
         val translationQuizStats: TranslationQuizStats?,
     ) : QuizStatsUiState
+}
+
+internal sealed interface ActionState {
+    data object Idle : ActionState
+    data object Deleting : ActionState
+    data object Deleted : ActionState
 }
