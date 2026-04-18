@@ -5,5 +5,5 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val wordQuizMeaningModule = module {
-    viewModel { WordQuizViewModel(get(), get()) }
+    viewModel { WordQuizViewModel(get(), get(), get()) }
 }

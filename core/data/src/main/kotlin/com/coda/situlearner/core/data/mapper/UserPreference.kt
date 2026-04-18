@@ -20,5 +20,6 @@ internal fun UserPreferenceProto.asExternalModel(
         ?: defaultRecommendedWordCount,
     wordBookSortBy = wordBookSortBy.asExternalModel(),
     playbackOnWordClick = playbackOnWordClick.asExternalModel(),
-    subtitleDisplayMode = subtitleDisplayMode.asExternalModel()
+    subtitleDisplayMode = subtitleDisplayMode.asExternalModel(),
+    quizDueMode = quizDueMode.asExternalModel()
 )

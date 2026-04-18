@@ -16,4 +16,7 @@
     <string name="home_settings_word_screen_word_book_sort_by">单词本排序</string>
     <string name="home_settings_word_screen_word_book_sort_by_count">单词数量</string>
     <string name="home_settings_word_screen_word_book_sort_by_updated_date">上次更新时间</string>
+    <string name="home_settings_word_screen_quiz_due_mode">测试范围</string>
+    <string name="home_settings_word_screen_quiz_due_mode_now">仅已到期</string>
+    <string name="home_settings_word_screen_quiz_due_mode_today">今日到期</string>
 </resources>

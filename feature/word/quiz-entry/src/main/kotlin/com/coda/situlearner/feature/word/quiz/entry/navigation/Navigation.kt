@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.coda.situlearner.core.model.data.QuizDueMode
 import com.coda.situlearner.feature.word.quiz.entry.EntryScreen
 import kotlinx.serialization.Serializable
 
@@ -19,8 +20,8 @@ fun NavController.navigateToWordQuizEntry() {
 
 fun NavGraphBuilder.wordQuizEntryScreen(
     onBack: () -> Unit,
-    onNavigateToMeaning: () -> Unit,
-    onNavigateToTranslation: () -> Unit,
+    onNavigateToMeaning: (QuizDueMode) -> Unit,
+    onNavigateToTranslation: (QuizDueMode) -> Unit,
     destination: NavGraphBuilder.() -> Unit,
 ) {
     navigation<WordQuizBaseRoute>(startDestination = WordQuizEntryRoute) {

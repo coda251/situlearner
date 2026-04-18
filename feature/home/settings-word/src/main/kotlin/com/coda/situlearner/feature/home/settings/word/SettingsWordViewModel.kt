@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.data.repository.AiStateRepository
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.model.data.Language
+import com.coda.situlearner.core.model.data.QuizDueMode
 import com.coda.situlearner.core.model.data.TranslationEvalBackend
 import com.coda.situlearner.core.model.data.TranslationEvalPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
@@ -28,6 +29,7 @@ internal class SettingsWordViewModel(
             recommendedWordCount = preference.recommendedWordCount,
             wordBookSortBy = preference.wordBookSortBy,
             quizWordCount = preference.quizWordCount,
+            quizDueMode = preference.quizDueMode,
             quizPromptTemplate = ai.quizPromptTemplate.data,
             evalPromptTemplate = ai.evalPromptTemplate.data,
             evalBackend = ai.evalBackend
@@ -83,6 +85,12 @@ internal class SettingsWordViewModel(
             aiStateRepository.setTranslationEvalBackend(evalBackend)
         }
     }
+
+    fun setQuizDueMode(quizDueMode: QuizDueMode) {
+        viewModelScope.launch {
+            preferenceRepository.setQuizDueMode(quizDueMode)
+        }
+    }
 }
 
 internal sealed interface UiState {
@@ -92,6 +100,7 @@ internal sealed interface UiState {
         val recommendedWordCount: UInt,
         val wordBookSortBy: WordBookSortBy,
         val quizWordCount: UInt,
+        val quizDueMode: QuizDueMode,
         val quizPromptTemplate: String,
         val evalPromptTemplate: String,
         val evalBackend: TranslationEvalBackend

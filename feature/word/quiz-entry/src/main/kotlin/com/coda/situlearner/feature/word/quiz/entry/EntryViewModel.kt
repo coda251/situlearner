@@ -6,7 +6,9 @@ import com.coda.situlearner.core.data.repository.AiStateRepository
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.MeaningQuizStats
+import com.coda.situlearner.core.model.data.QuizDueMode
 import com.coda.situlearner.core.model.data.TranslationQuizStats
+import com.coda.situlearner.core.model.data.mapper.toInstant
 import com.coda.situlearner.feature.word.quiz.entry.model.QuizState
 import com.coda.situlearner.feature.word.quiz.entry.model.QuizTaskByDay
 import com.coda.situlearner.feature.word.quiz.entry.model.asQuizState
@@ -36,15 +38,18 @@ internal class EntryViewModel(
     val uiState = combine(
         getMeaningQuizFlow(),
         getTranslationQuizFlow(),
-        hasChatBotFlow()
-    ) { m, t, h ->
+        hasChatBotFlow(),
+        getQuizDueModeFlow(),
+    ) { m, t, h, q ->
         // update current time when quiz stats change
-        val currentDate = Clock.System.now()
+        val now = Clock.System.now()
+        val quizDueDate = q.toInstant(now, timeZone)
         UiState.Success(
-            meaningQuizState = m.firstOrNull()?.nextQuizDate.asQuizState(currentDate),
-            translationQuizState = t.firstOrNull()?.nextQuizDate.asQuizState(currentDate),
-            tasks = (m to t).asTasks(currentDate, timeZone, dayWindow),
-            hasChatbot = h
+            meaningQuizState = m.firstOrNull()?.nextQuizDate.asQuizState(quizDueDate),
+            translationQuizState = t.firstOrNull()?.nextQuizDate.asQuizState(quizDueDate),
+            tasks = (m to t).asTasks(now, timeZone, dayWindow),
+            hasChatbot = h,
+            quizDueMode = q
         )
     }.stateIn(
         scope = viewModelScope,
@@ -77,6 +82,10 @@ internal class EntryViewModel(
     private fun hasChatBotFlow(): Flow<Boolean> = aiRepository.aiState.map {
         it.configs.isNotEmpty()
     }
+
+    private fun getQuizDueModeFlow(): Flow<QuizDueMode> = preferenceRepository.userPreference.map {
+        it.quizDueMode
+    }
 }
 
 internal sealed interface UiState {
@@ -86,5 +95,6 @@ internal sealed interface UiState {
         val translationQuizState: QuizState,
         val tasks: List<QuizTaskByDay>,
         val hasChatbot: Boolean,
+        val quizDueMode: QuizDueMode
     ) : UiState
 }

@@ -78,4 +78,12 @@ internal class LocalUserPreferenceDataSource(private val userPreference: DataSto
             }
         }
     }
+
+    override suspend fun setQuizDueModeProto(quizDueModeProto: QuizDueModeProto) {
+        userPreference.updateData {
+            it.copy {
+                this.quizDueMode = quizDueModeProto
+            }
+        }
+    }
 }

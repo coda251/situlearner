@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "com.coda.situlearner.core.datastore";
+option java_multiple_files = true;
+
+enum QuizDueModeProto {
+  QUIZ_DUE_MODE_NOW = 0;
+  QUIZ_DUE_MODE_TODAY = 1;
+}

@@ -1,7 +1,9 @@
 package com.coda.situlearner.feature.word.quiz.sentence
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.coda.situlearner.core.data.repository.AiStateRepository
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.data.repository.WordRepository
@@ -10,6 +12,7 @@ import com.coda.situlearner.core.model.data.TranslationEvalPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizPromptTemplate
 import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.Word
+import com.coda.situlearner.core.model.data.mapper.toInstant
 import com.coda.situlearner.core.model.feature.UserRating
 import com.coda.situlearner.core.model.feature.mapper.updateWith
 import com.coda.situlearner.core.model.infra.ChatMessage
@@ -19,6 +22,7 @@ import com.coda.situlearner.feature.word.quiz.sentence.domain.ChatSession
 import com.coda.situlearner.feature.word.quiz.sentence.domain.ChatStatus
 import com.coda.situlearner.feature.word.quiz.sentence.domain.GetChatSessionUseCase
 import com.coda.situlearner.feature.word.quiz.sentence.domain.QueryChatbotUseCase
+import com.coda.situlearner.feature.word.quiz.sentence.navigation.WordQuizTranslationRoute
 import com.coda.situlearner.infra.chatbot.Chatbot
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,15 +41,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
 import kotlin.time.Clock
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class QuizSentenceViewModel(
+    savedStateHandle: SavedStateHandle,
     private val wordRepository: WordRepository,
     private val userPreferenceRepository: UserPreferenceRepository,
     aiStateRepository: AiStateRepository,
     private val client: HttpClient,
 ) : ViewModel() {
+
+    private val route = savedStateHandle.toRoute<WordQuizTranslationRoute>()
 
     private val _quizEvent = MutableSharedFlow<QuizEvent>()
 
@@ -213,9 +221,14 @@ internal class QuizSentenceViewModel(
         val language = userPreferenceRepository.userPreference.firstOrNull()?.wordLibraryLanguage
             ?: return null
 
+        val dueDate = route.quizDueMode.toInstant(
+            Clock.System.now(),
+            TimeZone.currentSystemDefault()
+        )
+
         return wordRepository.getTranslationQuizWord(
             language,
-            Clock.System.now()
+            dueDate
         )
     }
 

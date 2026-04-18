@@ -1,24 +1,32 @@
 package com.coda.situlearner.feature.word.quiz.meaning
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.MeaningQuizStats
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContextView
+import com.coda.situlearner.core.model.data.mapper.toInstant
 import com.coda.situlearner.core.model.feature.UserRating
 import com.coda.situlearner.core.model.feature.mapper.updateWith
+import com.coda.situlearner.feature.word.quiz.meaning.navigation.WordQuizMeaningRoute
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
 import kotlin.time.Clock
 
 internal class WordQuizViewModel(
+    savedStateHandle: SavedStateHandle,
     private val wordRepository: WordRepository,
     private val userPreferenceRepository: UserPreferenceRepository,
 ) : ViewModel() {
+
+    private val route = savedStateHandle.toRoute<WordQuizMeaningRoute>()
 
     private val _uiState = MutableStateFlow<WordQuizUiState>(WordQuizUiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -32,9 +40,14 @@ internal class WordQuizViewModel(
     private fun getWords() {
         viewModelScope.launch {
             val preference = userPreferenceRepository.userPreference.first()
+            val dueDate = route.quizDueMode.toInstant(
+                Clock.System.now(),
+                TimeZone.currentSystemDefault()
+            )
+
             val words = wordRepository.getMeaningQuizWordWithContextsList(
                 language = preference.wordLibraryLanguage,
-                currentDate = Clock.System.now(),
+                currentDate = dueDate,
                 count = preference.quizWordCount,
             )
 

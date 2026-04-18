@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.cfg.AppConfig
 import com.coda.situlearner.core.model.data.Language
+import com.coda.situlearner.core.model.data.QuizDueMode
 import com.coda.situlearner.core.model.data.TranslationEvalBackend
 import com.coda.situlearner.core.model.data.WordBookSortBy
 import com.coda.situlearner.core.ui.util.asText
@@ -55,7 +56,8 @@ internal fun SettingsWordScreen(
         onSetQuizWordCount = viewModel::setQuizWordCount,
         onSetQuizPromptTemplate = viewModel::setTranslationQuizPromptTemplate,
         onSetEvalPromptTemplate = viewModel::setTranslationEvalPromptTemplate,
-        onSetEvalBackend = viewModel::setTranslationEvalBackend
+        onSetEvalBackend = viewModel::setTranslationEvalBackend,
+        onSetQuizDueMode = viewModel::setQuizDueMode
     )
 }
 
@@ -70,7 +72,8 @@ private fun SettingsWordScreen(
     onSetQuizWordCount: (UInt) -> Unit,
     onSetQuizPromptTemplate: (String) -> Unit,
     onSetEvalPromptTemplate: (String) -> Unit,
-    onSetEvalBackend: (TranslationEvalBackend) -> Unit
+    onSetEvalBackend: (TranslationEvalBackend) -> Unit,
+    onSetQuizDueMode: (QuizDueMode) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -95,6 +98,7 @@ private fun SettingsWordScreen(
                         recommendedWordCount = uiState.recommendedWordCount,
                         wordBookSortBy = uiState.wordBookSortBy,
                         quizWordCount = uiState.quizWordCount,
+                        quizDueMode = uiState.quizDueMode,
                         quizPromptTemplate = uiState.quizPromptTemplate,
                         evalPromptTemplate = uiState.evalPromptTemplate,
                         evalBackend = uiState.evalBackend,
@@ -104,7 +108,8 @@ private fun SettingsWordScreen(
                         onSetEvalBackend = onSetEvalBackend,
                         onSelectWordLibraryLanguage = onSelectWordLibraryLanguage,
                         onSetRecommendedWordCount = onSetRecommendedWordCount,
-                        onSetWordBookSortBy = onSetWordBookSortBy
+                        onSetWordBookSortBy = onSetWordBookSortBy,
+                        onSetQuizDueMode = onSetQuizDueMode
                     )
                 }
             }
@@ -118,6 +123,7 @@ private fun ContentBoard(
     recommendedWordCount: UInt,
     wordBookSortBy: WordBookSortBy,
     quizWordCount: UInt,
+    quizDueMode: QuizDueMode,
     quizPromptTemplate: String,
     evalPromptTemplate: String,
     evalBackend: TranslationEvalBackend,
@@ -128,6 +134,7 @@ private fun ContentBoard(
     onSetQuizPromptTemplate: (String) -> Unit,
     onSetEvalPromptTemplate: (String) -> Unit,
     onSetEvalBackend: (TranslationEvalBackend) -> Unit,
+    onSetQuizDueMode: (QuizDueMode) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -138,6 +145,7 @@ private fun ContentBoard(
         WordBookSortBySelector(wordBookSortBy, onSetWordBookSortBy)
         Indicator(R.string.home_settings_word_screen_word_quiz_indicator)
         QuizWordCountSelector(quizWordCount, onSetQuizWordCount)
+        QuizDueModeSelector(quizDueMode, onSetQuizDueMode)
         QuizPromptTemplate(quizPromptTemplate, onSetQuizPromptTemplate)
         EvalPromptTemplate(evalPromptTemplate, onSetEvalPromptTemplate)
         EvalBackendSelector(evalBackend, onSetEvalBackend)
@@ -326,6 +334,60 @@ private fun QuizWordCountSelector(
 }
 
 @Composable
+private fun QuizDueModeSelector(
+    quizDueMode: QuizDueMode,
+    onSelect: (QuizDueMode) -> Unit
+) {
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    ListItem(
+        headlineContent = {
+            Text(
+                text = stringResource(R.string.home_settings_word_screen_quiz_due_mode)
+            )
+        },
+        supportingContent = {
+            Text(
+                text = quizDueMode.asText()
+            )
+        },
+        modifier = Modifier.clickable {
+            showDialog = true
+        }
+    )
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                    }
+                ) {
+                    Text(text = stringResource(coreR.string.core_ui_ok))
+                }
+            },
+            text = {
+                Column {
+                    QuizDueMode.entries.forEach {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(
+                                selected = it == quizDueMode,
+                                onClick = { onSelect(it) },
+                            )
+                            Text(text = it.asText())
+                        }
+                    }
+                }
+            }
+        )
+    }
+}
+
+@Composable
 private fun QuizPromptTemplate(
     quizPromptTemplate: String,
     onSetQuizPromptTemplate: (String) -> Unit,
@@ -460,4 +522,10 @@ private fun TranslationEvalBackend.asText() = when (this) {
 private fun WordBookSortBy.asText() = when (this) {
     WordBookSortBy.Count -> stringResource(R.string.home_settings_word_screen_word_book_sort_by_count)
     WordBookSortBy.UpdatedDate -> stringResource(R.string.home_settings_word_screen_word_book_sort_by_updated_date)
+}
+
+@Composable
+private fun QuizDueMode.asText() = when (this) {
+    QuizDueMode.Now -> stringResource(R.string.home_settings_word_screen_quiz_due_mode_now)
+    QuizDueMode.Today -> stringResource(R.string.home_settings_word_screen_quiz_due_mode_today)
 }

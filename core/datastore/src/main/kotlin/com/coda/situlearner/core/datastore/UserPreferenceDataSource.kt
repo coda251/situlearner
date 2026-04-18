@@ -23,4 +23,6 @@ interface UserPreferenceDataSource {
     suspend fun setPlaybackOnWordClickProto(playbackOnWordClickProto: PlaybackOnWordClickProto)
 
     suspend fun setSubtitleDisplayModeProto(subtitleDisplayModeProto: SubtitleDisplayModeProto)
+
+    suspend fun setQuizDueModeProto(quizDueModeProto: QuizDueModeProto)
 }

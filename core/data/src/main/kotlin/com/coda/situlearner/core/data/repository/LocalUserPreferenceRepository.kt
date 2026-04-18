@@ -7,6 +7,7 @@ import com.coda.situlearner.core.datastore.UserPreferenceDataSource
 import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.PlaybackOnWordClick
+import com.coda.situlearner.core.model.data.QuizDueMode
 import com.coda.situlearner.core.model.data.SubtitleDisplayMode
 import com.coda.situlearner.core.model.data.ThemeColorMode
 import com.coda.situlearner.core.model.data.UserPreference
@@ -66,5 +67,9 @@ internal class LocalUserPreferenceRepository(
 
     override suspend fun setSubtitleDisplayMode(subtitleDisplayMode: SubtitleDisplayMode) {
         dataSource.setSubtitleDisplayModeProto(subtitleDisplayMode.asProto())
+    }
+
+    override suspend fun setQuizDueMode(quizDueMode: QuizDueMode) {
+        dataSource.setQuizDueModeProto(quizDueMode.asProto())
     }
 }

@@ -30,6 +30,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coda.situlearner.core.model.data.QuizDueMode
 import com.coda.situlearner.core.ui.util.asTimeText
 import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.feature.word.quiz.entry.model.QuizState
@@ -62,8 +63,8 @@ import com.coda.situlearner.core.ui.R as coreR
 @Composable
 internal fun EntryScreen(
     onBack: () -> Unit,
-    onNavigateToMeaning: () -> Unit,
-    onNavigateToTranslation: () -> Unit,
+    onNavigateToMeaning: (QuizDueMode) -> Unit,
+    onNavigateToTranslation: (QuizDueMode) -> Unit,
     viewModel: EntryViewModel = koinViewModel()
 ) {
 
@@ -82,8 +83,8 @@ internal fun EntryScreen(
 private fun EntryScreen(
     uiState: UiState,
     onBack: () -> Unit,
-    onNavigateToMeaning: () -> Unit,
-    onNavigateToTranslation: () -> Unit
+    onNavigateToMeaning: (QuizDueMode) -> Unit,
+    onNavigateToTranslation: (QuizDueMode) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -109,8 +110,8 @@ private fun EntryScreen(
                 is UiState.Success -> {
                     ContentBoard(
                         uiState = uiState,
-                        onNavigateToMeaning = onNavigateToMeaning,
-                        onNavigateToTranslation = onNavigateToTranslation,
+                        onNavigateToMeaning = { onNavigateToMeaning(uiState.quizDueMode) },
+                        onNavigateToTranslation = { onNavigateToTranslation(uiState.quizDueMode) },
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -387,7 +388,8 @@ private fun ContentBoardPreview() {
             meaningQuizState = QuizState.NeedQuiz,
             translationQuizState = QuizState.NeedQuiz,
             tasks = tasks,
-            hasChatbot = true
+            hasChatbot = true,
+            quizDueMode = QuizDueMode.Now
         ),
         onNavigateToMeaning = {},
         onNavigateToTranslation = {},

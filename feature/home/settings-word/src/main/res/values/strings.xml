@@ -16,4 +16,7 @@
     <string name="home_settings_word_screen_word_book_sort_by">Word book sort by</string>
     <string name="home_settings_word_screen_word_book_sort_by_count">Count</string>
     <string name="home_settings_word_screen_word_book_sort_by_updated_date">Updated date</string>
+    <string name="home_settings_word_screen_quiz_due_mode">Quiz due mode</string>
+    <string name="home_settings_word_screen_quiz_due_mode_now">Now</string>
+    <string name="home_settings_word_screen_quiz_due_mode_today">Today</string>
 </resources>
