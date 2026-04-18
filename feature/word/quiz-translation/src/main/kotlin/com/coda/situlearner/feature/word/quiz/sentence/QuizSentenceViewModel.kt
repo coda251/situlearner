@@ -233,16 +233,21 @@ internal class QuizSentenceViewModel(
     }
 
     private suspend fun updateTranslationQuizStats(state: EvaluateState.Data) {
+        val currentDate = Clock.System.now()
+
         val quizInfo =
             (wordRepository.getTranslationQuizStats(state.word.id)?.updateQuestionAndAnswer(
                 question = state.question,
                 answer = state.userAnswer
             ) ?: TranslationQuizStats.create(
                 wordId = state.word.id,
-                currentDate = Clock.System.now(),
+                currentDate = currentDate,
                 lastQuestion = state.question,
                 userAnswer = state.userAnswer
-            )).updateWith(state.toUserRating())
+            )).updateWith(
+                rating = state.toUserRating(),
+                currentQuizDate = currentDate
+            )
 
         wordRepository.updateTranslationQuizStats(quizInfo)
     }

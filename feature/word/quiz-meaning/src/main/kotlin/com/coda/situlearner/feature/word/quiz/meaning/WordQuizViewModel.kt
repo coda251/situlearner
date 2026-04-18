@@ -86,11 +86,12 @@ internal class WordQuizViewModel(
     private fun handelQuizResult() {
         _uiState.value = WordQuizUiState.Summarizing
         viewModelScope.launch {
+            val currentDate = Clock.System.now()
+
             val quizInfoList = buildList {
                 val infoInDb = wordRepository.getMeaningQuizStats(quizResult.keys)
                 addAll(infoInDb)
                 val keysInDb = infoInDb.map { it.wordId }.toSet()
-                val currentDate = Clock.System.now()
                 quizResult.keys.forEach {
                     if (it !in keysInDb) {
                         add(
@@ -105,7 +106,10 @@ internal class WordQuizViewModel(
 
             // update word quiz info
             val newQuizInfoList = quizInfoList.map {
-                it.updateWith(quizResult[it.wordId] ?: UserRating.Again)
+                it.updateWith(
+                    rating = quizResult[it.wordId] ?: UserRating.Again,
+                    currentDate
+                )
             }
             wordRepository.updateMeaningQuizStats(newQuizInfoList)
 

@@ -122,6 +122,7 @@ private fun predictTranslationTriggerDate(
 ): Instant? {
     var currentInterval = stats.intervalDays
     var currentEF = stats.easeFactor
+    // overdue words will be quizzed now
     var currentQuizDate = stats.nextQuizDate.coerceAtLeast(now)
 
     if (calcProficiency(currentInterval) == WordProficiency.Proficient) {
@@ -138,7 +139,7 @@ private fun predictTranslationTriggerDate(
         }
 
         // update currentQuizDate
-        currentQuizDate = calcNextQuizDate(currentInterval, currentQuizDate, now)
+        currentQuizDate = calcNextQuizDate(currentInterval, currentQuizDate)
     }
 
     return null
