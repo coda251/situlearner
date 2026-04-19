@@ -135,7 +135,7 @@ private fun TextWithClickableTokens(
  * @param onClickToken Token item (String), index of the first character of token item (Int).
  */
 @Composable
-// FIXME: seems like an internal bug in LinkAnnotation. If the token is located at the end of a
+// NOTE: seems like an internal bug in LinkAnnotation. If the token is located at the end of a
 //  line and the line is not the last line, then the click area for this token could be
 //  incorrectly positioned at the start of the line. See SubtitleListItemPreview.
 //  As a workaround, we currently use TextWithClickableTokens with deprecated ClickableText and

@@ -14,6 +14,5 @@ dependencies {
     api(libs.androidx.compose.material3)
     api(libs.coil)
     implementation(libs.coil.compose)
-    implementation(libs.kotlinx.datetime)
     implementation(libs.materialKolor)
 }
