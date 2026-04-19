@@ -20,7 +20,7 @@ suspend fun themeColorFromImage(
     getImageBitmap(url, context)?.themeColorOrNull()
 }
 
-private suspend fun getImageBitmap(
+suspend fun getImageBitmap(
     url: String,
     context: Context,
 ): ImageBitmap? {

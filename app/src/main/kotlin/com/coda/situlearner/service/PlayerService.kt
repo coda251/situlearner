@@ -3,11 +3,14 @@ package com.coda.situlearner.service
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Binder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.createBitmap
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.coda.situlearner.core.cfg.AppConfig
@@ -19,6 +22,7 @@ import com.coda.situlearner.core.model.data.PlaylistItem
 import com.coda.situlearner.core.model.data.PlaylistType
 import com.coda.situlearner.core.model.data.RepeatMode
 import com.coda.situlearner.core.model.data.ThemeColorMode
+import com.coda.situlearner.core.ui.theme.getImageBitmap
 import com.coda.situlearner.core.ui.theme.themeColorFromImage
 import com.coda.situlearner.infra.player.PlayerEngine
 import com.coda.situlearner.infra.player.PlayerState
@@ -57,6 +61,8 @@ class PlayerService : LifecycleService(), KoinComponent, PlayerState {
     private val notificationReceiver = NotificationReceiver(this)
 
     private lateinit var playerSession: PlayerSession
+    private lateinit var playerNotification: PlayerNotification
+    private lateinit var bitmapProvider: BitmapProvider
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate() {
@@ -69,13 +75,14 @@ class PlayerService : LifecycleService(), KoinComponent, PlayerState {
         }
         updateThumbnailThemeColorJob()
 
-        playerSession = PlayerSession(this)
-
+        bitmapProvider = BitmapProvider((256 * resources.displayMetrics.density).toInt())
+        playerSession = PlayerSession(this, this)
+        playerNotification = PlayerNotification(this, playerSession)
         registerReceiver(
             notificationReceiver,
             NotificationReceiver.buildFilter()
         )
-        PlayerNotification(this, this, playerSession.mediaSession).update()
+        updateSessionAndNotification()
     }
 
     override fun onBind(intent: Intent): PlayerBinder {
@@ -93,6 +100,49 @@ class PlayerService : LifecycleService(), KoinComponent, PlayerState {
     inner class PlayerBinder : Binder() {
         val state: PlayerState
             get() = this@PlayerService
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun updateSessionAndNotification() {
+        lifecycleScope.launch {
+            combine(
+                isPlaying,
+                playlist,
+                durationInMs
+            ) { playing, list, duration ->
+                Triple(
+                    playing,
+                    list.currentItem,
+                    duration
+                )
+            }.collectLatest { (playing, item, duration) ->
+                bitmapProvider.update(
+                    incomingUrl = item?.thumbnailUrl,
+                    context = this@PlayerService,
+                    onStart = {
+                        if (duration != null) {
+                            playerSession.updateMetadata(item, it, duration)
+                        }
+                        playerNotification.update(item, playing, it)
+                    },
+                    onDone = {
+                        if (duration != null) {
+                            playerSession.updateMetadata(item, it, duration)
+                        }
+                        playerNotification.update(item, playing, it)
+                    }
+                )
+            }
+        }
+
+        lifecycleScope.launch {
+            combine(
+                flow = isPlaying,
+                flow2 = positionInMs.sample(1000)
+            ) { a, b -> a to b }.collect { (a, b) ->
+                playerSession.updatePlaybackState(a, b)
+            }
+        }
     }
 
     private fun startRestorePlayerStateJob() = lifecycleScope.launch {
@@ -298,5 +348,45 @@ private class ThumbnailColorFlowProvider(
             cachedUrlToColor[url] = thumbnailColor
             return thumbnailColor
         } else return defaultColor
+    }
+}
+
+// refer to ViMusic
+private class BitmapProvider(size: Int) {
+    private var currentBitmap: Bitmap? = null
+
+    private var currentUrl: String? = null
+
+    private val defaultBitmap: Bitmap by lazy {
+        val size = size
+        createBitmap(size, size)
+    }
+
+    suspend fun update(
+        incomingUrl: String?,
+        context: Context,
+        onStart: (Bitmap) -> Unit,
+        onDone: (Bitmap) -> Unit,
+    ) {
+        if (incomingUrl != currentUrl) {
+            currentUrl = incomingUrl
+            currentBitmap = null
+        }
+
+        onStart(currentBitmap ?: defaultBitmap)
+
+        if (incomingUrl != null && currentBitmap == null) {
+            withContext(Dispatchers.IO) {
+                getImageBitmap(
+                    incomingUrl,
+                    context
+                )
+            }?.asAndroidBitmap()?.let {
+                if (incomingUrl == currentUrl) {
+                    currentBitmap = it
+                    onDone(it)
+                }
+            }
+        }
     }
 }

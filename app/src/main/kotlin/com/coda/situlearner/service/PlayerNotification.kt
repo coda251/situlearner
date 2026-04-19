@@ -9,24 +9,19 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
 import android.graphics.drawable.Icon
-import android.media.session.MediaSession
 import androidx.core.content.getSystemService
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.lifecycleScope
 import com.coda.situlearner.MainActivity
 import com.coda.situlearner.R
-import com.coda.situlearner.core.model.data.Playlist
 import com.coda.situlearner.core.model.data.PlaylistItem
 import com.coda.situlearner.infra.player.PlayerState
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 import com.coda.situlearner.core.ui.R as coreR
 
 class PlayerNotification(
-    private val playerState: PlayerState,
     private val service: LifecycleService,
-    private val mediaSession: MediaSession,
+    private val playerSession: PlayerSession,
 ) {
     companion object {
         const val NOTIFICATION_ID = 1
@@ -56,6 +51,7 @@ class PlayerNotification(
         context: Context,
         item: PlaylistItem?,
         isPlaying: Boolean,
+        bitmap: Bitmap
     ): Notification? {
         if (item == null) return null
 
@@ -63,6 +59,7 @@ class PlayerNotification(
             setContentTitle(item.name)
             setContentText(item.collectionName)
             setSmallIcon(R.mipmap.ic_launcher)
+            setLargeIcon(bitmap)
             setShowWhen(false)
             setVisibility(Notification.VISIBILITY_PUBLIC)
             setContentIntent(
@@ -109,52 +106,46 @@ class PlayerNotification(
 
             style = Notification.MediaStyle()
                 .setShowActionsInCompactView(0, 1, 2)
-                .setMediaSession(mediaSession.sessionToken)
+                .setMediaSession(playerSession.mediaSession.sessionToken)
         }
 
         return builder.build()
     }
 
+    fun update(
+        item: PlaylistItem?,
+        isPlaying: Boolean,
+        bitmap: Bitmap
+    ) {
+        val notification = build(
+            context = service,
+            item = item,
+            isPlaying = isPlaying,
+            bitmap = bitmap
+        )
 
-    fun update() {
-        service.apply {
-            lifecycleScope.launch {
-                combine(playerState.isPlaying, playerState.playlist) { t -> t }
-                    .collect { t ->
-                        val isPlaying = t[0] as Boolean
-                        val item = (t[1] as Playlist).currentItem
-
-                        val notification = build(
-                            context = this@apply,
-                            item = item,
-                            isPlaying = isPlaying
+        notification?.let {
+            if (!hasNotification) {
+                if (shouldStartForeGround) {
+                    service.startForegroundService(
+                        Intent(
+                            service,
+                            PlayerService::class.java
                         )
+                    )
+                    shouldStartForeGround = false
+                }
 
-                        notification?.let {
-                            if (!hasNotification) {
-                                if (shouldStartForeGround) {
-                                    startForegroundService(
-                                        Intent(
-                                            this@apply,
-                                            PlayerService::class.java
-                                        )
-                                    )
-                                    shouldStartForeGround = false
-                                }
-
-                                hasNotification = true
-                                startForeground(NOTIFICATION_ID, it)
-                            } else {
-                                notificationManager?.notify(NOTIFICATION_ID, notification)
-                            }
-                        } ?: let {
-                            hasNotification = false
-                            stopForeground(Service.STOP_FOREGROUND_REMOVE)
-                            shouldStartForeGround = true
-                            notificationManager?.cancel(NOTIFICATION_ID)
-                        }
-                    }
+                hasNotification = true
+                service.startForeground(NOTIFICATION_ID, it)
+            } else {
+                notificationManager?.notify(NOTIFICATION_ID, notification)
             }
+        } ?: let {
+            hasNotification = false
+            service.stopForeground(Service.STOP_FOREGROUND_REMOVE)
+            shouldStartForeGround = true
+            notificationManager?.cancel(NOTIFICATION_ID)
         }
     }
 }
