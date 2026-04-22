@@ -52,10 +52,6 @@ internal class LocalMediaRepository(
         )
     }
 
-    override suspend fun setMediaCollectionName(id: String, name: String) {
-        return mediaLibraryDao.updateMediaCollectionEntityName(id, name)
-    }
-
     override suspend fun deleteMediaCollection(id: String) {
         mediaLibraryDao.deleteMediaCollectionEntity(id)
         subtitleCacheManager.deleteSubtitleCollectionCache(id)
@@ -64,6 +60,17 @@ internal class LocalMediaRepository(
 
     override suspend fun setMediaFilesDuration(idToDuration: Map<String, Long>) {
         return mediaLibraryDao.updateMediaFileEntities(idToDuration)
+    }
+
+    override suspend fun getMediaCollection(id: String): MediaCollection? {
+        return with(coverImageCacheManager) {
+            mediaLibraryDao.getMediaCollectionEntity(id)?.asExternalModel()?.resolveUrl()
+        }
+    }
+
+    override suspend fun updateMediaCollection(collection: MediaCollection) {
+        mediaLibraryDao.updateMediaCollectionEntity(collection.asEntity())
+
     }
 
     override suspend fun cacheSubtitleFile(

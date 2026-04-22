@@ -2,7 +2,7 @@
 <resources>
     <string name="home_media_collection_screen_set_playlist">设置为播放列表</string>
     <string name="home_media_collection_screen_add_media_files">添加媒体文件</string>
-    <string name="home_media_collection_screen_rename_collection">重命名</string>
+    <string name="home_media_collection_screen_edit_collection">编辑</string>
     <string name="home_media_collection_screen_delete_collection_title">删除这个合集？</string>
     <string name="home_media_collection_screen_delete_collection_desc">单词与媒体文件的关联将会被全部删除（本地媒体文件不会删除）且不可恢复。你确定吗？</string>
 </resources>

@@ -50,12 +50,6 @@ internal class MediaCollectionViewModel(
             _actionState.value = ActionState.Deleted
         }
     }
-
-    fun setMediaCollectionName(name: String) {
-        viewModelScope.launch {
-            mediaRepository.setMediaCollectionName(route.collectionId, name)
-        }
-    }
 }
 
 internal sealed interface MediaCollectionUiState {

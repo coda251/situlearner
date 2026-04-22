@@ -13,6 +13,7 @@ dependencies {
 
     implementation(projects.feature.home.exploreEntry)
     implementation(projects.feature.home.exploreCollection)
+    implementation(projects.feature.home.mediaEdit)
     implementation(projects.feature.home.mediaEntry)
     implementation(projects.feature.home.mediaCollection)
     implementation(projects.feature.home.settingsEntry)

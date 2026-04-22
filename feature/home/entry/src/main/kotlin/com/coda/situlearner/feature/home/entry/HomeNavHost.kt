@@ -12,6 +12,8 @@ import com.coda.situlearner.feature.home.explore.entry.navigation.homeExploreEnt
 import com.coda.situlearner.feature.home.explore.entry.navigation.navigateToHomeExploreEntry
 import com.coda.situlearner.feature.home.media.collection.navigation.homeMediaCollectionScreen
 import com.coda.situlearner.feature.home.media.collection.navigation.navigateToHomeMediaCollection
+import com.coda.situlearner.feature.home.media.edit.navigation.homeMediaEditScreen
+import com.coda.situlearner.feature.home.media.edit.navigation.navigateToHomeMediaEdit
 import com.coda.situlearner.feature.home.media.entry.navigation.homeMediaEntryScreen
 import com.coda.situlearner.feature.home.settings.chatbot.navigation.homeSettingsChatbotScreen
 import com.coda.situlearner.feature.home.settings.chatbot.navigation.navigateToHomeSettingsChatbot
@@ -46,7 +48,8 @@ internal fun HomeNavHost(
         ) {
             homeMediaCollectionScreen(
                 onBack = navController::popBackStack,
-                onNavigateToExplore = navController::navigateToHomeExploreCollection
+                onNavigateToExplore = navController::navigateToHomeExploreCollection,
+                onNavigateToEdit = navController::navigateToHomeMediaEdit
             )
 
             homeExploreEntryScreen(
@@ -57,6 +60,10 @@ internal fun HomeNavHost(
                     onBack = navController::popBackStack
                 )
             }
+
+            homeMediaEditScreen(
+                onBack = navController::popBackStack
+            )
         }
 
         homeWordEntryScreen(

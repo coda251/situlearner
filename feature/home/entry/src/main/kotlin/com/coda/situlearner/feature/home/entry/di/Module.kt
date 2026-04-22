@@ -3,6 +3,7 @@ package com.coda.situlearner.feature.home.entry.di
 import com.coda.situlearner.feature.home.explore.collection.di.homeExploreCollectionModule
 import com.coda.situlearner.feature.home.explore.entry.di.homeExploreEntryModule
 import com.coda.situlearner.feature.home.media.collection.di.homeMediaCollectionModule
+import com.coda.situlearner.feature.home.media.edit.di.homeMediaEditModule
 import com.coda.situlearner.feature.home.media.entry.di.homeMediaEntryModule
 import com.coda.situlearner.feature.home.settings.chatbot.di.homeSettingsChatbotModule
 import com.coda.situlearner.feature.home.settings.entry.di.homeSettingsEntryModule
@@ -16,6 +17,7 @@ val homeEntryModules = listOf(
     homeExploreCollectionModule,
     homeExploreEntryModule,
     homeMediaCollectionModule,
+    homeMediaEditModule,
     homeMediaEntryModule,
     homeSettingsChatbotModule,
     homeSettingsEntryModule,

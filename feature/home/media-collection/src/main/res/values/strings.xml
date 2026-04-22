@@ -2,7 +2,7 @@
 <resources>
     <string name="home_media_collection_screen_set_playlist">set as playlist</string>
     <string name="home_media_collection_screen_add_media_files">add media files</string>
-    <string name="home_media_collection_screen_rename_collection">Rename</string>
+    <string name="home_media_collection_screen_edit_collection">edit</string>
     <string name="home_media_collection_screen_delete_collection_title">Delete this collection?</string>
     <string name="home_media_collection_screen_delete_collection_desc">All associations between words and media files will be deleted (local media files will not be removed) and can not be restored. Are you sure?</string>
 </resources>

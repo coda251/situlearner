@@ -38,7 +38,6 @@ import com.coda.situlearner.core.model.data.mapper.asPlaylistItem
 import com.coda.situlearner.core.ui.util.UndefinedTimeText
 import com.coda.situlearner.core.ui.util.asTimeText
 import com.coda.situlearner.core.ui.widget.BackButton
-import com.coda.situlearner.core.ui.widget.NonEmptyTextInputDialog
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 import org.koin.androidx.compose.koinViewModel
@@ -48,6 +47,7 @@ import com.coda.situlearner.core.ui.R as coreR
 internal fun MediaCollectionScreen(
     onBack: () -> Unit,
     onNavigateToExplore: (String) -> Unit,
+    onNavigateToEdit: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MediaCollectionViewModel = koinViewModel()
 ) {
@@ -61,8 +61,8 @@ internal fun MediaCollectionScreen(
         actionState = actionState,
         onBack = onBack,
         onNavigateToExplore = onNavigateToExplore,
+        onNavigateToEdit = onNavigateToEdit,
         onDeleteCollection = viewModel::deleteMediaCollection,
-        onRenameCollection = viewModel::setMediaCollectionName,
         modifier = modifier
     )
 }
@@ -76,7 +76,7 @@ private fun MediaCollectionScreen(
     onBack: () -> Unit,
     onNavigateToExplore: (String) -> Unit,
     onDeleteCollection: () -> Unit,
-    onRenameCollection: (String) -> Unit,
+    onNavigateToEdit: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(actionState) {
@@ -86,7 +86,6 @@ private fun MediaCollectionScreen(
         }
     }
 
-    var showRenameDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -118,7 +117,7 @@ private fun MediaCollectionScreen(
                                     showDeleteDialog = true
                                 },
                                 onRenameCollection = {
-                                    showRenameDialog = true
+                                    onNavigateToEdit(uiState.collection.id)
                                 }
                             )
                         }
@@ -152,19 +151,6 @@ private fun MediaCollectionScreen(
                 }
             }
         }
-    }
-
-    if (showRenameDialog && uiState is MediaCollectionUiState.Success) {
-        NonEmptyTextInputDialog(
-            text = uiState.collection.name,
-            onDismiss = {
-                showRenameDialog = false
-            },
-            onConfirm = {
-                onRenameCollection(it)
-                showRenameDialog = false
-            }
-        )
     }
 
     if (showDeleteDialog) {
@@ -249,7 +235,7 @@ private fun MoreActionMenu(
             }
         )
         DropdownMenuItem(
-            text = { Text(text = stringResource(id = R.string.home_media_collection_screen_rename_collection)) },
+            text = { Text(text = stringResource(id = R.string.home_media_collection_screen_edit_collection)) },
             leadingIcon = {
                 Icon(
                     painter = painterResource(coreR.drawable.edit_24dp_000000_fill0_wght400_grad0_opsz24),

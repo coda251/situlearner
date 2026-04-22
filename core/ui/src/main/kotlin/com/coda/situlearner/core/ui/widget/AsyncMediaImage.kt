@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,6 +29,7 @@ fun AsyncMediaImage(
     model: Any?,
     modifier: Modifier = Modifier,
     imageLoader: ImageLoader = LocalContext.current.imageLoader,
+    contentScale: ContentScale = ContentScale.Fit
 ) {
     SubcomposeAsyncImage(
         model = model,
@@ -46,7 +48,8 @@ fun AsyncMediaImage(
             MediaImageErrorPlaceHolder(
                 modifier = Modifier.fillMaxSize()
             )
-        }
+        },
+        contentScale = contentScale
     )
 }
 

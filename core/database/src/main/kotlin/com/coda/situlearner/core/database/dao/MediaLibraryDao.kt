@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.coda.situlearner.core.database.entity.MediaCollectionEntity
 import com.coda.situlearner.core.database.entity.MediaCollectionWithFilesEntity
 import com.coda.situlearner.core.database.entity.MediaFileEntity
@@ -36,9 +37,6 @@ interface MediaLibraryDao {
         insertMediaFileEntities(mediaCollectionWithFilesEntity.files)
     }
 
-    @Query("UPDATE MediaCollectionEntity SET name = :name WHERE id = :id")
-    suspend fun updateMediaCollectionEntityName(id: String, name: String)
-
     @Query("DELETE FROM MediaCollectionEntity WHERE id = :id")
     suspend fun deleteMediaCollectionEntity(id: String)
 
@@ -51,4 +49,15 @@ interface MediaLibraryDao {
             updateMediaFileEntity(it.key, it.value)
         }
     }
+
+    @Query(
+        """
+        SELECT * FROM MediaCollectionEntity
+        WHERE id = :id
+        """
+    )
+    suspend fun getMediaCollectionEntity(id: String): MediaCollectionEntity?
+
+    @Update
+    suspend fun updateMediaCollectionEntity(mediaCollectionEntity: MediaCollectionEntity)
 }

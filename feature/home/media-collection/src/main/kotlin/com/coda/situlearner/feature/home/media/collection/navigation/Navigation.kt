@@ -16,12 +16,14 @@ fun NavController.navigateToHomeMediaCollection(collection: MediaCollection) {
 
 fun NavGraphBuilder.homeMediaCollectionScreen(
     onBack: () -> Unit,
-    onNavigateToExplore: (String) -> Unit
+    onNavigateToExplore: (String) -> Unit,
+    onNavigateToEdit: (String) -> Unit
 ) {
     composable<HomeMediaCollectionRoute> {
         MediaCollectionScreen(
             onBack = onBack,
-            onNavigateToExplore = onNavigateToExplore
+            onNavigateToExplore = onNavigateToExplore,
+            onNavigateToEdit = onNavigateToEdit
         )
     }
 }

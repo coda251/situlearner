@@ -16,11 +16,13 @@ interface MediaRepository {
 
     suspend fun insertMediaCollectionWithFiles(collectionWithFiles: MediaCollectionWithFiles)
 
-    suspend fun setMediaCollectionName(id: String, name: String)
-
     suspend fun deleteMediaCollection(id: String)
 
     suspend fun setMediaFilesDuration(idToDuration: Map<String, Long>)
+
+    suspend fun getMediaCollection(id: String): MediaCollection?
+
+    suspend fun updateMediaCollection(collection: MediaCollection)
 
     suspend fun cacheSubtitleFile(
         collectionId: String,
