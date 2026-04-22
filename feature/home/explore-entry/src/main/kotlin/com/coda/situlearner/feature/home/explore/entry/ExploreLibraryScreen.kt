@@ -34,7 +34,7 @@ import com.coda.situlearner.core.model.data.MediaType
 import com.coda.situlearner.core.model.infra.SourceCollection
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
 import com.coda.situlearner.core.ui.widget.BackButton
-import com.coda.situlearner.feature.home.explore.entry.util.AudioCoverFetcher
+import com.coda.situlearner.feature.home.explore.entry.util.FetcherFactory
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -68,7 +68,7 @@ private fun ExploreLibraryScreen(
     val localImageLoader = remember {
         ImageLoader.Builder(context)
             .components {
-                add(AudioCoverFetcher.Factory())
+                add(FetcherFactory(context))
             }
             .build()
     }

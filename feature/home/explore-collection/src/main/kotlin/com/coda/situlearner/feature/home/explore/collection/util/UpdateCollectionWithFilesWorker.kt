@@ -1,13 +1,13 @@
 package com.coda.situlearner.feature.home.explore.collection.util
 
+import android.content.Context
 import androidx.core.net.toUri
 import com.coda.situlearner.core.data.repository.MediaRepository
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.MediaCollection
 import com.coda.situlearner.core.model.data.MediaFile
-import com.coda.situlearner.infra.explorer.local.util.downscale
-import com.coda.situlearner.infra.explorer.local.util.extractBitmapFrom
-import com.coda.situlearner.infra.explorer.local.util.getDurations
+import com.coda.situlearner.core.model.infra.MediaFileFormat
+import com.coda.situlearner.core.ui.util.extractBitmapFrom
 import com.coda.situlearner.infra.subkit.lang_detector.LanguageDetector
 import com.coda.situlearner.infra.subkit.processor.Processor
 import com.coda.situlearner.infra.subkit.tokenizer.Tokenizer
@@ -21,7 +21,8 @@ internal class UpdateCollectionWithFilesWorker(
     private val targetLanguage: Language,
     private val collectionId: String,
     private val mediaRepository: MediaRepository,
-    private val processor: Processor
+    private val processor: Processor,
+    private val context: Context
 ) {
 
     suspend fun doWork() {
@@ -104,7 +105,10 @@ internal class UpdateCollectionWithFilesWorker(
         withContext(Dispatchers.IO) {
             runCatching {
                 mediaCollection.originalCoverImageUrl?.let {
-                    extractBitmapFrom(it)?.downscale()?.run {
+                    // url used as path (absolute path) if the cover image is never cached
+                    val extension = it.substringAfterLast('.', "").lowercase()
+                    val isMedia = extension in MediaFileFormat.extensionToType.keys
+                    extractBitmapFrom(context, it, isMedia)?.run {
                         mediaRepository.cacheCoverImage(collectionId, this)
                     }
                 }

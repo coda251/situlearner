@@ -7,5 +7,5 @@ import org.koin.dsl.module
 
 val homeExploreCollectionModule = module {
     viewModel { ExploreCollectionViewModel(get(), get(), get()) }
-    viewModel { WorkerDialogViewModel(get(), get()) }
+    viewModel { WorkerDialogViewModel(get(), get(), get()) }
 }

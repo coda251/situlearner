@@ -58,7 +58,7 @@ internal fun EditScreen(
 private fun EditScreen(
     uiState: UiState,
     onBack: () -> Unit,
-    onSave: (MediaCollection) -> Unit,
+    onSave: (MediaCollection, MediaCollection) -> Unit,
 ) {
     var currentCollection by remember(uiState) {
         mutableStateOf(
@@ -87,7 +87,7 @@ private fun EditScreen(
                             onClick = {
                                 if (uiState is UiState.Success) {
                                     if (uiState.collection == it) onBack()
-                                    else onSave(it)
+                                    else onSave(it, uiState.collection)
                                 }
                             }
                         ) {
@@ -188,6 +188,6 @@ private fun ScreenPreview() {
             )
         ),
         onBack = {},
-        onSave = {}
+        onSave = { _, _ -> }
     )
 }

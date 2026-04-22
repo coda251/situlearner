@@ -1,5 +1,6 @@
 package com.coda.situlearner.feature.home.explore.collection
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.cfg.AppConfig
@@ -16,6 +17,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 internal class WorkerDialogViewModel(
+    private val application: Application,
     private val mediaRepository: MediaRepository,
     private val processor: Processor
 ) : ViewModel() {
@@ -52,6 +54,7 @@ internal class WorkerDialogViewModel(
                 collectionId = id,
                 mediaRepository = mediaRepository,
                 processor = processor,
+                context = application
             )
             worker.doWork()
 

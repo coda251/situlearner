@@ -13,6 +13,7 @@ dependencies {
 
     api(libs.androidx.compose.material3)
     api(libs.coil)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.coil.compose)
     implementation(libs.materialKolor)
 }

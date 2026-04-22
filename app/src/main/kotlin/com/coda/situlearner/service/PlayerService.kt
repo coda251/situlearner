@@ -8,7 +8,6 @@ import android.os.Binder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.createBitmap
 import androidx.lifecycle.LifecycleService
@@ -22,8 +21,8 @@ import com.coda.situlearner.core.model.data.PlaylistItem
 import com.coda.situlearner.core.model.data.PlaylistType
 import com.coda.situlearner.core.model.data.RepeatMode
 import com.coda.situlearner.core.model.data.ThemeColorMode
-import com.coda.situlearner.core.ui.theme.getImageBitmap
 import com.coda.situlearner.core.ui.theme.themeColorFromImage
+import com.coda.situlearner.core.ui.util.loadBitmapFromUrl
 import com.coda.situlearner.infra.player.PlayerEngine
 import com.coda.situlearner.infra.player.PlayerState
 import kotlinx.coroutines.Dispatchers
@@ -377,11 +376,11 @@ private class BitmapProvider(size: Int) {
 
         if (incomingUrl != null && currentBitmap == null) {
             withContext(Dispatchers.IO) {
-                getImageBitmap(
+                loadBitmapFromUrl(
+                    context,
                     incomingUrl,
-                    context
                 )
-            }?.asAndroidBitmap()?.let {
+            }?.let {
                 if (incomingUrl == currentUrl) {
                     currentBitmap = it
                     onDone(it)

@@ -1,8 +1,8 @@
-package com.coda.situlearner.infra.explorer.local.util
+package com.coda.situlearner.feature.home.explore.collection.util
 
 import android.media.MediaMetadataRetriever
 
-fun getDurations(paths: Set<String>): Map<String, Long?> {
+internal fun getDurations(paths: Set<String>): Map<String, Long?> {
     val retriever = MediaMetadataRetriever()
 
     val mapper = buildMap {

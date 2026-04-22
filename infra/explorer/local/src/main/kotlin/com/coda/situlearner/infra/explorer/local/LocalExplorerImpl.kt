@@ -1,6 +1,7 @@
 package com.coda.situlearner.infra.explorer.local
 
 import com.coda.situlearner.core.model.data.MediaType
+import com.coda.situlearner.core.model.infra.ImageFileFormat
 import com.coda.situlearner.core.model.infra.MediaFileFormat
 import com.coda.situlearner.core.model.infra.SourceCollection
 import com.coda.situlearner.core.model.infra.SourceCollectionWithFiles
@@ -113,22 +114,24 @@ private fun Path.mediaType(): MediaType? {
 }
 
 private fun Path.bitmapProviderPath(): Path? {
-    if (this.isRegularFile) {
-        val extension = this.extension
-        val type = MediaFileFormat.extensionToType[extension]
-        return when (type) {
-            MediaType.Audio, MediaType.Video -> this
-            else -> null
-        }
-    }
+    val imageExtensions = ImageFileFormat.entries.map { it.extension }.toSet()
+    val mediaExtensions = MediaFileFormat.entries.map { it.extension }.toSet()
 
     if (this.isDirectory) {
-        return FileSystem.SYSTEM.listOrNull(this)?.firstNotNullOfOrNull {
-            if (it.isRegularFile) it.bitmapProviderPath()
-            else null // we don't walk through all sub dirs
+        val files = FileSystem.SYSTEM.listOrNull(this) ?: return null
+
+        // 1. use existed image
+        val imageFile = files.find { it.isRegularFile && it.extension in imageExtensions }
+        if (imageFile != null) {
+            return imageFile
+        }
+
+        // 2. use media embedded image
+        val mediaFile = files.find { it.isRegularFile && it.extension in mediaExtensions }
+        if (mediaFile != null) {
+            return mediaFile
         }
     }
-
     return null
 }
 
@@ -136,7 +139,7 @@ private val Path.nameWithoutExtension: String
     get() = name.substringBeforeLast('.')
 
 private val Path.extension: String
-    get() = this.name.substringAfterLast('.', missingDelimiterValue = "")
+    get() = this.name.substringAfterLast('.', missingDelimiterValue = "").lowercase()
 
 private val Path.metadata: FileMetadata?
     get() = FileSystem.SYSTEM.metadataOrNull(this)

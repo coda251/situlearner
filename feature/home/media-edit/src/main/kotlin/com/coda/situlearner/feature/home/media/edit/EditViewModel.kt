@@ -1,15 +1,14 @@
 package com.coda.situlearner.feature.home.media.edit
 
-import androidx.core.net.toUri
+import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.coda.situlearner.core.data.repository.MediaRepository
 import com.coda.situlearner.core.model.data.MediaCollection
-import com.coda.situlearner.feature.home.media.edit.domain.ExtractBitmapUseCase
+import com.coda.situlearner.core.ui.util.extractBitmapFrom
 import com.coda.situlearner.feature.home.media.edit.navigation.HomeMediaEditRoute
-import com.coda.situlearner.infra.explorer.local.util.downscale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -17,7 +16,7 @@ import kotlinx.coroutines.launch
 internal class EditViewModel(
     savedStateHandle: SavedStateHandle,
     private val repository: MediaRepository,
-    private val extractBitmapUseCase: ExtractBitmapUseCase
+    private val application: Application,
 ) : ViewModel() {
 
     private val route = savedStateHandle.toRoute<HomeMediaEditRoute>()
@@ -41,14 +40,16 @@ internal class EditViewModel(
         }
     }
 
-    fun updateCollection(collection: MediaCollection) {
+    fun updateCollection(cur: MediaCollection, orig: MediaCollection) {
         viewModelScope.launch {
             _uiState.value = UiState.Saving
-            repository.updateMediaCollection(collection)
-            collection.originalCoverImageUrl?.toUri()?.let {
-                extractBitmapUseCase(it)
-            }?.let {
-                repository.cacheCoverImage(collection.id, it.downscale())
+            repository.updateMediaCollection(cur)
+            if (cur.originalCoverImageUrl != orig.originalCoverImageUrl) {
+                cur.originalCoverImageUrl?.let {
+                    extractBitmapFrom(application, it, false)
+                }?.let {
+                    repository.cacheCoverImage(cur.id, it)
+                }
             }
             _uiState.value = UiState.Saved
         }
