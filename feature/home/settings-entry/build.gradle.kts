@@ -14,4 +14,5 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.network)
     implementation(libs.androidx.documentfile)
+    implementation(libs.compose.markdown)
 }

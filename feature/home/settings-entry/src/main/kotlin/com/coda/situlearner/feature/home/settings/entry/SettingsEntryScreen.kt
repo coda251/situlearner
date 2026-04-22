@@ -37,6 +37,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.feature.home.settings.entry.model.ExportState
 import com.coda.situlearner.feature.home.settings.entry.model.VersionState
+import dev.jeziellago.compose.markdowntext.MarkdownText
 import org.koin.androidx.compose.koinViewModel
 import com.coda.situlearner.core.ui.R as coreR
 
@@ -139,6 +140,7 @@ private fun SettingsContentBoard(
         ChatbotConfigItem(onClickChatbot)
         ExportDataItem(exportState, snackbarHostState, onExport, onResetExportState)
         AppVersionCheckItem(versionState, onCheckUpdate)
+        AboutItem()
     }
 }
 
@@ -393,6 +395,59 @@ private fun ExportDataItem(
             text = {
                 Text(text = stringResource(R.string.home_settings_entry_screen_exporting_data))
             }
+        )
+    }
+}
+
+@Composable
+private fun AboutItem() {
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    ListItem(
+        headlineContent = {
+            Text(
+                text = stringResource(R.string.home_settings_entry_screen_about)
+            )
+        },
+        supportingContent = {
+            Text(
+                text = stringResource(R.string.home_settings_entry_screen_about_desc)
+            )
+        },
+        leadingContent = {
+            Icon(
+                painter = painterResource(R.drawable.info_24dp_000000_fill0_wght400_grad0_opsz24),
+                contentDescription = null
+            )
+        },
+        modifier = Modifier.clickable {
+            showDialog = true
+        }
+    )
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialog = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                    }
+                ) {
+                    Text(text = stringResource(coreR.string.core_ui_ok))
+                }
+            },
+            dismissButton = {},
+            title = {
+                Text(text = stringResource(R.string.home_settings_entry_screen_about))
+            },
+            text = {
+                MarkdownText(markdown = stringResource(R.string.home_settings_entry_screen_about_dialog_desc))
+            },
         )
     }
 }

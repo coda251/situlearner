@@ -22,4 +22,18 @@
     <string name="home_settings_entry_screen_player_desc">播放状态、字幕界面相关配置</string>
     <string name="home_settings_entry_screen_theme">主题</string>
     <string name="home_settings_entry_screen_theme_desc">颜色主题与深色模式</string>
+    <string name="home_settings_entry_screen_about">关于SituLearner</string>
+    <string name="home_settings_entry_screen_about_desc">设计与使用</string>
+    <string name="home_settings_entry_screen_about_dialog_desc">
+    <![CDATA[
+        SituLearner将“紧密关联单词和语境”作为主要目标，
+        以真实例句为素材提供单词推荐、回声、测验等功能，
+        **力求将语言学习融入鲜活、直观且引人入胜的情境中**。
+        使用者需要自行准备好音视频文件和相应的字幕文件，
+        更多细节见[github仓库](https://github.com/coda251/situlearner)。
+        本项目基于AGPL-3.0开源协议开源。
+        最后，感谢app中涉及的网络词典服务以及其它开源库。
+        祝学习愉快:)
+    ]]>
+    </string>
 </resources>

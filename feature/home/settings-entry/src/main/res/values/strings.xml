@@ -22,4 +22,19 @@
     <string name="home_settings_entry_screen_player_desc">Player state and subtitle ui related settings</string>
     <string name="home_settings_entry_screen_theme">Theme</string>
     <string name="home_settings_entry_screen_theme_desc">Color theme and dark mode</string>
+    <string name="home_settings_entry_screen_about">About SituLearner</string>
+    <string name="home_settings_entry_screen_about_desc">Design and usage</string>
+    <string name="home_settings_entry_screen_about_dialog_desc">
+    <![CDATA[
+        SituLearner is designed to build a strong connection between vocabulary and context.
+        By using authentic example sentences as its core material,
+        the app offers features such as vocabulary recommendations, echoing, and quizzes,
+        **aiming to immerse learners in language environments that are vivid, intuitive, and engaging**.
+        Users will need to provide their own audio/video files and corresponding subtitle files.
+        For more details, please visit the [GitHub repository](https://github.com/coda251/situlearner).
+        This project is open-sourced under the AGPL-3.0 license.
+        Finally, sincere thanks go to the online dictionary services and other open-source libraries used in this app.
+        Happy learning:)
+    ]]>
+    </string>
 </resources>
