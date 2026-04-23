@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coda.situlearner.core.model.data.PlaybackOnWordClick
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.data.mapper.asWordInfo
 import com.coda.situlearner.core.model.infra.RemoteWordInfoState
@@ -47,6 +48,7 @@ import com.coda.situlearner.core.ui.widget.WordInfoDetailItem
 import com.coda.situlearner.core.ui.widget.WordInfoEmptyItem
 import com.coda.situlearner.core.ui.widget.WordTranslationBoard
 import com.coda.situlearner.infra.player.PlayerState
+import com.coda.situlearner.infra.player.PlayerState.Companion.TIME_UNSET
 import com.coda.situlearner.infra.player.PlayerStateProvider
 import org.koin.androidx.compose.koinViewModel
 
@@ -58,6 +60,7 @@ internal fun PlayerWordBottomSheet(
     val route = viewModel.route
     val wordContextUiState by viewModel.wordContextUiState.collectAsStateWithLifecycle()
     val wordQueryUiState by viewModel.wordQueryUiState.collectAsStateWithLifecycle()
+    val preferenceUiState by viewModel.preferenceUiState.collectAsStateWithLifecycle()
     val playerState by PlayerStateProvider.state.collectAsStateWithLifecycle()
 
     PlayerWordBottomSheet(
@@ -68,7 +71,22 @@ internal fun PlayerWordBottomSheet(
         wordQueryUiState = wordQueryUiState,
         onAddWordContext = viewModel::insertWordWithContext,
         onDeleteWordContext = viewModel::deleteWordContext,
-        onDismiss = onDismiss,
+        onDismiss = {
+            when (val uiState = preferenceUiState) {
+                PreferenceUiState.Loading -> {}
+                is PreferenceUiState.Result -> {
+                    when (uiState.playbackOnWordClick) {
+                        PlaybackOnWordClick.Pause -> playerState.play()
+                        PlaybackOnWordClick.Unchange -> {}
+                        PlaybackOnWordClick.PlayInLoop -> playerState.setPlaybackLoop(
+                            TIME_UNSET,
+                            TIME_UNSET
+                        )
+                    }
+                }
+            }
+            onDismiss()
+        },
     )
 }
 
@@ -172,9 +190,11 @@ private fun PlayerWordScreen(
             modifier = Modifier.padding(horizontal = 12.dp)
         )
 
-        Box(modifier = Modifier
-            .weight(1f)
-            .fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
             when (wordQueryUiState) {
                 WordQueryUiState.NoTranslatorError -> {}
 

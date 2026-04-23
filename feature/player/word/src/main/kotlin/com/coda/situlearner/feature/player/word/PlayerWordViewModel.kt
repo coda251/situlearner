@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.coda.situlearner.core.cfg.AppConfig
+import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.data.repository.WordRepository
 import com.coda.situlearner.core.model.data.Language
+import com.coda.situlearner.core.model.data.PlaybackOnWordClick
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
 import com.coda.situlearner.core.model.infra.WordInfo
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -27,6 +30,7 @@ import kotlin.uuid.Uuid
 internal class PlayerWordViewModel(
     savedStateHandle: SavedStateHandle,
     private val wordRepository: WordRepository,
+    preferenceRepository: UserPreferenceRepository,
     defaultTargetLanguage: Language = AppConfig.targetLanguage
 ) : ViewModel() {
 
@@ -84,6 +88,14 @@ internal class PlayerWordViewModel(
         initialValue = WordQueryUiState.Loading
     )
 
+    val preferenceUiState = preferenceRepository.userPreference.map {
+        PreferenceUiState.Result(it.playbackOnWordClick)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000L),
+        initialValue = PreferenceUiState.Loading
+    )
+
     fun insertWordWithContext(wordInfo: WordInfo?) {
         viewModelScope.launch {
             val wordWithContext = createWordWithContext(wordInfo)
@@ -124,6 +136,11 @@ internal class PlayerWordViewModel(
 
         return word to wordContext
     }
+}
+
+internal sealed interface PreferenceUiState {
+    data object Loading : PreferenceUiState
+    data class Result(val playbackOnWordClick: PlaybackOnWordClick) : PreferenceUiState
 }
 
 internal sealed interface WordContextUiState {

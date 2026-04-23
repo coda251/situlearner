@@ -5,5 +5,5 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val playerWordModule = module {
-    viewModel { PlayerWordViewModel(get(), get()) }
+    viewModel { PlayerWordViewModel(get(), get(), get()) }
 }

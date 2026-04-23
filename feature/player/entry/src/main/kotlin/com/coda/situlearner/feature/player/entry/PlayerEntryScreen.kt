@@ -24,7 +24,6 @@ import com.coda.situlearner.core.model.data.PlaybackOnWordClick
 import com.coda.situlearner.core.model.infra.Subtitle
 import com.coda.situlearner.core.model.infra.Token
 import com.coda.situlearner.infra.player.PlayerState
-import com.coda.situlearner.infra.player.PlayerState.Companion.TIME_UNSET
 import com.coda.situlearner.infra.player.PlayerStateProvider
 import org.koin.androidx.compose.koinViewModel
 
@@ -71,21 +70,6 @@ private fun PlayerEntryScreen(
     // from player bottom sheet back to player entry screen
     var activeTokenId by remember(resetTokenFlag) {
         mutableStateOf(Pair(-1, -1))
-    }
-    LaunchedEffect(resetTokenFlag) {
-        when (settingsUiState) {
-            PlayerSettingsUiState.Loading -> {}
-            is PlayerSettingsUiState.Success -> {
-                when (settingsUiState.playbackOnWordClick) {
-                    PlaybackOnWordClick.Pause -> playerState.play()
-                    PlaybackOnWordClick.Unchange -> {}
-                    PlaybackOnWordClick.PlayInLoop -> playerState.setPlaybackLoop(
-                        TIME_UNSET,
-                        TIME_UNSET
-                    )
-                }
-            }
-        }
     }
 
     Scaffold(
