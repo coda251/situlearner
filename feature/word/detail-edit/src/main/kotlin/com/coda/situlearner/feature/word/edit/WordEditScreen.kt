@@ -2,7 +2,6 @@ package com.coda.situlearner.feature.word.edit
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -23,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -280,7 +281,6 @@ private fun MeaningsPanel(
     onDelete: (WordMeaning) -> Unit,
 ) {
     var editingItem by remember { mutableStateOf<WordMeaning?>(null) }
-    var deletingItem by remember { mutableStateOf<WordMeaning?>(null) }
     var showAddDialog by remember { mutableStateOf(false) }
 
     LazyColumn {
@@ -303,9 +303,8 @@ private fun MeaningsPanel(
             ListItem(
                 headlineContent = { Text(text = it.definition) },
                 overlineContent = { Text(text = it.partOfSpeechTag) },
-                modifier = Modifier.combinedClickable(
+                modifier = Modifier.clickable(
                     onClick = { editingItem = it },
-                    onLongClick = { deletingItem = it }
                 ),
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent)
             )
@@ -316,11 +315,15 @@ private fun MeaningsPanel(
         MeaningDialog(
             meaning = WordMeaning("", ""),
             currentPOSTags = meanings.map { it.partOfSpeechTag }.toSet(),
+            showDeleteOption = false,
             onConfirm = {
                 onAdd(it)
                 showAddDialog = false
             },
-            onDismiss = { showAddDialog = false }
+            onDelete = {},
+            onDismiss = {
+                showAddDialog = false
+            }
         )
     }
 
@@ -329,25 +332,16 @@ private fun MeaningsPanel(
             meaning = m,
             currentPOSTags = meanings.map { it.partOfSpeechTag }.filter { it != m.partOfSpeechTag }
                 .toSet(),
+            showDeleteOption = true,
             onConfirm = {
                 if (m != it) onChange(m, it)
                 editingItem = null
             },
+            onDelete = {
+                onDelete(m)
+                editingItem = null
+            },
             onDismiss = { editingItem = null }
-        )
-    }
-
-    deletingItem?.let {
-        DeleteDialog(
-            text = stringResource(
-                R.string.word_edit_screen_delete,
-                stringResource(coreR.string.core_ui_meanings).lowercase()
-            ),
-            onDismiss = { deletingItem = null },
-            onConfirm = {
-                onDelete(it)
-                deletingItem = null
-            }
         )
     }
 }
@@ -362,7 +356,6 @@ private fun PronunciationPanel(
 ) {
     var editingItem by remember { mutableStateOf<String?>(null) }
     var showAddDialog by remember { mutableStateOf(false) }
-    var deletingItem by remember { mutableStateOf<String?>(null) }
 
     Column(modifier = modifier) {
         ListItem(
@@ -387,17 +380,6 @@ private fun PronunciationPanel(
                     selected = false,
                     onClick = { editingItem = it },
                     label = { Text(text = it) },
-                    trailingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.close_24dp_000000_fill0_wght400_grad0_opsz24),
-                            contentDescription = null,
-                            // since chip intercepts the other click event,
-                            // so this is a workaround in ui to delete the pronunciation
-                            modifier = Modifier.clickable {
-                                deletingItem = it
-                            }
-                        )
-                    }
                 )
             }
         }
@@ -414,20 +396,6 @@ private fun PronunciationPanel(
         )
     }
 
-    deletingItem?.let {
-        DeleteDialog(
-            text = stringResource(
-                R.string.word_edit_screen_delete,
-                stringResource(R.string.word_edit_screen_pronunciation).lowercase()
-            ),
-            onConfirm = {
-                onDelete(it)
-                deletingItem = null
-            },
-            onDismiss = { deletingItem = null }
-        )
-    }
-
     editingItem?.let { s ->
         NonEmptyTextInputDialog(
             text = s,
@@ -437,7 +405,18 @@ private fun PronunciationPanel(
                 }
                 editingItem = null
             },
-            onDismiss = { editingItem = null }
+            onDismiss = { editingItem = null },
+            extra = {
+                TextButton(
+                    onClick = {
+                        onDelete(s)
+                        editingItem = null
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(text = stringResource(coreR.string.core_ui_delete))
+                }
+            }
         )
     }
 }
@@ -447,6 +426,8 @@ private fun MeaningDialog(
     meaning: WordMeaning,
     currentPOSTags: Set<String>,
     onConfirm: (WordMeaning) -> Unit,
+    showDeleteOption: Boolean,
+    onDelete: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -497,6 +478,16 @@ private fun MeaningDialog(
                 }
             ) {
                 Text(text = stringResource(coreR.string.core_ui_confirm))
+            }
+        },
+        dismissButton = {
+            if (showDeleteOption) {
+                TextButton(
+                    onClick = onDelete,
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(text = stringResource(coreR.string.core_ui_delete))
+                }
             }
         },
         text = {
@@ -564,32 +555,6 @@ private fun MeaningDialog(
         delay(200)
         focusRequester.requestFocus()
     }
-}
-
-@Composable
-private fun DeleteDialog(
-    text: String,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(
-                onClick = onConfirm
-            ) {
-                Text(text = stringResource(coreR.string.core_ui_confirm))
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss
-            ) {
-                Text(text = stringResource(coreR.string.core_ui_cancel))
-            }
-        },
-        title = { Text(text = text) }
-    )
 }
 
 private fun WordInfo.copyFromUserInput(

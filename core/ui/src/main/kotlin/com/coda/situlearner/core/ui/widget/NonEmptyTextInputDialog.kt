@@ -28,6 +28,7 @@ fun NonEmptyTextInputDialog(
     text: String,
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
+    extra: @Composable (() -> Unit)? = null,
 ) {
     val focusRequester = remember { FocusRequester() }
 
@@ -58,6 +59,7 @@ fun NonEmptyTextInputDialog(
                 Text(text = stringResource(R.string.core_ui_confirm))
             }
         },
+        dismissButton = extra,
         text = {
             OutlinedTextField(
                 value = currentText,
