@@ -20,6 +20,7 @@ import com.coda.situlearner.feature.word.list.entry.di.wordListEntryModule
 import com.coda.situlearner.feature.word.quiz.entry.di.wordQuizEntryModule
 import com.coda.situlearner.feature.word.quiz.meaning.di.wordQuizMeaningModule
 import com.coda.situlearner.feature.word.quiz.sentence.di.wordQuizTranslationModule
+import com.coda.situlearner.feature.word.search.di.wordSearchModule
 import com.coda.situlearner.infra.explorer.local.di.exploreLocalModule
 import com.coda.situlearner.infra.player.di.playerModule
 import com.coda.situlearner.infra.subkit.processor.di.processorModule
@@ -47,7 +48,8 @@ private val featureModules = listOf(
     wordListEntryModule,
     wordQuizEntryModule,
     wordQuizMeaningModule,
-    wordQuizTranslationModule
+    wordQuizTranslationModule,
+    wordSearchModule
 ) + homeEntryModules
 
 private val infraModules = listOf(

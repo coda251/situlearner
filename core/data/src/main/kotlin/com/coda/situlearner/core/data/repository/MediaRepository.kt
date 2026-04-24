@@ -34,4 +34,6 @@ interface MediaRepository {
         collectionId: String,
         bitmap: Bitmap
     )
+
+    suspend fun getAllMediaCollectionWithFiles(): List<MediaCollectionWithFiles>
 }

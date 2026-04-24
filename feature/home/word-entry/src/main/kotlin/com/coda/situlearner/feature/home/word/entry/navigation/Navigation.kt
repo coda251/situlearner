@@ -25,6 +25,7 @@ fun NavGraphBuilder.homeWordEntryScreen(
     onNavigateToWordList: (WordListType, String?, WordProficiencyType?) -> Unit,
     onNavigateToWordDetail: (String, WordProficiencyType) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
+    onNavigateToWordSearch: () -> Unit,
     destination: NavGraphBuilder.() -> Unit,
 ) {
     navigation<HomeWordBaseRoute>(startDestination = HomeWordEntryRoute) {
@@ -34,6 +35,7 @@ fun NavGraphBuilder.homeWordEntryScreen(
                 onNavigateToWordDetail = onNavigateToWordDetail,
                 onNavigateToWordQuiz = onNavigateToWordQuiz,
                 onNavigateToWordList = { type, id -> onNavigateToWordList(type, id, null) },
+                onNavigateToWordSearch = onNavigateToWordSearch
             )
         }
 

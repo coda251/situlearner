@@ -17,10 +17,24 @@ fun WordContextText(
         fontWeight = FontWeight.SemiBold
     ),
 ) {
-    val subtitleSourceText = wordContext.subtitleSourceText
-    val startIndex = wordContext.wordStartIndex
-    val endIndex = wordContext.wordEndIndex
+    WordContextText(
+        subtitleSourceText = wordContext.subtitleSourceText,
+        startIndex = wordContext.wordStartIndex,
+        endIndex = wordContext.wordEndIndex,
+        spanStyle = spanStyle
+    )
+}
 
+@Composable
+fun WordContextText(
+    subtitleSourceText: String,
+    startIndex: Int,
+    endIndex: Int,
+    spanStyle: SpanStyle = SpanStyle(
+        color = MaterialTheme.colorScheme.primary,
+        fontWeight = FontWeight.SemiBold
+    ),
+) {
     val annotatedText = AnnotatedString.Builder().apply {
         append(subtitleSourceText.substring(0, startIndex))
         withStyle(style = spanStyle) {

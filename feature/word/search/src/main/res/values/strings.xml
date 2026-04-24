@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="word_search_screen_empty_result">No matched words. Try to adjust query.</string>
+</resources>

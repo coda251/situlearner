@@ -60,4 +60,7 @@ interface MediaLibraryDao {
 
     @Update
     suspend fun updateMediaCollectionEntity(mediaCollectionEntity: MediaCollectionEntity)
+
+    @Query("SELECT * FROM MediaCollectionEntity")
+    suspend fun getAllMediaCollectionWithFilesEntities(): List<MediaCollectionWithFilesEntity>
 }

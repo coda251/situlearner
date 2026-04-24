@@ -28,22 +28,12 @@ internal class LocalMediaRepository(
 
     override fun getMediaCollectionWithFilesById(id: String): Flow<MediaCollectionWithFiles?> {
         return mediaLibraryDao.getMediaCollectionWithFilesEntityById(id)
-            .map { it?.asExternalModel() }.map {
-                it?.copy(
-                    collection = coverImageCacheManager.run { it.collection.resolveUrl() },
-                    files = it.files.map { subtitleCacheManager.run { it.resolveUrl() } }
-                )
-            }
+            .map { it?.asExternalModel()?.resolveUrl() }
     }
 
     override fun getMediaCollectionWithFilesByUrl(url: String): Flow<MediaCollectionWithFiles?> {
         return mediaLibraryDao.getMediaCollectionWithFilesEntityByUrl(url)
-            .map { it?.asExternalModel() }.map {
-                it?.copy(
-                    collection = coverImageCacheManager.run { it.collection.resolveUrl() },
-                    files = it.files.map { subtitleCacheManager.run { it.resolveUrl() } }
-                )
-            }
+            .map { it?.asExternalModel()?.resolveUrl() }
     }
 
     override suspend fun insertMediaCollectionWithFiles(collectionWithFiles: MediaCollectionWithFiles) {
@@ -86,4 +76,15 @@ internal class LocalMediaRepository(
     override suspend fun cacheCoverImage(collectionId: String, bitmap: Bitmap) {
         coverImageCacheManager.addCoverImageCache(collectionId, bitmap)
     }
+
+    override suspend fun getAllMediaCollectionWithFiles(): List<MediaCollectionWithFiles> {
+        return mediaLibraryDao.getAllMediaCollectionWithFilesEntities().map {
+            it.asExternalModel().resolveUrl()
+        }
+    }
+
+    private fun MediaCollectionWithFiles.resolveUrl() = this.copy(
+        collection = coverImageCacheManager.run { collection.resolveUrl() },
+        files = files.map { subtitleCacheManager.run { it.resolveUrl() } }
+    )
 }

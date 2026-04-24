@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="word_search_screen_empty_result">无匹配结果。可尝试调整查询单词</string>
+</resources>

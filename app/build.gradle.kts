@@ -51,6 +51,7 @@ dependencies {
     implementation(projects.feature.word.quizEntry)
     implementation(projects.feature.word.quizMeaning)
     implementation(projects.feature.word.quizTranslation)
+    implementation(projects.feature.word.search)
 
     implementation(projects.infra.explorer.local)
     implementation(projects.infra.player)

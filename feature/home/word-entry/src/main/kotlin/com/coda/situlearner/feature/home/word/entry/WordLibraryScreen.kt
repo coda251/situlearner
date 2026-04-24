@@ -76,6 +76,7 @@ internal fun WordLibraryScreen(
     onNavigateToWordList: (WordListType, String?) -> Unit,
     onNavigateToWordDetail: (String, WordProficiencyType) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
+    onNavigateToWordSearch: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WordLibraryViewModel = koinViewModel()
 ) {
@@ -99,6 +100,7 @@ internal fun WordLibraryScreen(
         onQuiz = onNavigateToWordQuiz,
         onSetOffset = viewModel::setWordsOffset,
         onChangeLanguage = viewModel::setWordLibraryLanguage,
+        onSearch = onNavigateToWordSearch,
         modifier = modifier,
     )
 }
@@ -114,6 +116,7 @@ private fun WordLibraryScreen(
     onQuiz: () -> Unit,
     onSetOffset: (Int) -> Unit,
     onChangeLanguage: (Language) -> Unit,
+    onSearch: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -126,7 +129,14 @@ private fun WordLibraryScreen(
                 actions = {
                     when (booksUiState) {
                         is WordBooksUiState.Success -> {
-                            IconButton(onClick = onQuiz) {
+                            IconButton(onSearch) {
+                                Icon(
+                                    painter = painterResource(coreR.drawable.search_24dp_000000_fill0_wght400_grad0_opsz24),
+                                    contentDescription = null
+                                )
+                            }
+
+                            IconButton(onQuiz) {
                                 Icon(
                                     painter = painterResource(R.drawable.quiz_24dp_000000_fill0_wght400_grad0_opsz24),
                                     contentDescription = null
@@ -446,7 +456,8 @@ private fun WordLibraryScreenContentPreview() {
             )
         },
         onChangeLanguage = {},
-        onQuiz = {}
+        onQuiz = {},
+        onSearch = {}
     )
 }
 
@@ -480,6 +491,7 @@ private fun WordLibraryScreenEmptyPreview() {
                 }
             }
         },
-        onQuiz = {}
+        onQuiz = {},
+        onSearch = {}
     )
 }

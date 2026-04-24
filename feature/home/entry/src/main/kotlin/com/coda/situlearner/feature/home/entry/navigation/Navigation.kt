@@ -15,6 +15,7 @@ fun NavGraphBuilder.homeEntryScreen(
     onNavigateToWordDetail: (String, WordProficiencyType) -> Unit,
     onNavigateToPlayer: () -> Unit,
     onNavigateToWordQuiz: () -> Unit,
+    onNavigateToWordSearch: () -> Unit,
 ) {
     composable<HomeEntryRoute> {
         HomeScreen(
@@ -22,6 +23,7 @@ fun NavGraphBuilder.homeEntryScreen(
             onNavigateToWordDetail = onNavigateToWordDetail,
             onNavigateToPlayer = onNavigateToPlayer,
             onNavigateToWordQuiz = onNavigateToWordQuiz,
+            onNavigateToWordSearch = onNavigateToWordSearch
         )
     }
 }

@@ -43,6 +43,9 @@ import com.coda.situlearner.feature.word.quiz.meaning.navigation.navigateToWordQ
 import com.coda.situlearner.feature.word.quiz.meaning.navigation.wordQuizMeaningScreen
 import com.coda.situlearner.feature.word.quiz.sentence.navigation.navigateToWordQuizTranslation
 import com.coda.situlearner.feature.word.quiz.sentence.navigation.wordQuizTranslationScreen
+import com.coda.situlearner.feature.word.search.navigation.WordSearchRoute
+import com.coda.situlearner.feature.word.search.navigation.navigateToWordSearch
+import com.coda.situlearner.feature.word.search.navigation.wordSearchScreen
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 
@@ -65,6 +68,7 @@ fun AppNavHost(
             onNavigateToWordDetail = appNavController::navigateToWordDetailEntry,
             onNavigateToPlayer = appNavController::navigateToPlayerEntry,
             onNavigateToWordQuiz = appNavController::navigateToWordQuizEntry,
+            onNavigateToWordSearch = appNavController::navigateToWordSearch
         )
 
         wordListEntryScreen(
@@ -110,6 +114,11 @@ fun AppNavHost(
             )
         }
 
+        wordSearchScreen(
+            onBack = appNavController::popBackStack,
+            onNavigateToPlayer = appNavController::navigateToPlayerEntry
+        )
+
         playerEntryScreen(
             resetTokenFlagProvider = { resetTokenFlag },
             onBack = appNavController::popBackStack,
@@ -148,7 +157,8 @@ private fun SwitchPlaylistType(
             if (navBackStack.any {
                     it.destination.hasRoute(WordDetailBaseRoute::class) ||
                             it.destination.hasRoute(WordListBaseRoute::class) ||
-                            it.destination.hasRoute(WordQuizBaseRoute::class)
+                            it.destination.hasRoute(WordQuizBaseRoute::class) ||
+                            it.destination.hasRoute(WordSearchRoute::class)
                 }) PlaylistType.Temporary
             else PlaylistType.Persistent
         }

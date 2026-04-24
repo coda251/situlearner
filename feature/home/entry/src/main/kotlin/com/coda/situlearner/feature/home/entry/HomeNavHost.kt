@@ -34,6 +34,7 @@ internal fun HomeNavHost(
     onNavigateToWordList: (WordListType, String?, WordProficiencyType?) -> Unit,
     onNavigateToWordDetail: (String, WordProficiencyType) -> Unit,
     onNavigateToWordQuiz: () -> Unit,
+    onNavigateToWordSearch: () -> Unit,
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
@@ -71,6 +72,7 @@ internal fun HomeNavHost(
             onNavigateToWordBook = navController::navigateToHomeWordBook,
             onNavigateToWordQuiz = onNavigateToWordQuiz,
             onNavigateToWordList = onNavigateToWordList,
+            onNavigateToWordSearch = onNavigateToWordSearch
         ) {
             homeWordBookScreen(
                 onBack = navController::popBackStack,
