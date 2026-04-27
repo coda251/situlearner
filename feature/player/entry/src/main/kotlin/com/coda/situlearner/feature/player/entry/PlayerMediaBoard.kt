@@ -9,11 +9,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -26,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.MediaType
@@ -39,6 +43,7 @@ import kotlinx.coroutines.delay
 internal fun PlayerMediaBoard(
     playerState: PlayerState,
     onBack: () -> Unit,
+    onFullscreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val playlist by playerState.playlist.collectAsStateWithLifecycle()
@@ -57,6 +62,7 @@ internal fun PlayerMediaBoard(
                 PlayerVideoBoard(
                     playerState,
                     onBack = onBack,
+                    onFullscreen = onFullscreen,
                     modifier = modifier
                 )
             }
@@ -68,6 +74,7 @@ internal fun PlayerMediaBoard(
 private fun PlayerVideoBoard(
     playerState: PlayerState,
     onBack: () -> Unit,
+    onFullscreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showController by remember {
@@ -101,17 +108,35 @@ private fun PlayerVideoBoard(
             exit = fadeOut()
         ) {
             CompositionLocalProvider(LocalContentColor provides Color.White) {
-                NavigationControllerTopBar(
-                    onBack = onBack,
-                    modifier = Modifier.background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Black.copy(alpha = 0.6f),
-                                Color.Transparent
+                Box(modifier = Modifier.fillMaxSize()) {
+                    NavigationControllerTopBar(
+                        onBack = onBack,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color.Black.copy(alpha = 0.6f),
+                                        Color.Transparent
+                                    )
+                                )
                             )
-                        )
                     )
-                )
+
+                    NavigationControllerBottomBar(
+                        onFullscreen = onFullscreen,
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color.Transparent,
+                                        Color.Black.copy(alpha = 0.6f),
+                                    )
+                                )
+                            )
+                    )
+                }
             }
         }
     }
@@ -156,5 +181,30 @@ private fun NavigationControllerTopBar(
                 .align(Alignment.CenterStart)
                 .padding(start = 4.dp)
         )
+    }
+}
+
+@Composable
+private fun NavigationControllerBottomBar(
+    onFullscreen: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+            .then(modifier),
+    ) {
+        IconButton(
+            onClick = onFullscreen,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 4.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.fullscreen_24dp_000000_fill0_wght400_grad0_opsz24),
+                contentDescription = null
+            )
+        }
     }
 }

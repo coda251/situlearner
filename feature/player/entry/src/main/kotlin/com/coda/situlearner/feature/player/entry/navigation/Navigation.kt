@@ -25,6 +25,7 @@ fun NavGraphBuilder.playerEntryScreen(
     onBack: () -> Unit,
     onNavigateToPlaylist: () -> Unit,
     onNavigateToPlayerWord: (Token, Subtitle, Language, String) -> Unit,
+    onNavigateToFullscreen: () -> Unit = {},
     destination: NavGraphBuilder.() -> Unit,
 ) {
     navigation<PlayerBaseRoute>(startDestination = PlayerEntryRoute) {
@@ -33,7 +34,8 @@ fun NavGraphBuilder.playerEntryScreen(
                 resetTokenFlag = resetTokenFlagProvider(),
                 onBack = onBack,
                 onNavigateToPlaylist = onNavigateToPlaylist,
-                onNavigateToPlayerWord = onNavigateToPlayerWord
+                onNavigateToPlayerWord = onNavigateToPlayerWord,
+                onNavigateToFullscreen = onNavigateToFullscreen
             )
         }
 

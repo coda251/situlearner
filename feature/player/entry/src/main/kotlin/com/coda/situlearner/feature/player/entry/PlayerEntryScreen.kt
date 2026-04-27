@@ -33,6 +33,7 @@ internal fun PlayerEntryScreen(
     onBack: () -> Unit,
     onNavigateToPlaylist: () -> Unit,
     onNavigateToPlayerWord: (Token, Subtitle, Language, String) -> Unit,
+    onNavigateToFullscreen: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PlayerEntryViewModel = koinViewModel()
 ) {
@@ -45,6 +46,7 @@ internal fun PlayerEntryScreen(
         onBack = onBack,
         onNavigateToPlaylist = onNavigateToPlaylist,
         onNavigateToPlayerWord = onNavigateToPlayerWord,
+        onFullscreen = onNavigateToFullscreen,
         modifier = modifier
     )
 }
@@ -57,6 +59,7 @@ private fun PlayerEntryScreen(
     onBack: () -> Unit,
     onNavigateToPlaylist: () -> Unit,
     onNavigateToPlayerWord: (Token, Subtitle, Language, String) -> Unit,
+    onFullscreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val playlist by playerState.playlist.collectAsStateWithLifecycle()
@@ -97,7 +100,11 @@ private fun PlayerEntryScreen(
                 .padding(it)
                 .consumeWindowInsets(it)
         ) {
-            PlayerMediaBoard(playerState = playerState, onBack = onBack)
+            PlayerMediaBoard(
+                playerState = playerState,
+                onBack = onBack,
+                onFullscreen = onFullscreen
+            )
             when (settingsUiState) {
                 PlayerSettingsUiState.Loading -> {
                     Box(modifier = modifier.fillMaxSize()) {
