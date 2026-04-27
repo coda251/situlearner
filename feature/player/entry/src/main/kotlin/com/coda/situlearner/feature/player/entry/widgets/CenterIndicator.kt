@@ -1,4 +1,4 @@
-package com.coda.situlearner.feature.player.entry.widgets.subtitle
+package com.coda.situlearner.feature.player.entry.widgets
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CenterIndicator(
+internal fun CenterIndicator(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
     thickness: Dp = 1.dp

@@ -2,12 +2,10 @@ package com.coda.situlearner.feature.player.entry
 
 import android.content.ClipData
 import android.widget.Toast
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,7 +35,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -59,10 +56,11 @@ import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.SubtitleDisplayMode
 import com.coda.situlearner.core.model.infra.Subtitle
 import com.coda.situlearner.core.model.infra.Token
-import com.coda.situlearner.feature.player.entry.widgets.subtitle.CenterIndicator
-import com.coda.situlearner.feature.player.entry.widgets.subtitle.InteractionTimer
-import com.coda.situlearner.feature.player.entry.widgets.subtitle.SubtitleTextDefault
-import com.coda.situlearner.feature.player.entry.widgets.subtitle.SubtitleTextItem
+import com.coda.situlearner.core.ui.widget.SubtitleListItem
+import com.coda.situlearner.core.ui.widget.SubtitleTextDefault
+import com.coda.situlearner.core.ui.widget.SubtitleTextItemWeight
+import com.coda.situlearner.feature.player.entry.widgets.CenterIndicator
+import com.coda.situlearner.feature.player.entry.widgets.InteractionTimer
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerState.Companion.TIME_UNSET
 import kotlinx.coroutines.launch
@@ -429,117 +427,6 @@ private fun SubtitleList(
     }
 }
 
-@Composable
-private fun SubtitleListItem(
-    modifier: Modifier = Modifier,
-    sourceText: String,
-    targetText: String = "",
-    isActive: Boolean,
-    isInClip: Boolean,
-    showTargetText: Boolean = true,
-    tokens: List<Token>? = null,
-    activeTokenStartIndex: Int = -1,
-    onClickToken: (Token) -> Unit = {},
-    onClickStartBox: () -> Unit = {},
-    onClickEndBox: () -> Unit = {},
-    onDoubleClickBox: () -> Unit = {},
-    onLongClickBox: () -> Unit = {}
-) {
-    SubcomposeLayout(modifier = modifier.fillMaxWidth()) { constraints ->
-        // weights as modifier.weight
-        val startBoxWeight = SubtitleStartBoxWeight
-        val textWeight = SubtitleTextItemWeight
-        val endBoxWeight = SubtitleEndBoxWeight
-
-        // Step 1: Measure SubtitleTextItem
-        val textPlaceable = subcompose("text") {
-            SubtitleTextItem(
-                sourceText = sourceText,
-                targetText = targetText,
-                tokens = tokens,
-                activeTokenStartIndex = activeTokenStartIndex,
-                onClickToken = onClickToken,
-                isActive = isActive,
-                isInClip = isInClip,
-                showTargetText = showTargetText
-            )
-        }.map {
-            it.measure(
-                constraints.copy(
-                    minWidth = (constraints.maxWidth * textWeight).toInt(),
-                    maxWidth = (constraints.maxWidth * textWeight).toInt()
-                )
-            )
-        }
-
-        // Determine the height based on the measured SubtitleTextItem
-        val textHeight = textPlaceable.maxOf { it.height }
-
-        // Step 2: Measure the boxes with the same height as SubtitleTextItem
-        val boxConstraints = constraints.copy(minHeight = textHeight, maxHeight = textHeight)
-        val startBoxPlaceable = subcompose("startBox") {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .combinedClickable(
-                        onClick = onClickStartBox,
-                        onLongClick = onLongClickBox,
-                        onDoubleClick = onDoubleClickBox,
-                    ),
-            )
-        }.map {
-            it.measure(
-                boxConstraints.copy(
-                    minWidth = (boxConstraints.maxWidth * startBoxWeight).toInt(),
-                    maxWidth = (boxConstraints.maxWidth * startBoxWeight).toInt()
-                )
-            )
-        }
-
-        val endBoxPlaceable = subcompose("endBox") {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .combinedClickable(
-                        onClick = onClickEndBox,
-                        onLongClick = onLongClickBox,
-                        onDoubleClick = onDoubleClickBox,
-                    ),
-            )
-        }.map {
-            it.measure(
-                boxConstraints.copy(
-                    minWidth = (boxConstraints.maxWidth * endBoxWeight).toInt(),
-                    maxWidth = (boxConstraints.maxWidth * endBoxWeight).toInt()
-                )
-            )
-        }
-
-        // Set the layout width and height
-        val width = constraints.maxWidth
-
-        layout(width, textHeight) {
-            // Place the startBox
-            var xOffset = 0
-            startBoxPlaceable.forEach {
-                it.place(xOffset, 0)
-                xOffset += it.width
-            }
-
-            // Place the SubtitleTextItem
-            textPlaceable.forEach {
-                it.place(xOffset, 0)
-                xOffset += it.width
-            }
-
-            // Place the endBox
-            endBoxPlaceable.forEach {
-                it.place(xOffset, 0)
-            }
-        }
-    }
-}
-
 @JvmInline
 private value class TimedEvent(val value: String) {
     companion object {
@@ -644,11 +531,6 @@ private fun Subtitle.isInLoop(loop: Pair<Long?, Long?>): Boolean {
     else if (start == null) startTimeInMs < end
     else !(endTimeInMs <= start || startTimeInMs >= end)
 }
-
-// combined
-private const val SubtitleStartBoxWeight = 1f / 6f
-private const val SubtitleTextItemWeight = 4f / 6f
-private const val SubtitleEndBoxWeight = 1f / 6f
 
 @Preview
 @Composable

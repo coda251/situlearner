@@ -1,4 +1,4 @@
-package com.coda.situlearner.feature.player.entry.widgets.seekbar
+package com.coda.situlearner.core.ui.widget
 
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateDp
@@ -23,7 +23,7 @@ import kotlin.math.roundToLong
  * Referred to https://github.com/vfsfitvnm/ViMusic, with some modification.
  */
 @Composable
-internal fun SeekBar(
+fun SeekBar(
     start: Long,
     end: Long,
     valueProvider: () -> Long,
@@ -121,7 +121,7 @@ internal fun SeekBar(
     )
 }
 
-internal class SeekBarColors(
+class SeekBarColors(
     val thumbColor: Color,
     val activeTrackColor: Color,
     val inactiveTrackColor: Color,

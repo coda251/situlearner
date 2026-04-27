@@ -1,4 +1,4 @@
-package com.coda.situlearner.feature.player.entry.widgets.subtitle
+package com.coda.situlearner.feature.player.entry.widgets
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay

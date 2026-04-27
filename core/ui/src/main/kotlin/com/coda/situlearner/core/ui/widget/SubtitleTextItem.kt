@@ -1,5 +1,6 @@
-package com.coda.situlearner.feature.player.entry.widgets.subtitle
+package com.coda.situlearner.core.ui.widget
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,7 +48,7 @@ internal fun SubtitleTextItem(
     val targetTextColor by subtitleColors.targetTextColor(showTargetText)
 
     Box(
-        modifier = modifier,
+        modifier = modifier.background(color = subtitleColors.containerColor),
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -216,7 +217,8 @@ object SubtitleTextDefault {
         inClipSourceTextColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
         defaultTargetTextColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
         activeTokenTextColor: Color = MaterialTheme.colorScheme.primary,
-        activeTokenBackgroundColor: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
+        activeTokenBackgroundColor: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f),
+        containerColor: Color = Color.Transparent
     ): SubtitleTextColors = SubtitleTextColors(
         defaultSourceTextColor = defaultSourceTextColor,
         activeSourceTextColor = activeSourceTextColor,
@@ -224,6 +226,7 @@ object SubtitleTextDefault {
         defaultTargetTextColor = defaultTargetTextColor,
         activeTokenTextColor = activeTokenTextColor,
         activeTokenBackgroundColor = activeTokenBackgroundColor,
+        containerColor = containerColor
     )
 }
 
@@ -234,7 +237,8 @@ class SubtitleTextColors internal constructor(
     private val inClipSourceTextColor: Color,
     val defaultTargetTextColor: Color,
     val activeTokenTextColor: Color,
-    val activeTokenBackgroundColor: Color
+    val activeTokenBackgroundColor: Color,
+    val containerColor: Color
 ) {
     @Composable
     fun sourceTextColor(

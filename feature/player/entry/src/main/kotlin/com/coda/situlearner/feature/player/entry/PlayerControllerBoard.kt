@@ -33,8 +33,8 @@ import com.coda.situlearner.core.ui.util.UndefinedTimeText
 import com.coda.situlearner.core.ui.util.asTimeText
 import com.coda.situlearner.core.ui.widget.PlayNextButton
 import com.coda.situlearner.core.ui.widget.PlaybackModeButton
-import com.coda.situlearner.feature.player.entry.widgets.seekbar.SeekBar
-import com.coda.situlearner.feature.player.entry.widgets.seekbar.SeekBarColors
+import com.coda.situlearner.core.ui.widget.SeekBar
+import com.coda.situlearner.core.ui.widget.SeekBarColors
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.core.ui.R as coreR
 
