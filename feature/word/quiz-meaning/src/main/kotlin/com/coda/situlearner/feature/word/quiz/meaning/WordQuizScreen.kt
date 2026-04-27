@@ -53,11 +53,11 @@ import com.coda.situlearner.core.model.data.MediaType
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.mapper.asPlaylistItem
+import com.coda.situlearner.core.model.feature.UserRating
 import com.coda.situlearner.core.testing.data.wordWithContextsListTestData
 import com.coda.situlearner.core.ui.widget.AsyncMediaImage
 import com.coda.situlearner.core.ui.widget.BackButton
 import com.coda.situlearner.core.ui.widget.WordContextText
-import com.coda.situlearner.core.model.feature.UserRating
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
 import org.koin.androidx.compose.koinViewModel
@@ -238,7 +238,7 @@ private fun QuizItem(
     onRate: (Word, UserRating) -> Unit,
     onNext: () -> Unit,
 ) {
-    var quizItemState by remember {
+    var quizItemState by remember(word) {
         mutableStateOf<QuizItemState>(QuizItemState.NoHint(wordContext))
     }
 
@@ -264,6 +264,7 @@ private fun QuizItem(
             AnimatedVisibility(
                 quizItemState is QuizItemState.HintWithContext
                         || quizItemState is QuizItemState.HintWithMedia
+                        || quizItemState is QuizItemState.Mistaken
             ) {
                 wordContext?.let {
                     Column {
@@ -281,7 +282,10 @@ private fun QuizItem(
                 }
             }
 
-            AnimatedVisibility(quizItemState is QuizItemState.HintWithMedia) {
+            AnimatedVisibility(
+                quizItemState is QuizItemState.HintWithMedia
+                        || quizItemState is QuizItemState.Mistaken
+            ) {
                 Column {
                     Spacer(modifier = Modifier.height(16.dp))
                     PlayerViewCard(
@@ -291,7 +295,10 @@ private fun QuizItem(
                 }
             }
 
-            AnimatedVisibility(quizItemState is QuizItemState.Answer) {
+            AnimatedVisibility(
+                quizItemState is QuizItemState.Answer
+                        || quizItemState is QuizItemState.Mistaken
+            ) {
                 Column {
                     Spacer(modifier = Modifier.height(16.dp))
                     WordAnswerCard(word = word, modifier = Modifier.padding(horizontal = 16.dp))
@@ -302,19 +309,37 @@ private fun QuizItem(
         QuizSelector(
             quizItemState = quizItemState,
             isLastItem = isLastItem,
-            onRate = {
-                onRate(word, it)
+            onNextQuiz = {
                 playerState.clear()
-                quizItemState = QuizItemState.Answer
-            },
-            onNext = onNext,
-            onHint = {
-                if (it is QuizItemState.HintWithMedia) {
-                    it.context.asPlaylistItem()?.let { item ->
-                        playerState.addItems(listOf(item), item)
-                        playerState.play()
+                val userRating = when (it) {
+                    is QuizItemState.Answer -> {
+                        when (it.fromState) {
+                            is QuizItemState.NoHint -> UserRating.Easy
+                            is QuizItemState.HintWithContext -> UserRating.Good
+                            is QuizItemState.HintWithMedia -> UserRating.Hard
+                            else -> UserRating.Again
+                        }
                     }
+
+                    is QuizItemState.Mistaken -> UserRating.Again
+
+                    else -> return@QuizSelector
                 }
+                onRate(word, userRating)
+                onNext()
+            },
+            onStateChanged = {
+                val context = when (it) {
+                    is QuizItemState.HintWithMedia, is QuizItemState.Mistaken -> wordContext
+                    else -> null
+                }
+                context?.asPlaylistItem()?.let { item ->
+                    playerState.addItems(listOf(item), item)
+                    playerState.play()
+                } ?: run {
+                    playerState.clear()
+                }
+
                 quizItemState = it
             }
         )
@@ -405,9 +430,8 @@ private fun PlayerViewCard(
 private fun QuizSelector(
     quizItemState: QuizItemState,
     isLastItem: Boolean,
-    onHint: (QuizItemState) -> Unit,
-    onRate: (UserRating) -> Unit,
-    onNext: () -> Unit,
+    onStateChanged: (QuizItemState) -> Unit,
+    onNextQuiz: (QuizItemState) -> Unit,
 ) {
     Column {
         Spacer(modifier = Modifier.height(16.dp))
@@ -416,19 +440,40 @@ private fun QuizSelector(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            if (quizItemState !is QuizItemState.Answer) {
-                val nextState = quizItemState.next()
-                val hasMoreHint = nextState !is QuizItemState.Answer
+            if (quizItemState !is QuizItemState.Mistaken) {
+                val nextState = when (quizItemState) {
+                    is QuizItemState.NoHint ->
+                        quizItemState.context?.let { QuizItemState.HintWithContext(it) }
+                        // no more hint, use mistaken as the next state
+                        // when user selected "do not know"
+                            ?: QuizItemState.Mistaken
+
+                    is QuizItemState.HintWithContext ->
+                        if (quizItemState.context.mediaFile != null) QuizItemState.HintWithMedia(
+                            quizItemState.context
+                        )
+                        else QuizItemState.Mistaken
+
+                    is QuizItemState.HintWithMedia -> QuizItemState.Mistaken
+                    is QuizItemState.Answer -> QuizItemState.Mistaken
+                }
+
+                val hasMoreHint = nextState !is QuizItemState.Mistaken
 
                 TextButton(
-                    onClick = {
-                        if (hasMoreHint) onHint(nextState)
-                        else onRate(UserRating.Again)
-                    }
+                    onClick = { onStateChanged(nextState) }
                 ) {
                     Text(
-                        text = if (hasMoreHint) stringResource(R.string.word_quiz_screen_hint)
-                        else stringResource(R.string.word_quiz_screen_do_not_know)
+                        text = when (quizItemState) {
+                            is QuizItemState.NoHint,
+                            is QuizItemState.HintWithContext,
+                            is QuizItemState.HintWithMedia -> {
+                                if (hasMoreHint) stringResource(R.string.word_quiz_screen_hint)
+                                else stringResource(R.string.word_quiz_screen_do_not_know)
+                            }
+
+                            is QuizItemState.Answer -> stringResource(R.string.word_quiz_screen_misremember)
+                        }
                     )
                 }
             }
@@ -436,16 +481,18 @@ private fun QuizSelector(
             Button(
                 onClick = {
                     when (quizItemState) {
-                        is QuizItemState.NoHint -> onRate(UserRating.Easy)
-                        is QuizItemState.HintWithContext -> onRate(UserRating.Good)
-                        is QuizItemState.HintWithMedia -> onRate(UserRating.Hard)
-                        QuizItemState.Answer -> onNext()
+                        is QuizItemState.NoHint,
+                        is QuizItemState.HintWithContext,
+                        is QuizItemState.HintWithMedia ->
+                            onStateChanged(QuizItemState.Answer(quizItemState))
+
+                        else -> onNextQuiz(quizItemState)
                     }
                 }
             ) {
                 Text(
                     text = when (quizItemState) {
-                        QuizItemState.Answer ->
+                        is QuizItemState.Answer, is QuizItemState.Mistaken ->
                             if (isLastItem) stringResource(R.string.word_quiz_screen_done)
                             else stringResource(R.string.word_quiz_screen_next)
 
@@ -463,14 +510,8 @@ private sealed interface QuizItemState {
     data class NoHint(val context: WordContextView?) : QuizItemState
     data class HintWithContext(val context: WordContextView) : QuizItemState
     data class HintWithMedia(val context: WordContextView) : QuizItemState
-    data object Answer : QuizItemState
-
-    fun next(): QuizItemState = when (this) {
-        is NoHint -> context?.let { HintWithContext(it) } ?: Answer
-        is HintWithContext -> if (context.mediaFile != null) HintWithMedia(context) else Answer
-        is HintWithMedia -> Answer
-        is Answer -> Answer
-    }
+    data class Answer(val fromState: QuizItemState) : QuizItemState
+    data object Mistaken : QuizItemState
 }
 
 @Composable

@@ -11,4 +11,5 @@
     <string name="word_quiz_screen_rating_hard">困难</string>
     <string name="word_quiz_screen_rating_again">忘记</string>
     <string name="word_quiz_screen_no_words_to_quiz">当前没有单词需要测试</string>
+    <string name="word_quiz_screen_misremember">记错了</string>
 </resources>
