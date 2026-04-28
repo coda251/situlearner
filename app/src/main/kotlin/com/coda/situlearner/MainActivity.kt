@@ -20,6 +20,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -76,8 +77,9 @@ class MainActivity : ComponentActivity() {
 
             val useDarkTheme = shouldUseDarkTheme(uiState)
 
+            val configuration = LocalConfiguration.current
             // referred to https://github.com/android/nowinandroid
-            DisposableEffect(useDarkTheme) {
+            DisposableEffect(useDarkTheme, configuration) {
                 enableEdgeToEdge(
                     statusBarStyle = SystemBarStyle.auto(
                         Color.TRANSPARENT,
