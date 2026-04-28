@@ -11,6 +11,7 @@ import com.coda.situlearner.core.datastore.di.dataStoreModule
 import com.coda.situlearner.core.network.di.networkModule
 import com.coda.situlearner.feature.home.entry.di.homeEntryModules
 import com.coda.situlearner.feature.player.entry.di.playerEntryModule
+import com.coda.situlearner.feature.player.fullscreen.di.playerFullscreenModule
 import com.coda.situlearner.feature.player.word.di.playerWordModule
 import com.coda.situlearner.feature.restore.di.restoreModule
 import com.coda.situlearner.feature.word.detail.entry.di.wordDetailEntryModule
@@ -43,6 +44,7 @@ private val activityModule = module {
 
 private val featureModules = listOf(
     playerEntryModule,
+    playerFullscreenModule,
     playerWordModule,
     restoreModule,
     wordDetailEditModule,

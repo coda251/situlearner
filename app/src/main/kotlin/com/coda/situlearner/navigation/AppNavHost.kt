@@ -20,6 +20,8 @@ import com.coda.situlearner.feature.home.entry.navigation.homeEntryScreen
 import com.coda.situlearner.feature.player.entry.navigation.PlayerEntryRoute
 import com.coda.situlearner.feature.player.entry.navigation.navigateToPlayerEntry
 import com.coda.situlearner.feature.player.entry.navigation.playerEntryScreen
+import com.coda.situlearner.feature.player.fullscreen.navigation.navigateToPlayerFullscreen
+import com.coda.situlearner.feature.player.fullscreen.navigation.playerFullscreen
 import com.coda.situlearner.feature.player.playlist.navigation.navigateToPlayerPlaylist
 import com.coda.situlearner.feature.player.playlist.navigation.playerPlaylistScreen
 import com.coda.situlearner.feature.player.word.navigation.navigateToPlayerWord
@@ -123,7 +125,8 @@ fun AppNavHost(
             resetTokenFlagProvider = { resetTokenFlag },
             onBack = appNavController::popBackStack,
             onNavigateToPlaylist = appNavController::navigateToPlayerPlaylist,
-            onNavigateToPlayerWord = appNavController::navigateToPlayerWord
+            onNavigateToPlayerWord = appNavController::navigateToPlayerWord,
+            onNavigateToFullscreen = appNavController::navigateToPlayerFullscreen
         ) {
             playerPlaylistScreen(
                 onBackToPlayer = appNavController::popBackStack,
@@ -139,6 +142,11 @@ fun AppNavHost(
                     resetTokenFlag = -resetTokenFlag
                     appNavController.popBackStack()
                 }
+            )
+
+            playerFullscreen(
+                onBack = { appNavController.popBackStack() },
+                onNavigateToPlayerWord = appNavController::navigateToPlayerWord
             )
         }
     }

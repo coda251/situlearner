@@ -44,6 +44,7 @@ dependencies {
 
     implementation(projects.feature.home.entry)
     implementation(projects.feature.player.entry)
+    implementation(projects.feature.player.fullscreen)
     implementation(projects.feature.player.playlist)
     implementation(projects.feature.player.word)
     implementation(projects.feature.restore)
