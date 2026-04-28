@@ -1,6 +1,7 @@
 package com.coda.situlearner.di
 
 import android.content.Context
+import com.coda.situlearner.BuildConfig
 import com.coda.situlearner.MainActivityViewModel
 import com.coda.situlearner.core.cache.di.cacheModule
 import com.coda.situlearner.core.cfg.CacheConfig
@@ -25,16 +26,19 @@ import com.coda.situlearner.infra.explorer.local.di.exploreLocalModule
 import com.coda.situlearner.infra.player.di.playerModule
 import com.coda.situlearner.infra.subkit.processor.di.processorModule
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
-
-private val activityModule = module {
-    viewModel { MainActivityViewModel(get()) }
-}
 
 private val configModule = module {
     single {
         CacheConfig(get<Context>().filesDir.path)
     }
+
+    single(named("versionName")) { BuildConfig.VERSION_NAME }
+}
+
+private val activityModule = module {
+    viewModel { MainActivityViewModel(get(), get()) }
 }
 
 private val featureModules = listOf(

@@ -1,5 +1,6 @@
 package com.coda.situlearner.feature.home.entry.di
 
+import com.coda.situlearner.feature.home.entry.HomeViewModel
 import com.coda.situlearner.feature.home.explore.collection.di.homeExploreCollectionModule
 import com.coda.situlearner.feature.home.explore.entry.di.homeExploreEntryModule
 import com.coda.situlearner.feature.home.media.collection.di.homeMediaCollectionModule
@@ -12,8 +13,15 @@ import com.coda.situlearner.feature.home.settings.theme.di.homeSettingsThemeModu
 import com.coda.situlearner.feature.home.settings.word.di.homeSettingsWordModule
 import com.coda.situlearner.feature.home.word.book.di.homeWordBookModule
 import com.coda.situlearner.feature.home.word.entry.di.homeWordEntryModule
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.module
+
+val homeEntryModule = module {
+    viewModel { HomeViewModel(get()) }
+}
 
 val homeEntryModules = listOf(
+    homeEntryModule,
     homeExploreCollectionModule,
     homeExploreEntryModule,
     homeMediaCollectionModule,

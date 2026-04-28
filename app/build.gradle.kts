@@ -11,6 +11,10 @@ android {
         versionName = "0.9.0"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true

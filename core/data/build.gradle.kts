@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.situlearner.android.library)
     alias(libs.plugins.situlearner.koin)
+    alias(libs.plugins.situlearner.ktor)
 }
 
 android {

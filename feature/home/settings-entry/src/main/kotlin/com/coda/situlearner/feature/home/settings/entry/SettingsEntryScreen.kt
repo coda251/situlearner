@@ -35,8 +35,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.coda.situlearner.core.model.data.AppVersionState
 import com.coda.situlearner.feature.home.settings.entry.model.ExportState
-import com.coda.situlearner.feature.home.settings.entry.model.VersionState
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import org.koin.androidx.compose.koinViewModel
 import com.coda.situlearner.core.ui.R as coreR
@@ -54,6 +54,7 @@ internal fun SettingsEntryScreen(
     val exportState by viewModel.exportState.collectAsStateWithLifecycle()
 
     SettingsEntryScreen(
+        currentVersion = viewModel.currentVersion,
         versionState = versionState,
         exportState = exportState,
         onClickTheme = onNavigateToTheme,
@@ -70,13 +71,14 @@ internal fun SettingsEntryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SettingsEntryScreen(
-    versionState: VersionState,
+    currentVersion: String,
+    versionState: AppVersionState,
     exportState: ExportState,
     onClickTheme: () -> Unit,
     onClickPlayer: () -> Unit,
     onClickWord: () -> Unit,
     onClickChatbot: () -> Unit,
-    onCheckUpdate: (String?) -> Unit,
+    onCheckUpdate: () -> Unit,
     onExport: (Uri) -> Unit,
     onResetExportState: () -> Unit,
     modifier: Modifier = Modifier
@@ -105,6 +107,7 @@ private fun SettingsEntryScreen(
                 .consumeWindowInsets(it)
         ) {
             SettingsContentBoard(
+                currentVersion = currentVersion,
                 versionState = versionState,
                 exportState = exportState,
                 snackbarHostState = snackbarHostState,
@@ -122,14 +125,15 @@ private fun SettingsEntryScreen(
 
 @Composable
 private fun SettingsContentBoard(
-    versionState: VersionState,
+    currentVersion: String,
+    versionState: AppVersionState,
     exportState: ExportState,
     snackbarHostState: SnackbarHostState,
     onClickTheme: () -> Unit,
     onClickPlayer: () -> Unit,
     onClickWord: () -> Unit,
     onClickChatbot: () -> Unit,
-    onCheckUpdate: (String?) -> Unit,
+    onCheckUpdate: () -> Unit,
     onExport: (Uri) -> Unit,
     onResetExportState: () -> Unit,
 ) {
@@ -139,7 +143,7 @@ private fun SettingsContentBoard(
         WordConfigItem(onClickWord)
         ChatbotConfigItem(onClickChatbot)
         ExportDataItem(exportState, snackbarHostState, onExport, onResetExportState)
-        AppVersionCheckItem(versionState, onCheckUpdate)
+        AppVersionCheckItem(currentVersion, versionState, onCheckUpdate)
         AboutItem()
     }
 }
@@ -238,20 +242,17 @@ private fun ChatbotConfigItem(
 
 @Composable
 private fun AppVersionCheckItem(
-    versionState: VersionState,
-    onCheckUpdate: (String?) -> Unit,
+    currentVersion: String,
+    versionState: AppVersionState,
+    onCheckUpdate: () -> Unit,
 ) {
     val context = LocalContext.current
 
-    val currentVersion = remember {
-        context.packageManager.getPackageInfo(context.packageName, 0).versionName
-    }
-
     val handleClick = {
         when (versionState) {
-            VersionState.NotChecked, VersionState.Failed -> onCheckUpdate(currentVersion)
-            VersionState.Loading, VersionState.UpToDate -> {}
-            is VersionState.UpdateAvailable -> {
+            AppVersionState.NotChecked, AppVersionState.Failed -> onCheckUpdate()
+            AppVersionState.Loading, AppVersionState.UpToDate -> {}
+            is AppVersionState.UpdateAvailable -> {
                 val intent = Intent(Intent.ACTION_VIEW, versionState.downloadUrl.toUri())
                 context.startActivity(intent)
             }
@@ -263,7 +264,7 @@ private fun AppVersionCheckItem(
             Text(text = stringResource(R.string.home_settings_entry_screen_current_version))
         },
         supportingContent = {
-            currentVersion?.let { Text(text = it) }
+            Text(text = currentVersion)
         },
         trailingContent = {
             TextButton(
@@ -272,14 +273,14 @@ private fun AppVersionCheckItem(
                 Text(
                     text = stringResource(
                         when (versionState) {
-                            VersionState.Failed -> R.string.home_settings_entry_screen_check_failed
-                            VersionState.Loading -> R.string.home_settings_entry_screen_checking
-                            VersionState.NotChecked -> R.string.home_settings_entry_screen_check_update
-                            VersionState.UpToDate -> R.string.home_settings_entry_screen_up_to_date
-                            is VersionState.UpdateAvailable -> R.string.home_settings_entry_screen_update_available
+                            AppVersionState.Failed -> R.string.home_settings_entry_screen_check_failed
+                            AppVersionState.Loading -> R.string.home_settings_entry_screen_checking
+                            AppVersionState.NotChecked -> R.string.home_settings_entry_screen_check_update
+                            AppVersionState.UpToDate -> R.string.home_settings_entry_screen_up_to_date
+                            is AppVersionState.UpdateAvailable -> R.string.home_settings_entry_screen_update_available
                         }
                     ) + when (versionState) {
-                        is VersionState.UpdateAvailable -> " ${versionState.version}"
+                        is AppVersionState.UpdateAvailable -> " ${versionState.version}"
                         else -> ""
                     }
                 )

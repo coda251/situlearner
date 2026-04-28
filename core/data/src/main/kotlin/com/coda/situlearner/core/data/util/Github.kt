@@ -1,6 +1,6 @@
-package com.coda.situlearner.feature.home.settings.entry.util
+package com.coda.situlearner.core.data.util
 
-import com.coda.situlearner.feature.home.settings.entry.model.VersionState
+import com.coda.situlearner.core.model.data.AppVersionState
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -38,14 +38,14 @@ private fun hasUpdate(local: String, remote: String): Boolean {
     return false
 }
 
-internal fun GitHubRelease.toVersionState(local: String?): VersionState {
+internal fun GitHubRelease.toVersionState(local: String?): AppVersionState {
     val remote = this.tagName.trimStart('v')
-    val state = VersionState.UpdateAvailable(
+    val state = AppVersionState.UpdateAvailable(
         version = remote,
         downloadUrl = this.assets.first().browserDownloadUrl
     )
 
     if (local == null) return state
     return if (hasUpdate(local, remote)) state
-    else VersionState.UpToDate
+    else AppVersionState.UpToDate
 }

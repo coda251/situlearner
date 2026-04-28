@@ -3,38 +3,27 @@ package com.coda.situlearner.feature.home.settings.entry
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.coda.situlearner.core.data.repository.AppVersionRepository
 import com.coda.situlearner.feature.home.settings.entry.domain.ExportDataUseCase
 import com.coda.situlearner.feature.home.settings.entry.model.ExportState
-import com.coda.situlearner.feature.home.settings.entry.model.VersionState
-import com.coda.situlearner.feature.home.settings.entry.util.getRelease
-import com.coda.situlearner.feature.home.settings.entry.util.toVersionState
-import io.ktor.client.HttpClient
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 internal class SettingsEntryViewModel(
-    private val client: HttpClient,
+    private val appVersionRepository: AppVersionRepository,
     private val exportDataUseCase: ExportDataUseCase,
 ) : ViewModel() {
-    private val _versionState = MutableStateFlow<VersionState>(VersionState.NotChecked)
-    val versionState = _versionState.asStateFlow()
+
+    val currentVersion = appVersionRepository.currentVersion
+    val versionState = appVersionRepository.appVersionState
 
     private val _exportState = MutableStateFlow<ExportState>(ExportState.Idle)
     val exportState = _exportState.asStateFlow()
 
-    fun checkAppUpdate(currentVersion: String?) {
+    fun checkAppUpdate() {
         viewModelScope.launch {
-            _versionState.value = VersionState.Loading
-            _versionState.value = withContext(Dispatchers.IO) {
-                try {
-                    getRelease(client).toVersionState(currentVersion)
-                } catch (_: Exception) {
-                    VersionState.Failed
-                }
-            }
+            appVersionRepository.checkAppUpdate()
         }
     }
 

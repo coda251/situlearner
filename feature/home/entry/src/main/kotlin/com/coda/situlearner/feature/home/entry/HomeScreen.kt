@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -43,6 +45,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.coda.situlearner.core.model.data.AppVersionState
 import com.coda.situlearner.core.model.data.PlaylistItem
 import com.coda.situlearner.core.model.data.WordProficiencyType
 import com.coda.situlearner.core.model.feature.WordListType
@@ -57,6 +60,7 @@ import com.coda.situlearner.feature.home.word.entry.navigation.HomeWordBaseRoute
 import com.coda.situlearner.feature.home.word.entry.navigation.navigateToHomeWordEntry
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
+import org.koin.androidx.compose.koinViewModel
 import kotlin.reflect.KClass
 
 @Composable
@@ -66,9 +70,11 @@ internal fun HomeScreen(
     onNavigateToWordQuiz: () -> Unit,
     onNavigateToPlayer: () -> Unit,
     onNavigateToWordSearch: () -> Unit,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    homeViewModel: HomeViewModel = koinViewModel()
 ) {
     val playerState by PlayerStateProvider.state.collectAsStateWithLifecycle()
+    val versionState by homeViewModel.appVersionState.collectAsStateWithLifecycle()
 
     Scaffold(
         bottomBar = {
@@ -77,7 +83,10 @@ internal fun HomeScreen(
                     playerState = playerState,
                     onNavigateToPlayer = onNavigateToPlayer,
                 )
-                NavBottomBar(navController = navController)
+                NavBottomBar(
+                    versionState = versionState,
+                    navController = navController
+                )
             }
         }
     ) {
@@ -176,7 +185,12 @@ private fun PlayerBottomBar(
 }
 
 @Composable
-private fun NavBottomBar(navController: NavController) {
+private fun NavBottomBar(
+    versionState: AppVersionState,
+    navController: NavController
+) {
+    val hasNewVersion = versionState is AppVersionState.UpdateAvailable
+
     NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
@@ -186,7 +200,15 @@ private fun NavBottomBar(navController: NavController) {
             val isSelected = currentDestination?.hierarchy?.any { it.hasRoute(destination) } == true
             val iconId = if (isSelected) item.selectedIcon else item.unSelectedIcon
             NavigationBarItem(
-                icon = { Icon(painter = painterResource(iconId), contentDescription = null) },
+                icon = {
+                    BadgedBox(
+                        badge = {
+                            if (item == BottomNavRoute.Settings && hasNewVersion) {
+                                Badge()
+                            }
+                        }
+                    ) { Icon(painter = painterResource(iconId), contentDescription = null) }
+                },
                 label = { Text(stringResource(id = item.title)) },
                 selected = isSelected,
                 onClick = {

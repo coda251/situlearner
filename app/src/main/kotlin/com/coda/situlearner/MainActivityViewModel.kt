@@ -4,16 +4,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coda.situlearner.core.cfg.AppConfig
+import com.coda.situlearner.core.data.repository.AppVersionRepository
 import com.coda.situlearner.core.data.repository.UserPreferenceRepository
 import com.coda.situlearner.core.model.data.DarkThemeMode
 import com.coda.situlearner.core.model.data.ThemeColorMode
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class MainActivityViewModel(
-    userPreferenceRepository: UserPreferenceRepository
+    userPreferenceRepository: UserPreferenceRepository,
+    private val appVersionRepository: AppVersionRepository
 ) : ViewModel() {
+
+    init {
+        checkAppVersion()
+    }
 
     val uiState = userPreferenceRepository.userPreference.map {
         MainActivityUiState.Success(
@@ -27,6 +34,12 @@ class MainActivityViewModel(
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = MainActivityUiState.Loading,
     )
+
+    private fun checkAppVersion() {
+        viewModelScope.launch {
+            appVersionRepository.checkAppUpdate()
+        }
+    }
 }
 
 sealed interface MainActivityUiState {
