@@ -3,14 +3,26 @@ package com.coda.situlearner.core.data.mapper
 import com.coda.situlearner.core.datastore.MediaTypeProto
 import com.coda.situlearner.core.datastore.PlayerStateProto
 import com.coda.situlearner.core.datastore.PlaylistItemProto
+import com.coda.situlearner.core.datastore.RepeatModeProto
 import com.coda.situlearner.core.model.data.MediaType
 import com.coda.situlearner.core.model.data.PlayerStateData
 import com.coda.situlearner.core.model.data.Playlist
 import com.coda.situlearner.core.model.data.PlaylistItem
+import com.coda.situlearner.core.model.data.RepeatMode
 
 private const val POSITION_UNSET = -1L
 
 private const val URL_UNSET = ""
+
+internal fun RepeatMode.asProto() = when (this) {
+    RepeatMode.One -> RepeatModeProto.REPEAT_MODE_ONE
+    RepeatMode.All -> RepeatModeProto.REPEAT_MODE_ALL
+}
+
+internal fun RepeatModeProto.asExternalModel() = when (this) {
+    RepeatModeProto.REPEAT_MODE_ONE, RepeatModeProto.UNRECOGNIZED -> RepeatMode.One
+    RepeatModeProto.REPEAT_MODE_ALL -> RepeatMode.All
+}
 
 internal fun PlayerStateProto.asExternalModel() = PlayerStateData(
     repeatMode = repeatMode.asExternalModel(),
