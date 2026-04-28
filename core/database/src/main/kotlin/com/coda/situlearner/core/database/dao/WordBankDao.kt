@@ -217,4 +217,7 @@ interface WordBankDao {
         due: Instant,
         proficiency: WordProficiency = Proficient
     ): Flow<List<TranslationQuizStatsEntity>>
+
+    @Query("SELECT * FROM WordEntity WHERE language = :language")
+    fun getWordEntities(language: Language): Flow<List<WordEntity>>
 }

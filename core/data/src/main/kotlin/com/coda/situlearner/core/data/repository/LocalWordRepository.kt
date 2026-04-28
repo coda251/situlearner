@@ -164,14 +164,14 @@ internal class LocalWordRepository(
         language: Language,
         due: Instant
     ): Flow<List<MeaningQuizStats>> = combine(
-        words,
+        wordBankDao.getWordEntities(language.asValue()),
         wordBankDao.getMeaningQuizStatsEntities(language.asValue(), due)
     ) { allWords, quizzedEntities ->
         val neverQuizzed = allWords
-            .filter { it.word.meaningProficiency == WordProficiency.Unset }
+            .filter { it.meaningProficiency.asExternalModel() == WordProficiency.Unset }
             .map {
                 MeaningQuizStats.create(
-                    wordId = it.word.id,
+                    wordId = it.id,
                     currentDate = Instant.DISTANT_PAST
                 )
             }
@@ -183,17 +183,19 @@ internal class LocalWordRepository(
         language: Language,
         due: Instant
     ): Flow<List<TranslationQuizStats>> = combine(
-        words,
+        wordBankDao.getWordEntities(language.asValue()),
         wordBankDao.getTranslationQuizStatsEntities(language.asValue(), due)
     ) { allWords, quizzedEntities ->
         val neverQuizzed = allWords
             .filter {
-                it.word.meaningProficiency == WordProficiency.Proficient &&
-                        it.word.translationProficiency == WordProficiency.Unset
+                val m = it.meaningProficiency
+                val t = it.translationProficiency
+                m.asExternalModel() == WordProficiency.Proficient &&
+                        (t == null || t.asExternalModel() == WordProficiency.Unset)
             }
             .map {
                 TranslationQuizStats.create(
-                    wordId = it.word.id,
+                    wordId = it.id,
                     currentDate = Instant.DISTANT_PAST
                 )
             }
