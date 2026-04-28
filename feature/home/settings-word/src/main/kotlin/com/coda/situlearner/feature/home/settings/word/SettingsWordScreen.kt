@@ -3,26 +3,21 @@ package com.coda.situlearner.feature.home.settings.word
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,11 +29,10 @@ import com.coda.situlearner.core.model.data.TranslationEvalBackend
 import com.coda.situlearner.core.model.data.WordBookSortBy
 import com.coda.situlearner.core.ui.util.asText
 import com.coda.situlearner.core.ui.widget.BackButton
-import com.coda.situlearner.core.ui.widget.LanguageSelectorDialog
 import com.coda.situlearner.core.ui.widget.NonEmptyTextInputDialog
+import com.coda.situlearner.core.ui.widget.SingleChoiceSelector
 import com.coda.situlearner.core.ui.widget.WordCountSelectorDialog
 import org.koin.androidx.compose.koinViewModel
-import com.coda.situlearner.core.ui.R as coreR
 
 @Composable
 internal fun SettingsWordScreen(
@@ -157,35 +151,14 @@ private fun WordFilterLanguageSelector(
     language: Language,
     onSelectLanguage: (Language) -> Unit,
 ) {
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-
-    ListItem(
-        headlineContent = {
-            Text(
-                text = stringResource(R.string.home_settings_word_screen_word_library_language)
-            )
-        },
-        supportingContent = {
-            Text(
-                text = language.asText()
-            )
-        },
-        modifier = Modifier.clickable {
-            showDialog = true
-        }
+    SingleChoiceSelector(
+        currentValue = language,
+        choices = AppConfig.sourceLanguages,
+        headline = stringResource(R.string.home_settings_word_screen_word_library_language),
+        supportingText = language.asText(),
+        valueToText = { it.asText() },
+        onConfirm = onSelectLanguage
     )
-
-    if (showDialog) {
-        LanguageSelectorDialog(
-            choices = AppConfig.sourceLanguages,
-            currentLanguage = language,
-            onDismiss = { showDialog = false },
-            onConfirm = { showDialog = false },
-            onSelect = { onSelectLanguage(it) }
-        )
-    }
 }
 
 @Composable
@@ -232,53 +205,14 @@ private fun WordBookSortBySelector(
     wordBookSortBy: WordBookSortBy,
     onSelect: (WordBookSortBy) -> Unit
 ) {
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-
-    ListItem(
-        headlineContent = {
-            Text(
-                text = stringResource(R.string.home_settings_word_screen_word_book_sort_by)
-            )
-        },
-        supportingContent = {
-            Text(
-                text = wordBookSortBy.asText()
-            )
-        },
-        modifier = Modifier.clickable {
-            showDialog = true
-        }
+    SingleChoiceSelector(
+        currentValue = wordBookSortBy,
+        choices = WordBookSortBy.entries,
+        headline = stringResource(R.string.home_settings_word_screen_word_book_sort_by),
+        supportingText = wordBookSortBy.asText(),
+        valueToText = { it.asText() },
+        onConfirm = onSelect
     )
-
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDialog = false
-                    }
-                ) {
-                    Text(text = stringResource(coreR.string.core_ui_ok))
-                }
-            },
-            text = {
-                Column {
-                    WordBookSortBy.entries.forEach {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(
-                                selected = it == wordBookSortBy,
-                                onClick = { onSelect(it) },
-                            )
-                            Text(text = it.asText())
-                        }
-                    }
-                }
-            }
-        )
-    }
 }
 
 @Composable
@@ -338,53 +272,14 @@ private fun QuizDueModeSelector(
     quizDueMode: QuizDueMode,
     onSelect: (QuizDueMode) -> Unit
 ) {
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-
-    ListItem(
-        headlineContent = {
-            Text(
-                text = stringResource(R.string.home_settings_word_screen_quiz_due_mode)
-            )
-        },
-        supportingContent = {
-            Text(
-                text = quizDueMode.asText()
-            )
-        },
-        modifier = Modifier.clickable {
-            showDialog = true
-        }
+    SingleChoiceSelector(
+        currentValue = quizDueMode,
+        choices = QuizDueMode.entries,
+        headline = stringResource(R.string.home_settings_word_screen_quiz_due_mode),
+        supportingText = quizDueMode.asText(),
+        valueToText = { it.asText() },
+        onConfirm = onSelect
     )
-
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDialog = false
-                    }
-                ) {
-                    Text(text = stringResource(coreR.string.core_ui_ok))
-                }
-            },
-            text = {
-                Column {
-                    QuizDueMode.entries.forEach {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(
-                                selected = it == quizDueMode,
-                                onClick = { onSelect(it) },
-                            )
-                            Text(text = it.asText())
-                        }
-                    }
-                }
-            }
-        )
-    }
 }
 
 @Composable
@@ -462,53 +357,14 @@ private fun EvalBackendSelector(
     evalBackend: TranslationEvalBackend,
     onSetEvalBackend: (TranslationEvalBackend) -> Unit
 ) {
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-
-    ListItem(
-        headlineContent = {
-            Text(
-                text = stringResource(R.string.home_settings_word_screen_translation_eval_backend)
-            )
-        },
-        supportingContent = {
-            Text(
-                text = evalBackend.asText()
-            )
-        },
-        modifier = Modifier.clickable {
-            showDialog = true
-        }
+    SingleChoiceSelector(
+        currentValue = evalBackend,
+        choices = TranslationEvalBackend.entries,
+        headline = stringResource(R.string.home_settings_word_screen_translation_eval_backend),
+        supportingText = evalBackend.asText(),
+        valueToText = { it.asText() },
+        onConfirm = onSetEvalBackend
     )
-
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDialog = false
-                    }
-                ) {
-                    Text(text = stringResource(coreR.string.core_ui_ok))
-                }
-            },
-            text = {
-                Column {
-                    TranslationEvalBackend.entries.forEach {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(
-                                selected = it == evalBackend,
-                                onClick = { onSetEvalBackend(it) },
-                            )
-                            Text(text = it.asText())
-                        }
-                    }
-                }
-            }
-        )
-    }
 }
 
 @Composable

@@ -1,35 +1,24 @@
 package com.coda.situlearner.feature.home.settings.player
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.core.model.data.PlaybackOnWordClick
 import com.coda.situlearner.core.model.data.SubtitleDisplayMode
 import com.coda.situlearner.core.ui.widget.BackButton
+import com.coda.situlearner.core.ui.widget.SingleChoiceSelector
 import org.koin.androidx.compose.koinViewModel
-import com.coda.situlearner.core.ui.R as coreR
 
 @Composable
 internal fun SettingsPlayerScreen(
@@ -104,53 +93,14 @@ private fun PlaybackOnWordClickSelector(
     playbackOnWordClick: PlaybackOnWordClick,
     onSelect: (PlaybackOnWordClick) -> Unit
 ) {
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-
-    ListItem(
-        headlineContent = {
-            Text(
-                text = stringResource(R.string.home_settings_player_screen_playback_on_word_click)
-            )
-        },
-        supportingContent = {
-            Text(
-                text = playbackOnWordClick.asText()
-            )
-        },
-        modifier = Modifier.clickable {
-            showDialog = true
-        }
+    SingleChoiceSelector(
+        currentValue = playbackOnWordClick,
+        choices = PlaybackOnWordClick.entries,
+        headline = stringResource(R.string.home_settings_player_screen_playback_on_word_click),
+        supportingText = playbackOnWordClick.asText(),
+        valueToText = { it.asText() },
+        onConfirm = onSelect
     )
-
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDialog = false
-                    }
-                ) {
-                    Text(text = stringResource(coreR.string.core_ui_ok))
-                }
-            },
-            text = {
-                Column {
-                    PlaybackOnWordClick.entries.forEach {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(
-                                selected = it == playbackOnWordClick,
-                                onClick = { onSelect(it) },
-                            )
-                            Text(text = it.asText())
-                        }
-                    }
-                }
-            }
-        )
-    }
 }
 
 @Composable
@@ -158,53 +108,14 @@ private fun SubtitleDisplayModeSelector(
     subtitleDisplayMode: SubtitleDisplayMode,
     onSelect: (SubtitleDisplayMode) -> Unit
 ) {
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-
-    ListItem(
-        headlineContent = {
-            Text(
-                text = stringResource(R.string.home_settings_player_screen_subtitle_display_mode)
-            )
-        },
-        supportingContent = {
-            Text(
-                text = subtitleDisplayMode.asText()
-            )
-        },
-        modifier = Modifier.clickable {
-            showDialog = true
-        }
+    SingleChoiceSelector(
+        currentValue = subtitleDisplayMode,
+        choices = SubtitleDisplayMode.entries,
+        headline = stringResource(R.string.home_settings_player_screen_subtitle_display_mode),
+        supportingText = subtitleDisplayMode.asText(),
+        valueToText = { it.asText() },
+        onConfirm = onSelect
     )
-
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDialog = false
-                    }
-                ) {
-                    Text(text = stringResource(coreR.string.core_ui_ok))
-                }
-            },
-            text = {
-                Column {
-                    SubtitleDisplayMode.entries.forEach {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(
-                                selected = it == subtitleDisplayMode,
-                                onClick = { onSelect(it) },
-                            )
-                            Text(text = it.asText())
-                        }
-                    }
-                }
-            }
-        )
-    }
 }
 
 @Composable
