@@ -8,21 +8,26 @@ import com.coda.situlearner.core.data.mapper.asValue
 import com.coda.situlearner.core.data.util.selectRecommendedWords
 import com.coda.situlearner.core.database.dao.WordBankDao
 import com.coda.situlearner.core.database.entity.MeaningQuizStatsEntity
+import com.coda.situlearner.core.database.entity.MediaCollectionEntity
+import com.coda.situlearner.core.database.entity.MediaFileEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.MeaningQuizStats
 import com.coda.situlearner.core.model.data.TranslationQuizStats
 import com.coda.situlearner.core.model.data.Word
 import com.coda.situlearner.core.model.data.WordContext
+import com.coda.situlearner.core.model.data.WordContextView
 import com.coda.situlearner.core.model.data.WordProficiency
 import com.coda.situlearner.core.model.data.WordWithContexts
 import com.coda.situlearner.core.model.feature.mapper.toWordProficiency
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlin.time.Instant
 
@@ -43,11 +48,13 @@ internal class LocalWordRepository(
 
     override fun getWordWithContextsList(language: Language): Flow<List<WordWithContexts>> {
         return wordBankDao.getWordWithContextsEntities(language.asValue())
-            .map { wordWithContextsEntities ->
-                wordWithContextsEntities
-                    .map(WordWithContextsEntity::asExternalModel)
-                    .map { it.resolveMediaUrl(subtitleCacheManager, imageCacheManager) }
+            .map {
+                it.asExternalModelsWithResolvedUrls(
+                    subtitleCacheManager,
+                    imageCacheManager
+                )
             }
+            .flowOn(Dispatchers.Default)
     }
 
     override fun getWordWithContext(
@@ -96,7 +103,7 @@ internal class LocalWordRepository(
             language.asValue(),
             currentDate,
             count.toInt()
-        ).map { it.asExternalModel().resolveMediaUrl(subtitleCacheManager, imageCacheManager) }
+        ).asExternalModelsWithResolvedUrls(subtitleCacheManager, imageCacheManager)
     }
 
     override suspend fun insertWordWithContext(word: Word, wordContext: WordContext) {
@@ -211,4 +218,41 @@ internal class LocalWordRepository(
             )
         }
     )
+
+    private fun List<WordWithContextsEntity>.asExternalModelsWithResolvedUrls(
+        subtitleCacheManager: SubtitleCacheManager,
+        imageCacheManager: CoverImageCacheManager,
+    ): List<WordWithContexts> {
+        // Phase 1: collect unique entities
+        val uniqueFileEntities = mutableMapOf<String, MediaFileEntity>()
+        val uniqueCollectionEntities = mutableMapOf<String, MediaCollectionEntity>()
+        this.flatMap { it.contexts }.forEach { ctxView ->
+            ctxView.mediaFile?.let { uniqueFileEntities.putIfAbsent(it.id, it) }
+            ctxView.mediaCollection?.let { uniqueCollectionEntities.putIfAbsent(it.id, it) }
+        }
+
+        // Phase 2: resolve each unique entity once
+        val resolvedFiles = uniqueFileEntities.mapValues { (_, fileEntity) ->
+            val domain = fileEntity.asExternalModel()
+            subtitleCacheManager.run { domain.resolveUrl() }
+        }
+        val resolvedCollections = uniqueCollectionEntities.mapValues { (_, colEntity) ->
+            val domain = colEntity.asExternalModel()
+            imageCacheManager.run { domain.resolveUrl() }
+        }
+
+        // Phase 3: apply resolved entities back
+        return this.map { entity ->
+            WordWithContexts(
+                word = entity.word.asExternalModel(),
+                contexts = entity.contexts.map { ctxView ->
+                    WordContextView(
+                        wordContext = ctxView.wordContext.asExternalModel(),
+                        mediaFile = ctxView.mediaFile?.let { resolvedFiles[it.id] },
+                        mediaCollection = ctxView.mediaCollection?.let { resolvedCollections[it.id] },
+                    )
+                }
+            )
+        }
+    }
 }
