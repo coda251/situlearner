@@ -321,7 +321,17 @@ private fun QuizItem(
                         }
                     }
 
-                    is QuizItemState.Mistaken -> UserRating.Again
+                    is QuizItemState.Mistaken -> {
+                        if (it.isMisremember) {
+                            when (it.fromState) {
+                                // it's more likely misremembering the pronunciation
+                                is QuizItemState.NoHint, is QuizItemState.HintWithContext -> UserRating.Hard
+
+                                // misremembering the meaning
+                                else -> UserRating.Again
+                            }
+                        } else UserRating.Again
+                    }
 
                     else -> return@QuizSelector
                 }
@@ -446,16 +456,16 @@ private fun QuizSelector(
                         quizItemState.context?.let { QuizItemState.HintWithContext(it) }
                         // no more hint, use mistaken as the next state
                         // when user selected "do not know"
-                            ?: QuizItemState.Mistaken
+                            ?: QuizItemState.Mistaken(false, quizItemState)
 
                     is QuizItemState.HintWithContext ->
                         if (quizItemState.context.mediaFile != null) QuizItemState.HintWithMedia(
                             quizItemState.context
                         )
-                        else QuizItemState.Mistaken
+                        else QuizItemState.Mistaken(false, quizItemState)
 
-                    is QuizItemState.HintWithMedia -> QuizItemState.Mistaken
-                    is QuizItemState.Answer -> QuizItemState.Mistaken
+                    is QuizItemState.HintWithMedia -> QuizItemState.Mistaken(false, quizItemState)
+                    is QuizItemState.Answer -> QuizItemState.Mistaken(true, quizItemState.fromState)
                 }
 
                 val hasMoreHint = nextState !is QuizItemState.Mistaken
@@ -511,7 +521,10 @@ private sealed interface QuizItemState {
     data class HintWithContext(val context: WordContextView) : QuizItemState
     data class HintWithMedia(val context: WordContextView) : QuizItemState
     data class Answer(val fromState: QuizItemState) : QuizItemState
-    data object Mistaken : QuizItemState
+    data class Mistaken(
+        val isMisremember: Boolean,
+        val fromState: QuizItemState
+    ) : QuizItemState
 }
 
 @Composable
