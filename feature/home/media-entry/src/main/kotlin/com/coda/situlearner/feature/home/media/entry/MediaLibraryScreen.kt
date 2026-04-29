@@ -108,7 +108,7 @@ private fun MediaLibraryContentBoard(
     LazyColumn(modifier = modifier) {
         items(
             items = collections,
-            key = { it.hashCode() }
+            key = { it.id }
         ) { collection ->
             MediaCollectionItem(
                 mediaCollection = collection,

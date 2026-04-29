@@ -18,13 +18,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.coda.situlearner.feature.word.detail.relation.model.MatchSimilarityType
 import org.koin.androidx.compose.koinViewModel
-import java.util.Locale
 
 @Composable
 internal fun MatchFilterBottomSheet(
@@ -111,7 +111,7 @@ private fun MatchFilterOptionBoard(
                 )
             },
             trailingContent = {
-                Text(text = String.format(Locale.getDefault(), "%.1f", threshold))
+                Text(text = String.format(LocalLocale.current.platformLocale, "%.1f", threshold))
             },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
         )

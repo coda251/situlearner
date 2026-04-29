@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -100,51 +99,20 @@ private fun SettingsEntryScreen(
             )
         }
     ) {
-        Box(
+        Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(it)
                 .consumeWindowInsets(it)
         ) {
-            SettingsContentBoard(
-                currentVersion = currentVersion,
-                versionState = versionState,
-                exportState = exportState,
-                snackbarHostState = snackbarHostState,
-                onClickTheme = onClickTheme,
-                onClickWord = onClickWord,
-                onClickChatbot = onClickChatbot,
-                onClickPlayer = onClickPlayer,
-                onCheckUpdate = onCheckUpdate,
-                onExport = onExport,
-                onResetExportState = onResetExportState
-            )
+            ThemeConfigItem(onClickTheme)
+            PlayerConfigItem(onClickPlayer)
+            WordConfigItem(onClickWord)
+            ChatbotConfigItem(onClickChatbot)
+            ExportDataItem(exportState, snackbarHostState, onExport, onResetExportState)
+            AppVersionCheckItem(currentVersion, versionState, onCheckUpdate)
+            AboutItem()
         }
-    }
-}
-
-@Composable
-private fun SettingsContentBoard(
-    currentVersion: String,
-    versionState: AppVersionState,
-    exportState: ExportState,
-    snackbarHostState: SnackbarHostState,
-    onClickTheme: () -> Unit,
-    onClickPlayer: () -> Unit,
-    onClickWord: () -> Unit,
-    onClickChatbot: () -> Unit,
-    onCheckUpdate: () -> Unit,
-    onExport: (Uri) -> Unit,
-    onResetExportState: () -> Unit,
-) {
-    Column {
-        ThemeConfigItem(onClickTheme)
-        PlayerConfigItem(onClickPlayer)
-        WordConfigItem(onClickWord)
-        ChatbotConfigItem(onClickChatbot)
-        ExportDataItem(exportState, snackbarHostState, onExport, onResetExportState)
-        AppVersionCheckItem(currentVersion, versionState, onCheckUpdate)
-        AboutItem()
     }
 }
 

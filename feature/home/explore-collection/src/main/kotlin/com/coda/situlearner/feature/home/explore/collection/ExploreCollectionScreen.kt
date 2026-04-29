@@ -134,7 +134,7 @@ private fun ExploreCollectionContentBoard(
     ) {
         itemsIndexed(
             items = files,
-            key = { _, it -> it.hashCode() }
+            key = { _, it -> it.mediaUrl }
         ) { index, it ->
             SourceFileItemView(
                 exploreFile = it,

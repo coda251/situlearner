@@ -25,7 +25,7 @@ internal fun List<WordWithContexts>.toWordBooks(wordBookSortBy: WordBookSortBy):
                 type = WordBookType.All,
                 name = "",
                 wordCount = this@toWordBooks.size,
-                updatedDate = Instant.Companion.DISTANT_FUTURE,
+                updatedDate = Instant.DISTANT_FUTURE,
                 coverUrl = null,
             )
         )
@@ -37,7 +37,7 @@ internal fun List<WordWithContexts>.toWordBooks(wordBookSortBy: WordBookSortBy):
                     type = WordBookType.NoMedia,
                     name = "",
                     wordCount = noMediaCount,
-                    updatedDate = Instant.Companion.DISTANT_PAST,
+                    updatedDate = Instant.DISTANT_PAST,
                     coverUrl = null,
                 )
             )

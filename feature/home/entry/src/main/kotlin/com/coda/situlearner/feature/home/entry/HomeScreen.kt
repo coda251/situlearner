@@ -45,6 +45,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.coda.situlearner.core.data.repository.AppVersionRepository
 import com.coda.situlearner.core.model.data.AppVersionState
 import com.coda.situlearner.core.model.data.PlaylistItem
 import com.coda.situlearner.core.model.data.WordProficiencyType
@@ -60,7 +61,7 @@ import com.coda.situlearner.feature.home.word.entry.navigation.HomeWordBaseRoute
 import com.coda.situlearner.feature.home.word.entry.navigation.navigateToHomeWordEntry
 import com.coda.situlearner.infra.player.PlayerState
 import com.coda.situlearner.infra.player.PlayerStateProvider
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import kotlin.reflect.KClass
 
 @Composable
@@ -71,10 +72,10 @@ internal fun HomeScreen(
     onNavigateToPlayer: () -> Unit,
     onNavigateToWordSearch: () -> Unit,
     navController: NavHostController = rememberNavController(),
-    homeViewModel: HomeViewModel = koinViewModel()
+    appVersionRepository: AppVersionRepository = koinInject()
 ) {
     val playerState by PlayerStateProvider.state.collectAsStateWithLifecycle()
-    val versionState by homeViewModel.appVersionState.collectAsStateWithLifecycle()
+    val versionState by appVersionRepository.appVersionState.collectAsStateWithLifecycle()
 
     Scaffold(
         bottomBar = {
