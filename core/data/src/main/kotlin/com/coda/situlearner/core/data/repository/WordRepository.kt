@@ -120,4 +120,6 @@ interface WordRepository {
         language: Language,
         due: Instant
     ): Flow<List<TranslationQuizStats>>
+
+    fun getWords(language: Language): Flow<List<Word>>
 }

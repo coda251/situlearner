@@ -85,12 +85,12 @@ internal class WordRelationViewModel(
                 return@launch
             }
 
-            wordRepository.words
+            wordRepository.getWords(query.language)
                 .map { targets ->
                     val matcher = Matcher.getMatcher(query.language)
                     matchWords(
                         query = query,
-                        targets = targets.map { it.word },
+                        targets = targets,
                         matcher = matcher,
                     ).filter { it.id != query.id }
 

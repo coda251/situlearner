@@ -10,6 +10,7 @@ import com.coda.situlearner.core.database.dao.WordBankDao
 import com.coda.situlearner.core.database.entity.MeaningQuizStatsEntity
 import com.coda.situlearner.core.database.entity.MediaCollectionEntity
 import com.coda.situlearner.core.database.entity.MediaFileEntity
+import com.coda.situlearner.core.database.entity.WordEntity
 import com.coda.situlearner.core.database.entity.WordWithContextsEntity
 import com.coda.situlearner.core.model.data.Language
 import com.coda.situlearner.core.model.data.MeaningQuizStats
@@ -201,6 +202,12 @@ internal class LocalWordRepository(
             }
         val quizzed = quizzedEntities.map { it.asExternalModel() }
         neverQuizzed + quizzed
+    }
+
+    override fun getWords(language: Language): Flow<List<Word>> {
+        return wordBankDao.getWordEntities(language.asValue()).map {
+            it.map(WordEntity::asExternalModel)
+        }
     }
 
     private fun WordWithContexts.resolveMediaUrl(
