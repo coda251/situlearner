@@ -34,7 +34,7 @@ internal class WordListViewModel(
     val wordOptionUiState = _wordOptionUiState.asStateFlow()
 
     val uiState = combine(
-        wordRepository.words,
+        wordRepository.getWordWithContextsList(),
         wordOptionUiState
     ) { words, options ->
         if (words.isEmpty()) WordListUiState.Empty

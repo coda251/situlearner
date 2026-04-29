@@ -36,26 +36,26 @@ internal class LocalWordRepository(
     private val wordBankDao: WordBankDao,
     private val subtitleCacheManager: SubtitleCacheManager,
     private val imageCacheManager: CoverImageCacheManager,
-    preferenceRepository: UserPreferenceRepository,
+    private val preferenceRepository: UserPreferenceRepository,
 ) : WordRepository {
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override val words = preferenceRepository.userPreference
-        .map { it.wordLibraryLanguage }
-        .distinctUntilChanged()
-        .flatMapLatest { getWordWithContextsList(it) }
 
     override var cachedRecommendedWords: List<WordWithContexts> = emptyList()
 
-    override fun getWordWithContextsList(language: Language): Flow<List<WordWithContexts>> {
-        return wordBankDao.getWordWithContextsEntities(language.asValue())
-            .map {
-                it.asExternalModelsWithResolvedUrls(
-                    subtitleCacheManager,
-                    imageCacheManager
-                )
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getWordWithContextsList(): Flow<List<WordWithContexts>> {
+        return preferenceRepository.userPreference
+            .map { it.wordLibraryLanguage }
+            .distinctUntilChanged()
+            .flatMapLatest { language ->
+                wordBankDao.getWordWithContextsEntities(language.asValue())
+                    .map {
+                        it.asExternalModelsWithResolvedUrls(
+                            subtitleCacheManager,
+                            imageCacheManager
+                        )
+                    }
+                    .flowOn(Dispatchers.Default)
             }
-            .flowOn(Dispatchers.Default)
     }
 
     override fun getWordWithContext(
@@ -138,7 +138,8 @@ internal class LocalWordRepository(
 
     override suspend fun getRecommendedWords(count: UInt): List<WordWithContexts> {
         cachedRecommendedWords =
-            words.firstOrNull()?.let { selectRecommendedWords(it, count.toInt()) } ?: emptyList()
+            getWordWithContextsList().firstOrNull()
+                ?.let { selectRecommendedWords(it, count.toInt()) } ?: emptyList()
         return cachedRecommendedWords
     }
 

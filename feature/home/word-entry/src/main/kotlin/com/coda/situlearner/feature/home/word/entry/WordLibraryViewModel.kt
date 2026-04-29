@@ -29,7 +29,7 @@ internal class WordLibraryViewModel(
 ) : ViewModel() {
 
     val booksUiState: StateFlow<WordBooksUiState> = combine(
-        wordRepository.words,
+        wordRepository.getWordWithContextsList(),
         userPreferenceRepository.userPreference
     ) { words, preference ->
         if (words.isEmpty()) WordBooksUiState.Empty(preference.wordLibraryLanguage)
@@ -62,7 +62,7 @@ internal class WordLibraryViewModel(
                 .collectLatest { pair ->
                     val recommendedWordCount = pair.first
                     refreshWords(recommendedWordCount)
-                    wordRepository.words
+                    wordRepository.getWordWithContextsList()
                         .map { it.size }
                         .distinctUntilChanged()
                         .filter { it < recommendedWordCount.toInt() }

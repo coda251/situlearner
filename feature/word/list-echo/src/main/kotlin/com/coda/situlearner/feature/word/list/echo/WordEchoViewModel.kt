@@ -31,7 +31,7 @@ internal class WordEchoViewModel(
         .map { playlist -> playlist.items.map { it.id } }
         .distinctUntilChanged()
         .flatMapLatest { ids ->
-            wordRepository.words.map { wordWithContextsList ->
+            wordRepository.getWordWithContextsList().map { wordWithContextsList ->
                 val contextIdToPair = wordWithContextsList.flatMap { wordWithContexts ->
                     wordWithContexts.contexts.map { context ->
                         wordWithContexts.word to context.wordContext

@@ -19,7 +19,7 @@ internal class WordBookViewModel(
 
     private val route = savedStateHandle.toRoute<HomeWordBookRoute>()
 
-    val uiState = repository.words.map {
+    val uiState = repository.getWordWithContextsList().map {
         val data = it.toChapters(route.id)
         if (data.isEmpty()) WordBookUiState.Empty
         else WordBookUiState.Success(data)

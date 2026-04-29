@@ -11,8 +11,6 @@ import kotlin.time.Instant
 
 interface WordRepository {
 
-    val words: Flow<List<WordWithContexts>>
-
     /**
      * We assure that all the recommended words have one and only one wordContext (safe to use
      * List.single()). However, we can not assure that all the recommended words are the latest
@@ -20,7 +18,10 @@ interface WordRepository {
      */
     val cachedRecommendedWords: List<WordWithContexts>
 
-    fun getWordWithContextsList(language: Language): Flow<List<WordWithContexts>>
+    /**
+     * Return all WordWithContexts in current preferred language.
+     */
+    fun getWordWithContextsList(): Flow<List<WordWithContexts>>
 
     fun getWordWithContext(
         mediaId: String,
