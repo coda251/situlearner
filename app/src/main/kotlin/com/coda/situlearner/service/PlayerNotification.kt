@@ -28,7 +28,7 @@ class PlayerNotification(
         const val NOTIFICATION_CHANNEL_ID = "SituLearner Player Notification"
     }
 
-    private var shouldStartForeGround = true
+    private var shouldStartForeground = true
     private var hasNotification = false
 
     private val notificationManager: NotificationManager? = service.getSystemService()
@@ -124,27 +124,27 @@ class PlayerNotification(
             bitmap = bitmap
         )
 
-        notification?.let {
+        if (notification != null) {
             if (!hasNotification) {
-                if (shouldStartForeGround) {
+                if (shouldStartForeground) {
                     service.startForegroundService(
                         Intent(
                             service,
                             PlayerService::class.java
                         )
                     )
-                    shouldStartForeGround = false
+                    shouldStartForeground = false
                 }
 
                 hasNotification = true
-                service.startForeground(NOTIFICATION_ID, it)
+                service.startForeground(NOTIFICATION_ID, notification)
             } else {
                 notificationManager?.notify(NOTIFICATION_ID, notification)
             }
-        } ?: let {
+        } else {
             hasNotification = false
             service.stopForeground(Service.STOP_FOREGROUND_REMOVE)
-            shouldStartForeGround = true
+            shouldStartForeground = true
             notificationManager?.cancel(NOTIFICATION_ID)
         }
     }

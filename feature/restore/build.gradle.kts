@@ -7,6 +7,5 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.cfg)
     implementation(projects.core.model)
 }

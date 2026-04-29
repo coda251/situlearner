@@ -42,9 +42,7 @@
             android:name="com.coda.situlearner.service.PlayerService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="mediaPlayback"
-            android:permission="TODO"
-            tools:ignore="Instantiatable" />
+            android:foregroundServiceType="mediaPlayback" />
     </application>
 
     <queries>

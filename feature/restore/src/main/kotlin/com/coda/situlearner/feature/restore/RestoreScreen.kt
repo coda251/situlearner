@@ -32,9 +32,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.coda.situlearner.core.cfg.AppConfig.DEFAULT_THEME_COLOR
-import com.coda.situlearner.core.model.data.ThemeColorMode
-import com.coda.situlearner.core.ui.theme.SituLearnerTheme
 import com.coda.situlearner.feature.restore.model.RestoreState
 import org.koin.androidx.compose.koinViewModel
 
@@ -45,18 +42,12 @@ internal fun RestoreScreen(
 ) {
     val uiState by viewModel.restoreState.collectAsStateWithLifecycle()
 
-    SituLearnerTheme(
-        useDarkTheme = false,
-        colorMode = ThemeColorMode.Static,
-        themeColor = Color(DEFAULT_THEME_COLOR)
-    ) {
-        RestoreScreen(
-            restoreState = uiState,
-            onRestoreFinished = onFinished,
-            onRestoreData = viewModel::restoreData,
-            onResetRestoreState = viewModel::resetRestoreState
-        )
-    }
+    RestoreScreen(
+        restoreState = uiState,
+        onRestoreFinished = onFinished,
+        onRestoreData = viewModel::restoreData,
+        onResetRestoreState = viewModel::resetRestoreState
+    )
 }
 
 @Composable
