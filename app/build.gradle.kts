@@ -7,8 +7,8 @@ android {
 
     defaultConfig {
         applicationId = "com.coda.situlearner"
-        versionCode = 12
-        versionName = "0.10.0"
+        versionCode = 13
+        versionName = "0.10.1"
     }
 
     buildFeatures {
