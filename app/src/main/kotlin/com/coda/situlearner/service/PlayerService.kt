@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Binder
+import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -77,10 +78,16 @@ class PlayerService : LifecycleService(), KoinComponent, PlayerState {
         bitmapProvider = BitmapProvider((256 * resources.displayMetrics.density).toInt())
         playerSession = PlayerSession(this, this)
         playerNotification = PlayerNotification(this, playerSession)
-        registerReceiver(
-            notificationReceiver,
-            NotificationReceiver.buildFilter()
-        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(
+                notificationReceiver,
+                NotificationReceiver.buildFilter(),
+                RECEIVER_NOT_EXPORTED
+            )
+        } else {
+            registerReceiver(notificationReceiver, NotificationReceiver.buildFilter())
+        }
         updateSessionAndNotification()
     }
 
